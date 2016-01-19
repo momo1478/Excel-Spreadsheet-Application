@@ -12,4 +12,12 @@ namespace DemoApp
         {
         }
     }
+
+    class NextClass
+    {
+        static void f ()
+        {
+
+        }
+    }
 }
