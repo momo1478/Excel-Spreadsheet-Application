@@ -13,9 +13,9 @@ namespace DemoApp
         }
     }
 
-    class Other
+    class NextClass
     {
-        static void g()
+        static void f ()
         {
 
         }
