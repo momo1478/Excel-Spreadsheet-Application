@@ -41,7 +41,78 @@ namespace Formulas
         /// </summary>
         public Formula(String formula)
         {
+            List<String> tokens = GetTokens(formula).ToList<String>();
+
+            for (int i = 0; i < tokens.Count; i++)
+            {
+                if(isValidToken(tokens[i]))
+            }
+
         }
+
+        private bool isValidToken(string token)
+        {
+            if (isNumber(token) || isOperator(token) || isVar(token) || isParen(token))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Is the given token an Operator?
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        private bool isOperator(string token)
+        {
+            List<String> operators = new List<string>() { "+", "-", "*", "/" };
+
+            foreach (string item in operators)
+            {
+                if (token.Equals(item))
+                    return true;
+            }
+            return false;
+        }
+        /// <summary>
+        /// Is the given token a vlid double?
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        private bool isNumber(string token)
+        {
+            double result = 0;
+            return double.TryParse(token,out result);
+        }
+        /// <summary>
+        /// Is the token a vlid variable?
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        private bool isVar(string token)
+        {
+            if (!char.IsLetter(token[0]))
+                return false;
+
+            for (int i = 0; i < token.Length; i++)
+            {
+                if (!(char.IsLetter(token[i]) || char.IsNumber(token[i])) )
+                    return false;
+            }
+
+            return true;
+        }
+        /// <summary>
+        /// Is the given token a parenthesis?
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        private bool isParen(string token)
+        {
+            return (token.Equals("(") || token.Equals(")"));
+        }
+
         /// <summary>
         /// Evaluates this Formula, using the Lookup delegate to determine the values of variables.  (The
         /// delegate takes a variable name as a parameter and returns its value (if it has one) or throws
