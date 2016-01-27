@@ -39,8 +39,14 @@ namespace Formulas
         /// If the formula is syntacticaly invalid, throws a FormulaFormatException with an 
         /// explanatory Message.
         /// </summary>
+
+        
+        //instance varible to hold the string form of the formula for use in other methods.
+        private string stringFormula;
         public Formula(String formula)
         {
+            stringFormula = formula;
+
             List<String> tokens = GetTokens(formula).ToList<String>();
 
             if (tokens.Count == 0)
@@ -104,7 +110,7 @@ namespace Formulas
 
         }
 
-        private bool isValidToken(string token)
+        private static bool isValidToken(string token)
         {
             if (isNumber(token) || isOperator(token) || isVar(token) || isParen(token))
             {
@@ -118,7 +124,7 @@ namespace Formulas
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        private bool isOperator(string token)
+        private static bool isOperator(string token)
         {
             List<String> operators = new List<string>() { "+", "-", "*", "/" };
 
@@ -134,7 +140,7 @@ namespace Formulas
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        private bool isNumber(string token)
+        private static bool isNumber(string token)
         {
             double result = 0;
             return double.TryParse(token,out result);
@@ -144,7 +150,7 @@ namespace Formulas
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        private bool isVar(string token)
+        private static bool isVar(string token)
         {
             if (!char.IsLetter(token[0]))
                 return false;
@@ -162,7 +168,7 @@ namespace Formulas
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        private bool isParen(string token)
+        private static bool isParen(string token)
         {
             return (token.Equals("(") || token.Equals(")"));
         }
@@ -178,9 +184,39 @@ namespace Formulas
         /// </summary>
         public double Evaluate(Lookup lookup)
         {
+            List<String> tokens = GetTokens(this.stringFormula).ToList();
+            
+            
+            
             return 0;
         }
+        private static string readToken(string token)
+        {
+            if (isNumber(token))
+            {
+                return "number";
+            }
 
+            if (isVar(token))
+            {
+                return "var";
+            }
+
+            if (isOperator(token))
+            {
+                if (token.Equals("*") || token.Equals("/"))
+                {
+                    return "*/";
+                }
+                else
+                {
+                    return "+-";
+                }
+            }
+            return token;
+        }
+
+        
         /// <summary>
         /// Given a formula, enumerates the tokens that compose it.  Tokens are left paren,
         /// right paren, one of the four operator symbols, a string consisting of a letter followed by

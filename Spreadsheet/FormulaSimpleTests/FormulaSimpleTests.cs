@@ -69,7 +69,7 @@ namespace FormulaTestCases
         [TestMethod]
         public void GoodConstruct3()
         {
-            Formula f = new Formula("(((2+3)/4)*3)*2");
+            Formula f = new Formula("2e3 + 2e5");
         }
         /// <summary>
         /// Makes sure that "2+3" evaluates to 5.  Since the Formula
