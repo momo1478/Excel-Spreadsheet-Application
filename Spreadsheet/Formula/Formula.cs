@@ -43,9 +43,63 @@ namespace Formulas
         {
             List<String> tokens = GetTokens(formula).ToList<String>();
 
+            if (tokens.Count == 0)
+            {
+                throw new FormulaFormatException("there must be atleast one token!");
+            }
+
+                int parenCount = 0;
             for (int i = 0; i < tokens.Count; i++)
             {
-                if(isValidToken(tokens[i]))
+                if (!isValidToken(tokens[i]))
+                {
+                    throw new FormulaFormatException("Detected invalid symbol.");
+                }
+
+                if (tokens[i].Equals("(") || isOperator(tokens[i]))
+                {
+                    if (tokens[i].Equals("("))
+                    {
+                        parenCount++;
+                    }
+
+                    if (i + 1 < tokens.Count && (!isNumber(tokens[i + 1]) || !isVar(tokens[i + 1]) || !tokens.Equals("(")))
+                    {
+                        throw new FormulaFormatException("Expected a number, variable, or opening parenthesis after an opening parenthesis or operator.");
+                    }
+                }
+
+                if (isNumber(tokens[i + 1]) || isVar(tokens[i + 1]) || tokens.Equals(")"))
+                {
+                    if (tokens[i].Equals(")"))
+                    {
+                        parenCount--;
+                        if (parenCount < 0)
+                        {
+                            throw new FormulaFormatException("There are more closing parenthesis than opening ones.");
+                        }
+                    }
+                    if (i + 1 < tokens.Count && (!isOperator(tokens[i + 1]) || !tokens.Equals(")")))
+                    {
+                        throw new FormulaFormatException("Expected a number, variable, or opening parenthesis after an opening parenthesis or operator.");
+                    }
+                }
+
+            }
+            if (parenCount != 0)
+            {
+                throw new FormulaFormatException("Balance your parenthesis.");
+            }
+
+            String firstToken = tokens.First<String>();
+            if (!isNumber(firstToken) || !isVar(firstToken) || !firstToken.Equals("("))
+            {
+                throw new FormulaFormatException("Check your first item!");
+            }
+            String lastToken = tokens.First<String>();
+            if (!isNumber(lastToken) || !isVar(lastToken) || !lastToken.Equals(")"))
+            {
+                throw new FormulaFormatException("Check your last item!");
             }
 
         }
