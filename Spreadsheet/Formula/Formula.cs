@@ -63,13 +63,13 @@ namespace Formulas
                         parenCount++;
                     }
 
-                    if (i + 1 < tokens.Count && (!isNumber(tokens[i + 1]) || !isVar(tokens[i + 1]) || !tokens.Equals("(")))
+                    if (i + 1 < tokens.Count && !(isNumber(tokens[i + 1]) || isVar(tokens[i + 1]) || tokens[i + 1].Equals("(")))
                     {
-                        throw new FormulaFormatException("Expected a number, variable, or opening parenthesis after an opening parenthesis or operator.");
+                        throw new FormulaFormatException("Any token that immediately follows an opening parenthesis or an operator must be either a number, a variable, or an opening parenthesis.");
                     }
                 }
 
-                if (isNumber(tokens[i + 1]) || isVar(tokens[i + 1]) || tokens.Equals(")"))
+                if (isNumber(tokens[i]) || isVar(tokens[i]) || tokens[i].Equals(")"))
                 {
                     if (tokens[i].Equals(")"))
                     {
@@ -79,9 +79,9 @@ namespace Formulas
                             throw new FormulaFormatException("There are more closing parenthesis than opening ones.");
                         }
                     }
-                    if (i + 1 < tokens.Count && (!isOperator(tokens[i + 1]) || !tokens.Equals(")")))
+                    if (i + 1 < tokens.Count && !(isOperator(tokens[i + 1]) || tokens[i + 1].Equals(")")))
                     {
-                        throw new FormulaFormatException("Expected a number, variable, or opening parenthesis after an opening parenthesis or operator.");
+                        throw new FormulaFormatException("Any token that immediately follows a number, a variable, or a closing parenthesis must be either an operator or a closing parenthesis.");
                     }
                 }
 
@@ -92,12 +92,12 @@ namespace Formulas
             }
 
             String firstToken = tokens.First<String>();
-            if (!isNumber(firstToken) || !isVar(firstToken) || !firstToken.Equals("("))
+            if (!(isNumber(firstToken) || isVar(firstToken) || firstToken.Equals("(")))
             {
                 throw new FormulaFormatException("Check your first item!");
             }
-            String lastToken = tokens.First<String>();
-            if (!isNumber(lastToken) || !isVar(lastToken) || !lastToken.Equals(")"))
+            String lastToken = tokens.Last<String>();
+            if (!(isNumber(lastToken) || isVar(lastToken) || lastToken.Equals(")")))
             {
                 throw new FormulaFormatException("Check your last item!");
             }

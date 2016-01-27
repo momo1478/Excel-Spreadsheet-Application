@@ -25,6 +25,23 @@ namespace FormulaTestCases
         {
             Formula f = new Formula("_");
         }
+        /// <summary>
+        /// Successful formula Construct
+        /// </summary>
+        [TestMethod]
+        public void GoodConstruct1()
+        {
+            Formula f = new Formula("7 + 9 - 6");
+        }
+
+        /// <summary>
+        /// Successful formula Construct
+        /// </summary>
+        [TestMethod]
+        public void GoodConstruct2()
+        {
+            Formula f = new Formula("(7 * 4) / 14");
+        }
 
         /// <summary>
         /// This is another syntax error
@@ -46,6 +63,14 @@ namespace FormulaTestCases
             Formula f = new Formula("2 3");
         }
 
+        /// <summary>
+        /// This is another syntax error
+        /// </summary>
+        [TestMethod]
+        public void GoodConstruct3()
+        {
+            Formula f = new Formula("(((2+3)/4)*3)*2");
+        }
         /// <summary>
         /// Makes sure that "2+3" evaluates to 5.  Since the Formula
         /// contains no variables, the delegate passed in as the
@@ -101,7 +126,7 @@ namespace FormulaTestCases
         /// This uses one of each kind of token.
         /// </summary>
         [TestMethod]
-        public void Evaluate5 ()
+        public void Evaluate5()
         {
             Formula f = new Formula("(x + y) * (z / y) * 1.0");
             double answer = f.Evaluate(Lookup4);
