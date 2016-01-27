@@ -185,9 +185,121 @@ namespace Formulas
         public double Evaluate(Lookup lookup)
         {
             List<String> tokens = GetTokens(this.stringFormula).ToList();
-            
-            
-            
+
+            Stack<double> values = new Stack<double>();
+            Stack<string> operators = new Stack<string>();
+
+            for (int i = 0; i < tokens.Count; i++)
+            {
+                string type = readToken(tokens[i]);
+
+                if (type.Equals("number"))
+                {
+                    if (operators.Count > 0)
+                    {
+                        if (operators.Peek().Equals("*"))
+                        {
+                            operators.Pop();
+                            values.Push(values.Pop() * double.Parse(tokens[i]));
+                        }
+                        if (operators.Peek().Equals("/"))
+                        {
+                            operators.Pop();
+                            values.Push(values.Pop() / double.Parse(tokens[i]));
+                        }
+                    }
+                    else
+                    {
+                        values.Push(double.Parse(tokens[i]));
+                    }
+                }
+                if (type.Equals("var"))
+                {
+                    double varValue;
+                    try
+                    {
+                        varValue = lookup.Invoke(tokens[i]);
+                        values.Push(varValue);
+                    }
+                    catch (UndefinedVariableException)
+                    {
+                        throw new FormulaEvaluationException("A variable is undefined.");
+                    }
+                }
+                if (type.Equals("+-"))
+                {
+                    if (operators.Count > 0)
+                    {
+                        if (operators.Peek().Equals("+"))
+                        {
+                            operators.Pop();
+                            values.Push(values.Pop() + values.Pop());
+                        }
+                        if (operators.Peek().Equals("-"))
+                        {
+                            operators.Pop();
+                            values.Push(values.Pop() - values.Pop());
+                        }
+                    }
+                    operators.Push(tokens[i]);
+                }
+                if (type.Equals("*/"))
+                {
+                    operators.Push(tokens[i]);
+                }
+                if (type.Equals("("))
+                {
+                    operators.Push(tokens[i]);
+                }
+                if (type.Equals(")"))
+                {
+                    if (operators.Count > 0)
+                    {
+                        if (operators.Peek().Equals("+"))
+                        {
+                            operators.Pop();
+                            values.Push(values.Pop() + values.Pop());
+                        }
+                        if (operators.Peek().Equals("-"))
+                        {
+                            operators.Pop();
+                            values.Push(values.Pop() - values.Pop());
+                        }
+                    }
+                    operators.Pop();
+                    if (operators.Count > 0)
+                    {
+                        if (operators.Peek().Equals("*"))
+                        {
+                            operators.Pop();
+                            values.Push(values.Pop() * values.Pop());
+                        }
+                        if (operators.Peek().Equals("/"))
+                        {
+                            operators.Pop();
+                            values.Push(values.Pop() / values.Pop());
+                        }
+                    }
+                }
+
+            }
+            if (operators.Count == 0)
+            {
+                return values.Pop();
+            }
+            else
+            {
+                string lastOperator = operators.Pop();
+
+                if (lastOperator.Equals("+"))
+                {
+                    return values.Pop() + values.Pop();
+                }
+                else
+                {
+                    return values.Pop() - values.Pop();
+                }
+            }
             return 0;
         }
         private static string readToken(string token)
