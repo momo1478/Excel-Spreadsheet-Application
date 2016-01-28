@@ -35,7 +35,7 @@ namespace Formulas
         ///     "_"
         ///     "-5.3"
         ///     "2 5 + 3"
-        /// 
+        ///  
         /// If the formula is syntacticaly invalid, throws a FormulaFormatException with an 
         /// explanatory Message.
         /// </summary>
