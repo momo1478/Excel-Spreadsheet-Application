@@ -81,6 +81,7 @@ namespace FormulaTestCases
         public void Evaluate1()
         {
             Formula f = new Formula("2+3");
+            f.Evaluate(v => 0);
             Assert.AreEqual(f.Evaluate(v => 0), 5.0, 1e-6);
         }
 

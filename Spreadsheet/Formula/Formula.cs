@@ -143,7 +143,7 @@ namespace Formulas
         private static bool isNumber(string token)
         {
             double result = 0;
-            return double.TryParse(token,out result);
+            return double.TryParse(token,out result) && result > 0;
         }
         /// <summary>
         /// Is the token a vlid variable?
@@ -155,10 +155,17 @@ namespace Formulas
             if (!char.IsLetter(token[0]))
                 return false;
 
+            bool nowNums = false;
             for (int i = 0; i < token.Length; i++)
             {
-                if (!(char.IsLetter(token[i]) || char.IsNumber(token[i])) )
+                if (char.IsNumber(token[i]))
+                {
+                    nowNums = true;
+                }
+                if (nowNums == true && !char.IsNumber(token[i]))
+                {
                     return false;
+                }
             }
 
             return true;
@@ -195,16 +202,20 @@ namespace Formulas
 
                 if (type.Equals("number"))
                 {
-                    if (operators.Count > 0)
+                    if (operators.Count > 0 && (operators.Peek().Equals("*") || operators.Peek().Equals("/")))
                     {
                         if (operators.Peek().Equals("*"))
                         {
                             operators.Pop();
                             values.Push(values.Pop() * double.Parse(tokens[i]));
                         }
-                        if (operators.Peek().Equals("/"))
+                        else if (operators.Peek().Equals("/"))
                         {
                             operators.Pop();
+                            if (double.Parse(tokens[i]) == 0)
+                            {
+                                throw new FormulaEvaluationException("Dividing by Zero.");
+                            }
                             values.Push(values.Pop() / double.Parse(tokens[i]));
                         }
                     }
@@ -213,7 +224,7 @@ namespace Formulas
                         values.Push(double.Parse(tokens[i]));
                     }
                 }
-                if (type.Equals("var"))
+                else if (type.Equals("var"))
                 {
                     double varValue;
                     try
@@ -226,16 +237,16 @@ namespace Formulas
                         throw new FormulaEvaluationException("A variable is undefined.");
                     }
                 }
-                if (type.Equals("+-"))
+                else if (type.Equals("+-"))
                 {
-                    if (operators.Count > 0)
+                    if (operators.Count > 0 && (operators.Peek().Equals("+") || operators.Peek().Equals("-")))
                     {
                         if (operators.Peek().Equals("+"))
                         {
                             operators.Pop();
                             values.Push(values.Pop() + values.Pop());
                         }
-                        if (operators.Peek().Equals("-"))
+                        else if (operators.Peek().Equals("-"))
                         {
                             operators.Pop();
                             values.Push(values.Pop() - values.Pop());
@@ -243,38 +254,38 @@ namespace Formulas
                     }
                     operators.Push(tokens[i]);
                 }
-                if (type.Equals("*/"))
+                else if (type.Equals("*/"))
                 {
                     operators.Push(tokens[i]);
                 }
-                if (type.Equals("("))
+                else if (type.Equals("("))
                 {
                     operators.Push(tokens[i]);
                 }
-                if (type.Equals(")"))
+                else if (type.Equals(")"))
                 {
-                    if (operators.Count > 0)
+                    if (operators.Count > 0 && (operators.Peek().Equals("+") || operators.Peek().Equals("-")))
                     {
                         if (operators.Peek().Equals("+"))
                         {
                             operators.Pop();
                             values.Push(values.Pop() + values.Pop());
                         }
-                        if (operators.Peek().Equals("-"))
+                        else if (operators.Peek().Equals("-"))
                         {
                             operators.Pop();
                             values.Push(values.Pop() - values.Pop());
                         }
                     }
                     operators.Pop();
-                    if (operators.Count > 0)
+                    if (operators.Count > 0 && (operators.Peek().Equals("*") || operators.Peek().Equals("/")))
                     {
                         if (operators.Peek().Equals("*"))
                         {
                             operators.Pop();
                             values.Push(values.Pop() * values.Pop());
                         }
-                        if (operators.Peek().Equals("/"))
+                        else if (operators.Peek().Equals("/"))
                         {
                             operators.Pop();
                             values.Push(values.Pop() / values.Pop());
@@ -300,7 +311,6 @@ namespace Formulas
                     return values.Pop() - values.Pop();
                 }
             }
-            return 0;
         }
         private static string readToken(string token)
         {
