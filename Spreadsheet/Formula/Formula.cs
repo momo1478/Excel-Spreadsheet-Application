@@ -230,12 +230,33 @@ namespace Formulas
                     try
                     {
                         varValue = lookup.Invoke(tokens[i]);
-                        values.Push(varValue);
                     }
                     catch (UndefinedVariableException)
                     {
                         throw new FormulaEvaluationException("A variable is undefined.");
                     }
+                    if (operators.Count > 0 && (operators.Peek().Equals("*") || operators.Peek().Equals("/")))
+                    {
+                        if (operators.Peek().Equals("*"))
+                        {
+                            operators.Pop();
+                            values.Push(values.Pop() * varValue);
+                        }
+                        else if (operators.Peek().Equals("/"))
+                        {
+                            operators.Pop();
+                            if (varValue == 0)
+                            {
+                                throw new FormulaEvaluationException("Dividing by Zero.");
+                            }
+                            values.Push(values.Pop() / varValue);
+                        }
+                    }
+                    else
+                    {
+                        values.Push(varValue);
+                    }
+
                 }
                 else if (type.Equals("+-"))
                 {
@@ -264,7 +285,7 @@ namespace Formulas
                 }
                 else if (type.Equals(")"))
                 {
-                    if (operators.Count > 0 && (operators.Peek().Equals("+") || operators.Peek().Equals("-")))
+                    if (operators.Count > 0)
                     {
                         if (operators.Peek().Equals("+"))
                         {
@@ -278,7 +299,7 @@ namespace Formulas
                         }
                     }
                     operators.Pop();
-                    if (operators.Count > 0 && (operators.Peek().Equals("*") || operators.Peek().Equals("/")))
+                    if(operators.Count > 0 && (operators.Peek().Equals("*") || operators.Peek().Equals("/")))
                     {
                         if (operators.Peek().Equals("*"))
                         {
@@ -292,6 +313,7 @@ namespace Formulas
                         }
                     }
                 }
+                
 
             }
             if (operators.Count == 0)
