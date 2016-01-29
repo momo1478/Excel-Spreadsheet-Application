@@ -71,6 +71,16 @@ namespace FormulaTestCases
         {
             Formula f = new Formula("2e3 + 2e5");
         }
+
+        /// <summary>
+        /// Another syntax error.
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(FormulaFormatException))]
+        public void Construct4()
+        {
+            Formula f = new Formula("");
+        }
         /// <summary>
         /// Makes sure that "2+3" evaluates to 5.  Since the Formula
         /// contains no variables, the delegate passed in as the
@@ -80,10 +90,11 @@ namespace FormulaTestCases
         [TestMethod]
         public void Evaluate1()
         {
-            Formula f = new Formula("2+3");
+            Formula f = new Formula("(2+3)* 5 / 4");
             f.Evaluate(v => 0);
-            Assert.AreEqual(f.Evaluate(v => 0), 5.0, 1e-6);
+            Assert.AreEqual(f.Evaluate(v => 0), 25.0/4, 1e-6);
         }
+        
 
         /// <summary>
         /// The Formula consists of a single variable (x5).  The value of
@@ -94,8 +105,8 @@ namespace FormulaTestCases
         [TestMethod]
         public void Evaluate2()
         {
-            Formula f = new Formula("x5");
-            Assert.AreEqual(f.Evaluate(v => 22.5), 22.5, 1e-6);
+            Formula f = new Formula("(x5 + x5 * 5) / 1");
+            Assert.AreEqual(f.Evaluate(v => 22.5), 22.5 * 6, 1e-6);
         }
 
         /// <summary>
@@ -132,6 +143,16 @@ namespace FormulaTestCases
             Formula f = new Formula("(x + y) * (z / y) * 1.0");
             double answer = f.Evaluate(Lookup4);
             Assert.AreEqual(f.Evaluate(Lookup4), 13.333333333333332, 1e-6);
+        }
+        /// <summary>
+        /// A weird case with a strange double number in scientific notation
+        /// </summary>
+        [TestMethod]
+        public void Evaluate6()
+        {
+            Formula f = new Formula("2e3+3e3");
+            double answer = f.Evaluate(v => 0);
+            Assert.AreEqual(f.Evaluate(v => 0), 5e3, 1e-6);
         }
 
         /// <summary>
