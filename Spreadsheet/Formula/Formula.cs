@@ -187,7 +187,7 @@ namespace Formulas
         /// 
         /// If no undefined variables or divisions by zero are encountered when evaluating 
         /// this Formula, its value is returned.  Otherwise, throws a FormulaEvaluationException  
-        /// with an explanatory Message.
+        /// with an explanatory Message. 
         /// </summary>
         public double Evaluate(Lookup lookup)
         {
