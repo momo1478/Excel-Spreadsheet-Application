@@ -53,6 +53,7 @@ namespace DependencyGraphTestCases
 
             CollectionAssert.AreEqual(list1, list2);
         }
+        
         /// <summary>
         /// AddDependencies with self dependencies.
         /// Tests of if one or either string are null and if the dpendent is already there.
@@ -76,6 +77,7 @@ namespace DependencyGraphTestCases
 
             CollectionAssert.AreEqual(list1, list2);
         }
+        
         /// <summary>
         /// Combination of tests 1 - 3. Tests AddDependencies 1 to 4 acheive 100% code coverage
         /// </summary>

@@ -138,7 +138,22 @@ namespace Dependencies
         /// </summary>
         public IEnumerable<string> GetDependees(string s)
         {
-            return null;
+            if (s.Equals(null))
+                yield break;
+
+            int firstDimIndex = findInFirstDim(dependees, s);
+
+            if (firstDimIndex < 0)
+            {
+                yield break;
+            }
+            else
+            {
+                for (int i = 1; i < dependees[firstDimIndex].Count; i++)
+                {
+                    yield return dependees[firstDimIndex][i];
+                }
+            }
         }
 
         /// <summary>
@@ -164,14 +179,51 @@ namespace Dependencies
                 else // s exists but t doesn't, add it!
                 {
                     dependents[firstDimIndex].Add(t);
+                    AddDependee(s, t);
                 }
             }
-            else //s is not a dependent. Add it with t.
+            else 
             {
-                dependents.Add(new List<string> { s, t } );
+                dependents.Add(new List<string> { s, t } ); //s is not a dependent. Add it with t.
+                AddDependee(s, t);
             }
 
         }
+
+        /// <summary>
+        /// Mimics AddDependent but reverses the roles of the dependent and the dependee.
+        /// The dependee will now be in the first dimension and the dependent will the be the list of
+        /// items following each dependee.
+        /// </summary>
+        /// <param name="t"></param>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        private void AddDependee(string s, string t)
+        {
+            if (ReferenceEquals(s, null) || ReferenceEquals(t, null))
+                return;
+
+            int firstDimIndex = findInFirstDim(dependees , t);
+
+            if (firstDimIndex >= 0) //t is already a dependee
+            {
+                int secondDimIndex = findInSecondDim(dependees[firstDimIndex], s);
+
+                if (secondDimIndex >= 0) // (s,t) already exists, do nothing.
+                {
+                    return;
+                }
+                else // t exists but s doesn't, add it!
+                {
+                    dependees[firstDimIndex].Add(s);
+                }
+            }
+            else
+            {
+                dependees.Add(new List<string> { t, s });  //add reversed to dependees.
+            }
+        }
+
         /// <summary>
         /// Searches the first element of each list in the given list of lists.
         /// </summary>
@@ -189,6 +241,7 @@ namespace Dependencies
             }
             return -1;
         }
+        
         /// <summary>
         /// Sees if an item is present in a list. Excludes first element in search (name element).
         /// </summary>
