@@ -50,10 +50,37 @@ namespace Dependencies
     public class DependencyGraph
     {
         /// <summary>
+        /// 2-D List of Strings that hold dependents in its first dimension.
+        /// The first dimension holds the name of the dependent that the dependees rely upon.
+        /// The second dimension holds the List of dependees for each dependent.
+        /// This 2-D list is sorted in each of its dimensions (using the string comparer).
+        /// </summary>
+        private List<List<String>> dependents;
+
+        /// <summary>
+        /// 2-D List of Strings that hold dependees in its first dimension.
+        /// The first dimension holds the name of the dependee that the dependents rely upon.
+        /// The second dimension holds the List of dependents for each dependee.
+        /// This 2-D list is sorted in each of its dimensions (using the string comparer).
+        /// Do we need this?
+        /// </summary>
+        private List<List<String>> dependees;
+
+        /// <summary>
+        /// Holds the amount of depndencies in the instance of the depency graph.
+        /// </summary>
+        private int count;
+
+
+        /// <summary>
         /// Creates a DependencyGraph containing no dependencies.
         /// </summary>
         public DependencyGraph()
         {
+            dependents = new List<List<String>>();
+            dependees = new List<List<String>>();
+
+            count = 0;
         }
 
         /// <summary>
@@ -61,7 +88,8 @@ namespace Dependencies
         /// </summary>
         public int Size
         {
-            get { return 0; }
+            //?
+            get { return count; }
         }
 
         /// <summary>
@@ -103,6 +131,34 @@ namespace Dependencies
         /// </summary>
         public void AddDependency(string s, string t)
         {
+            if (s.Equals(null) || t.Equals(null))
+                return;
+
+            int firstDimSearchIndex = dependents[0].BinarySearch(s);
+
+            if (firstDimSearchIndex >= 0) //s is already a dependent
+            {
+                int secondDimSearchIndex = dependents[firstDimSearchIndex].BinarySearch(t);
+
+                if (secondDimSearchIndex >= 0) //(s,t) exists, don't do anything.
+                {
+                    return;
+                }
+                else                           //s exist but t is not a dependee of s, so add it!
+                {
+                    dependents[firstDimSearchIndex].Insert(-secondDimSearchIndex - 1, t);
+                    count++;
+                }
+            }
+            else //s is not even in dependents, add it along with t!
+            {
+                int secondDimSearchIndex = dependents[firstDimSearchIndex].BinarySearch(t);
+
+                dependents.Add(new List<string>() { s, t });
+                count++;
+            }
+
+
         }
 
         /// <summary>
@@ -112,6 +168,7 @@ namespace Dependencies
         /// </summary>
         public void RemoveDependency(string s, string t)
         {
+
         }
 
         /// <summary>
@@ -121,6 +178,7 @@ namespace Dependencies
         /// </summary>
         public void ReplaceDependents(string s, IEnumerable<string> newDependents)
         {
+
         }
 
         /// <summary>
@@ -130,6 +188,7 @@ namespace Dependencies
         /// </summary>
         public void ReplaceDependees(string t, IEnumerable<string> newDependees)
         {
+
         }
     }
 }
