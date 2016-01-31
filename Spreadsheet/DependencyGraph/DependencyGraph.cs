@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Dependencies
 {
@@ -47,6 +48,7 @@ namespace Dependencies
     /// the test cases with which you will be graded will create massive DependencyGraphs.  If you
     /// build an inefficient DependencyGraph this week, you will be regretting it for the next month.
     /// </summary>
+    
     public class DependencyGraph
     {
         /// <summary>
@@ -113,7 +115,22 @@ namespace Dependencies
         /// </summary>
         public IEnumerable<string> GetDependents(string s)
         {
-            return null;
+            if (s.Equals(null))
+                yield break;
+
+            int firstDimIndex = findInFirstDim(dependents, s);
+
+            if (firstDimIndex < 0)
+            {
+                yield break;
+            }
+            else
+            {
+                for (int i = 1; i < dependents[firstDimIndex].Count; i++)
+                {
+                    yield return dependents[firstDimIndex][i];
+                }
+            }
         }
 
         /// <summary>
@@ -131,34 +148,61 @@ namespace Dependencies
         /// </summary>
         public void AddDependency(string s, string t)
         {
-            if (s.Equals(null) || t.Equals(null))
+            if (ReferenceEquals(s, null) || ReferenceEquals(t, null))
                 return;
 
-            int firstDimSearchIndex = dependents[0].BinarySearch(s);
+            int firstDimIndex = findInFirstDim(dependents, s);
 
-            if (firstDimSearchIndex >= 0) //s is already a dependent
+            if (firstDimIndex >= 0) //s is already a dependent
             {
-                int secondDimSearchIndex = dependents[firstDimSearchIndex].BinarySearch(t);
+                int secondDimIndex = findInSecondDim(dependents[firstDimIndex], t);
 
-                if (secondDimSearchIndex >= 0) //(s,t) exists, don't do anything.
+                if (secondDimIndex >= 0) // (s,t) already exists, do nothing.
                 {
                     return;
                 }
-                else                           //s exist but t is not a dependee of s, so add it!
+                else // s exists but t doesn't, add it!
                 {
-                    dependents[firstDimSearchIndex].Insert(-secondDimSearchIndex - 1, t);
-                    count++;
+                    dependents[firstDimIndex].Add(t);
                 }
             }
-            else //s is not even in dependents, add it along with t!
+            else //s is not a dependent. Add it with t.
             {
-                int secondDimSearchIndex = dependents[firstDimSearchIndex].BinarySearch(t);
-
-                dependents.Add(new List<string>() { s, t });
-                count++;
+                dependents.Add(new List<string> { s, t } );
             }
 
-
+        }
+        /// <summary>
+        /// Searches the first element of each list in the given list of lists.
+        /// </summary>
+        /// <param name="lists"></param>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        private static int findInFirstDim(List<List<String>> lists, string s)
+        {
+            for (int i = 0; i < lists.Count; i++)
+            {
+                if (lists[i][0].Equals(s))
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
+        /// <summary>
+        /// Sees if an item is present in a list. Excludes first element in search (name element).
+        /// </summary>
+        /// <param name="list"></param>
+        /// <param name="t"></param>
+        /// <returns></returns>
+        private static int findInSecondDim(List<String> list, string t)
+        {
+            for (int i = 1; i < list.Count; i++)
+            {
+                if (list[i].Equals(t))
+                    return i;
+            }
+            return -1;
         }
 
         /// <summary>
