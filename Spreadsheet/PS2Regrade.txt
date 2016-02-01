@@ -1,0 +1,4 @@
+17) Failed because isNumber didn't consider 0 a number, also because division order was wrong (reordered).
+18) Wrong division order (reordered).
+22a)Definition for variable was wrong, fixed such that it is a letter followed by letters or numbers.
+24,32, 32a) Wrong subtraction order(reordered).
