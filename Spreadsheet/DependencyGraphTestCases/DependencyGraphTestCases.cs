@@ -195,6 +195,68 @@ namespace DependencyGraphTestCases
             CollectionAssert.AreEqual(list1, list2);
         }
 
+        /// <summary>
+        /// Basic RemoveDependency test.
+        /// </summary>
+        [TestMethod]
+        public void RemoveDependencies1()
+        {
+            DependencyGraph DG = new DependencyGraph();
+
+            DG.AddDependency("a", "b");
+            DG.AddDependency("a", "c");
+            DG.AddDependency("a", "d");
+            DG.AddDependency("a", "e");
+            DG.AddDependency("a", "f");
+            DG.RemoveDependency("a", "f");
+            DG.RemoveDependency("a", "b");
+
+
+            List<string> list1 = DG.GetDependents("f").ToList();
+            List<string> list2 = new List<string>() { };
+
+            CollectionAssert.AreEqual(list1, list2);
+
+            list1 = DG.GetDependents("b").ToList();
+            list2 = new List<string>() { };
+
+            CollectionAssert.AreEqual(list1, list2);
+        }
+
+        /// <summary>
+        /// Basic RemoveDependency test.
+        /// -Removes with invalid string input
+        /// -Removes nothing test.
+        /// </summary>
+        [TestMethod]
+        public void RemoveDependencies2()
+        {
+            DependencyGraph DG = new DependencyGraph();
+
+            DG.AddDependency("a", "b");
+            DG.AddDependency("a", "c");
+            DG.AddDependency("b", "d");
+            DG.AddDependency("b", "e");
+            DG.AddDependency("a", "a");
+
+            DG.RemoveDependency("a", "a");
+            DG.RemoveDependency("a", "g");
+            DG.RemoveDependency("g", "a");
+            DG.RemoveDependency(null, "c");
+            DG.RemoveDependency("b" , null);
+            DG.RemoveDependency(null, null);
+
+
+            List<string> list1 = DG.GetDependents("a").ToList();
+            List<string> list2 = new List<string>() { };
+
+            CollectionAssert.AreEqual(list1, list2);
+
+            list1 = DG.GetDependents("b").ToList();
+            list2 = new List<string>() { "a" };
+
+            CollectionAssert.AreEqual(list1, list2);
+        }
 
     }
 }

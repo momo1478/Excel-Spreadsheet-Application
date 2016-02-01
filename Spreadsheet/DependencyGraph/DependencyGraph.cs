@@ -279,6 +279,7 @@ namespace Dependencies
                 if (secondDimIndex >= 0) // (s,t) already exists remove it.
                 {
                     dependents[firstDimIndex].RemoveAt(secondDimIndex);
+                    RemoveDependee(s, t);
                 }
                 else //t exists so s can't exist.
                 {
@@ -307,13 +308,13 @@ namespace Dependencies
             {
                 int secondDimIndex = findInSecondDim(dependees[firstDimIndex], s);
 
-                if (secondDimIndex >= 0) // (s,t) exists, do nothing.
-                {
-                    return;
-                }
-                else //t exists but s doesn't, add it!
+                if (secondDimIndex >= 0) // (s,t) exists remove it.
                 {
                     dependees[firstDimIndex].RemoveAt(secondDimIndex);
+                }
+                else //s exists but t doesn't do remove anaything.
+                {
+                    return;
                 }
             }
             else //s doesn't exist so (s,t) can't exists.
