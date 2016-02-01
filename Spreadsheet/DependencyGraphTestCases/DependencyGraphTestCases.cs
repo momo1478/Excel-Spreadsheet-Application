@@ -11,6 +11,7 @@ namespace DependencyGraphTestCases
     {
         /// <summary>
         /// very basic test AddDependencies with no self dependencies.
+        /// Tests HasDependencies and HasDependees as well as Size.
         /// </summary>
         [TestMethod]
         public void AddDependencies1()
@@ -27,6 +28,11 @@ namespace DependencyGraphTestCases
             List<string> list2 = new List<string>() {"b", "c", "d", "e", "f" };
 
             CollectionAssert.AreEqual(list1, list2);
+            Assert.AreEqual(DG.Size, 5);
+
+            Assert.IsFalse(DG.HasDependents("a"));
+            Assert.IsTrue(DG.HasDependees("a"));
+            Assert.IsFalse(DG.HasDependees("f"));
         }
 
         /// <summary>
@@ -254,6 +260,39 @@ namespace DependencyGraphTestCases
 
             list1 = DG.GetDependents("b").ToList();
             list2 = new List<string>() { "a" };
+
+            CollectionAssert.AreEqual(list1, list2);
+        }
+
+        /// <summary>
+        /// Very basic test AddDependencies with no self dependencies. Now with 2 dependents
+        /// </summary>
+        [TestMethod]
+        public void ReplaceDependents1()
+        {
+            DependencyGraph DG = new DependencyGraph();
+
+            DG.AddDependency("a", "b");
+            DG.AddDependency("a", "c");
+            DG.AddDependency("a", "d");
+            DG.AddDependency("b", "a");
+            DG.AddDependency("b", "c");
+            DG.AddDependency("c", "a");
+            DG.AddDependency("c", "c");
+            DG.AddDependency("c", "a");
+            DG.AddDependency("c", "c");
+
+            DG.ReplaceDependents("a", new List<String> { "m", "k", "g" });
+
+            List<string> list1 = DG.GetDependees("a").ToList();
+            List<string> list2 = new List<string>() { "m", "k", "g" };
+
+            CollectionAssert.AreEqual(list1, list2);
+
+            DG.ReplaceDependees("c", new List<String> { "p", "r", "s" });
+
+            list1 = DG.GetDependees("c").ToList();
+            list2 = new List<string>() { "p", "r", "s" };
 
             CollectionAssert.AreEqual(list1, list2);
         }

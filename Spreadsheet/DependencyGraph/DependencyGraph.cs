@@ -53,16 +53,16 @@ namespace Dependencies
     {
         /// <summary>
         /// 2-D List of Strings that hold dependents in its first dimension.
-        /// The first dimension holds the name of the dependent that the dependees rely upon.
-        /// The second dimension holds the List of dependees for each dependent.
+        /// The first element of each list holds the name of the dependent that the dependees rely upon.
+        /// The second element onwards holds the List of dependees for that dependent.
         /// This 2-D list is sorted in each of its dimensions (using the string comparer).
         /// </summary>
         private List<List<String>> dependents;
 
         /// <summary>
         /// 2-D List of Strings that hold dependees in its first dimension.
-        /// The first dimension holds the name of the dependee that the dependents rely upon.
-        /// The second dimension holds the List of dependents for each dependee.
+        /// The first element of each list holds the name of the dependee that the dependents rely upon.
+        /// The second element onwards holds the List of dependents for that dependee.
         /// This 2-D list is sorted in each of its dimensions (using the string comparer).
         /// Do we need this?
         /// </summary>
@@ -90,7 +90,6 @@ namespace Dependencies
         /// </summary>
         public int Size
         {
-            //?
             get { return count; }
         }
 
@@ -99,7 +98,7 @@ namespace Dependencies
         /// </summary>
         public bool HasDependents(string s)
         {
-            return false;
+            return GetDependents(s).Count() > 0;
         }
 
         /// <summary>
@@ -107,11 +106,11 @@ namespace Dependencies
         /// </summary>
         public bool HasDependees(string s)
         {
-            return false;
+            return GetDependees(s).Count() > 0;
         }
 
         /// <summary>
-        /// Enumerates dependents(s).  Requires s != null.
+        /// Enumerates dependee(s).  Requires s != null.
         /// </summary>
         public IEnumerable<string> GetDependees(string s)
         {
@@ -134,7 +133,7 @@ namespace Dependencies
         }
 
         /// <summary>
-        /// Enumerates dependees(s).  Requires s != null.
+        /// Enumerates dependent(s).  Requires s != null.
         /// </summary>
         public IEnumerable<string> GetDependents(string s)
         {
@@ -331,7 +330,23 @@ namespace Dependencies
         /// </summary>
         public void ReplaceDependents(string s, IEnumerable<string> newDependents)
         {
+            //if (ReferenceEquals(s, null))
+            //    return;
 
+            //List<String> newDependentsList = newDependents.ToList(); //converts to list.
+
+            //int firstDimIndex = findInFirstDim(dependees, s); //finds dependent's list.
+
+            //for (int i = 1; i < dependents[firstDimIndex].Count; i++)
+            //{
+            //    RemoveDependency(s , dependents[firstDimIndex][i]); //Remove Dependency
+            //    i--; //Resolves for-loop removal issue.
+            //}
+
+            //for (int i = 0; i < newDependents.Count(); i++)
+            //{
+            //    AddDependency(s, newDependentsList[i]);
+            //}
         }
 
         /// <summary>
@@ -341,7 +356,20 @@ namespace Dependencies
         /// </summary>
         public void ReplaceDependees(string t, IEnumerable<string> newDependees)
         {
+            //List<String> newDependeesList = newDependees.ToList();
 
+            //int firstDimIndex = findInFirstDim(dependees, t); //finds dependent's list.
+
+            //for (int i = 1; i < dependees[firstDimIndex].Count; i++) //Iterates and removes dependencies
+            //{
+            //    RemoveDependee(t, dependees[firstDimIndex][i]); //Remove Dependee.
+            //    i--; //Resolves for-loop removal issue.
+            //}
+
+            //for (int i = 0; i < newDependees.Count(); i++) //Iterates and adds 
+            //{
+            //    AddDependee(t, newDependeesList[i]);
+            //}
         }
     }
 }
