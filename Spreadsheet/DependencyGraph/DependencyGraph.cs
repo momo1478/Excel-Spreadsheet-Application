@@ -113,7 +113,7 @@ namespace Dependencies
         /// <summary>
         /// Enumerates dependents(s).  Requires s != null.
         /// </summary>
-        public IEnumerable<string> GetDependents(string s)
+        public IEnumerable<string> GetDependees(string s)
         {
             if (s.Equals(null))
                 yield break;
@@ -136,7 +136,7 @@ namespace Dependencies
         /// <summary>
         /// Enumerates dependees(s).  Requires s != null.
         /// </summary>
-        public IEnumerable<string> GetDependees(string s)
+        public IEnumerable<string> GetDependents(string s)
         {
             if (s.Equals(null))
                 yield break;
@@ -180,12 +180,14 @@ namespace Dependencies
                 {
                     dependents[firstDimIndex].Add(t);
                     AddDependee(s, t);
+                    count++;
                 }
             }
             else 
             {
                 dependents.Add(new List<string> { s, t } ); //s is not a dependent. Add it with t.
                 AddDependee(s, t);
+                count++;
             }
 
         }
@@ -265,8 +267,61 @@ namespace Dependencies
         /// </summary>
         public void RemoveDependency(string s, string t)
         {
+            if (ReferenceEquals(s, null) || ReferenceEquals(t, null))
+                return;
+
+            int firstDimIndex = findInFirstDim(dependents, s);
+
+            if (firstDimIndex >= 0) //t is already a dependee
+            {
+                int secondDimIndex = findInSecondDim(dependents[firstDimIndex], t);
+
+                if (secondDimIndex >= 0) // (s,t) already exists remove it.
+                {
+                    dependents[firstDimIndex].RemoveAt(secondDimIndex);
+                }
+                else //t exists so s can't exist.
+                {
+                    return;
+                }
+            }
+            else //s doesn't exist so (s,t) can't exists.
+            {
+                return;
+            }
 
         }
+        /// <summary>
+        /// Applies the same logic as Remove Dependency to dependees.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="t"></param>
+        private void RemoveDependee(string s, string t)
+        {
+            if (ReferenceEquals(s, null) || ReferenceEquals(t, null))
+                return;
+
+            int firstDimIndex = findInFirstDim(dependees, t);
+
+            if (firstDimIndex >= 0) //t is already a dependee
+            {
+                int secondDimIndex = findInSecondDim(dependees[firstDimIndex], s);
+
+                if (secondDimIndex >= 0) // (s,t) exists, do nothing.
+                {
+                    return;
+                }
+                else //t exists but s doesn't, add it!
+                {
+                    dependees[firstDimIndex].RemoveAt(secondDimIndex);
+                }
+            }
+            else //s doesn't exist so (s,t) can't exists.
+            {
+                return;
+            }
+        }
+
 
         /// <summary>
         /// Removes all existing dependencies of the form (s,r).  Then, for each
