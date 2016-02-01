@@ -1,4 +1,9 @@
 17) Failed because isNumber didn't consider 0 a number, also because division order was wrong (reordered).
+My tests didn't test for order of division (although strange enough some divisions that I felt shouldn't have worked, worked)
+
 18) Wrong division order (reordered).
+My tests didn't test for order of division (although strange enough some divisions that I felt shouldn't have worked, worked)
 22a)Definition for variable was wrong, fixed such that it is a letter followed by letters or numbers.
+I had the wrong idea what a variable was...
 24,32, 32a) Wrong subtraction order(reordered).
+My tests didn't test for order of subtraction (although strange enough some subtractions that I felt shouldn't have worked, worked)
