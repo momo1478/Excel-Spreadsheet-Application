@@ -143,7 +143,7 @@ namespace Formulas
         private static bool isNumber(string token)
         {
             double result = 0;
-            return double.TryParse(token,out result) && result > 0;
+            return double.TryParse(token,out result) && result >= 0;
         }
         /// <summary>
         /// Is the token a vlid variable?
@@ -154,19 +154,6 @@ namespace Formulas
         {
             if (!char.IsLetter(token[0]))
                 return false;
-
-            bool nowNums = false;
-            for (int i = 0; i < token.Length; i++)
-            {
-                if (char.IsNumber(token[i]))
-                {
-                    nowNums = true;
-                }
-                if (nowNums == true && !char.IsNumber(token[i]))
-                {
-                    return false;
-                }
-            }
 
             return true;
         }
@@ -270,7 +257,9 @@ namespace Formulas
                         else if (operators.Peek().Equals("-"))
                         {
                             operators.Pop();
-                            values.Push(values.Pop() - values.Pop());
+                            double val1 = values.Pop();
+                            double val2 = values.Pop();
+                            values.Push(val2 - val1);
                         }
                     }
                     operators.Push(tokens[i]);
@@ -295,7 +284,9 @@ namespace Formulas
                         else if (operators.Peek().Equals("-"))
                         {
                             operators.Pop();
-                            values.Push(values.Pop() - values.Pop());
+                            double val1 = values.Pop();
+                            double val2 = values.Pop();
+                            values.Push(val2 - val1);
                         }
                     }
                     operators.Pop();
@@ -309,7 +300,14 @@ namespace Formulas
                         else if (operators.Peek().Equals("/"))
                         {
                             operators.Pop();
-                            values.Push(values.Pop() / values.Pop());
+                            double val1 = values.Pop();
+                            double val2 = values.Pop();
+
+                            if (val1 == 0)
+                            {
+                                throw new FormulaEvaluationException("About to divide by zero");
+                            }
+                            values.Push(val2 / val1);
                         }
                     }
                 }
@@ -326,11 +324,17 @@ namespace Formulas
 
                 if (lastOperator.Equals("+"))
                 {
-                    return values.Pop() + values.Pop();
+                    double val1 = values.Pop();
+                    double val2 = values.Pop();
+
+                    return val2 + val1;
                 }
                 else
                 {
-                    return values.Pop() - values.Pop();
+                    double val1 = values.Pop();
+                    double val2 = values.Pop();
+
+                    return val2 - val1;
                 }
             }
         }
