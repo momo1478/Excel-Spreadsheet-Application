@@ -64,7 +64,7 @@ namespace Dependencies
         /// The first element of each list holds the name of the dependee that the dependents rely upon.
         /// The second element onwards holds the List of dependents for that dependee.
         /// This 2-D list is sorted in each of its dimensions (using the string comparer).
-        /// Do we need this?
+        /// Do we need this? It makes my life a whole lot easier! It also makes the dependee side much more efficient.
         /// </summary>
         private List<List<String>> dependees;
 
@@ -98,7 +98,8 @@ namespace Dependencies
         /// </summary>
         public bool HasDependents(string s)
         {
-            return GetDependents(s).Count() > 0;
+            //do a null check on s first. This method can be made faster.
+            return !ReferenceEquals(s,null) && GetDependents(s).Count() > 0;
         }
 
         /// <summary>
@@ -106,7 +107,8 @@ namespace Dependencies
         /// </summary>
         public bool HasDependees(string s)
         {
-            return GetDependees(s).Count() > 0;
+            //do a null check on s first. This method can be made faster.
+            return !ReferenceEquals(s, null) && GetDependees(s).Count() > 0;
         }
 
         /// <summary>
@@ -114,20 +116,21 @@ namespace Dependencies
         /// </summary>
         public IEnumerable<string> GetDependees(string s)
         {
-            if (s.Equals(null))
+            if (ReferenceEquals(s,null)) //s is null? Break enumeration (IEnumerable's count will be 0)
                 yield break;
 
-            int firstDimIndex = findInFirstDim(dependents, s);
+            int firstDimIndex = findInFirstDim(dependents, s); //Find dependent so we can extract its list of dependees.
 
-            if (firstDimIndex < 0)
+            if (firstDimIndex < 0)  //couldn't find s, s doesn't exist, so it doesn't have dependees.
             {
                 yield break;
             }
             else
             {
-                for (int i = 1; i < dependents[firstDimIndex].Count; i++)
+                //we start at 1 because the first element (0) is the dependent of the list.
+                for (int i = 1; i < dependents[firstDimIndex].Count; i++)  
                 {
-                    yield return dependents[firstDimIndex][i];
+                    yield return dependents[firstDimIndex][i]; //return each dependee one at a time.
                 }
             }
         }
@@ -137,17 +140,18 @@ namespace Dependencies
         /// </summary>
         public IEnumerable<string> GetDependents(string s)
         {
-            if (s.Equals(null))
+            if (ReferenceEquals(s, null)) //s is null? Break enumeration (IEnumerable's count will be 0)
                 yield break;
 
-            int firstDimIndex = findInFirstDim(dependees, s);
+            int firstDimIndex = findInFirstDim(dependees, s); //Find dependee so we can extract its list of dependents.
 
-            if (firstDimIndex < 0)
+            if (firstDimIndex < 0) //can't find dependee, if dependee doesn't exist, then it has no dependents.
             {
-                yield break;
+                yield break; //return each dependent one at a time.
             }
             else
             {
+                //we start at 1 because the first element (0) is the dependent of the list.
                 for (int i = 1; i < dependees[firstDimIndex].Count; i++)
                 {
                     yield return dependees[firstDimIndex][i];
@@ -162,14 +166,14 @@ namespace Dependencies
         /// </summary>
         public void AddDependency(string s, string t)
         {
-            if (ReferenceEquals(s, null) || ReferenceEquals(t, null))
+            if (ReferenceEquals(s, null) || ReferenceEquals(t, null)) //null check on s and t
                 return;
 
-            int firstDimIndex = findInFirstDim(dependents, s);
+            int firstDimIndex = findInFirstDim(dependents, s); //see if s is present in DG and if so, where?
 
             if (firstDimIndex >= 0) //s is already a dependent
             {
-                int secondDimIndex = findInSecondDim(dependents[firstDimIndex], t);
+                int secondDimIndex = findInSecondDim(dependents[firstDimIndex], t); ////see if t is present in s's list and if so, where?
 
                 if (secondDimIndex >= 0) // (s,t) already exists, do nothing.
                 {
@@ -182,11 +186,11 @@ namespace Dependencies
                     count++;
                 }
             }
-            else 
+            else //s doesn't exist, so t can't! Add (s,t)
             {
-                dependents.Add(new List<string> { s, t } ); //s is not a dependent. Add it with t.
-                AddDependee(s, t);
-                count++;
+                dependents.Add(new List<string> { s, t } ); 
+                AddDependee(s, t); //manage dependee 2-D List.
+                count++;           //we've added a dependency.
             }
 
         }
@@ -195,13 +199,15 @@ namespace Dependencies
         /// Mimics AddDependent but reverses the roles of the dependent and the dependee.
         /// The dependee will now be in the first dimension and the dependent will the be the list of
         /// items following each dependee.
+        /// Note that this is done in a sperate list.
         /// </summary>
         /// <param name="t"></param>
         /// <param name="s"></param>
         /// <returns></returns>
         private void AddDependee(string s, string t)
         {
-            if (ReferenceEquals(s, null) || ReferenceEquals(t, null))
+            
+            if (ReferenceEquals(s, null) || ReferenceEquals(t, null)) //null check
                 return;
 
             int firstDimIndex = findInFirstDim(dependees , t);
@@ -260,16 +266,16 @@ namespace Dependencies
         }
 
         /// <summary>
-        /// Removes the dependency (s,t) from this DependencyGraph.
+        /// Removes the dependency (s,t) in dependents from this DependencyGraph.
         /// Does nothing if (s,t) doesn't belong to this DependencyGraph.
         /// Requires s != null and t != null.
         /// </summary>
         public void RemoveDependency(string s, string t)
         {
-            if (ReferenceEquals(s, null) || ReferenceEquals(t, null))
+            if (ReferenceEquals(s, null) || ReferenceEquals(t, null)) //null check
                 return;
 
-            int firstDimIndex = findInFirstDim(dependents, s);
+            int firstDimIndex = findInFirstDim(dependents, s); //find s's list of dependees.
 
             if (firstDimIndex >= 0) //t is already a dependee
             {
@@ -280,7 +286,7 @@ namespace Dependencies
                     dependents[firstDimIndex].RemoveAt(secondDimIndex);
                     RemoveDependee(s, t);
                 }
-                else //t exists so s can't exist.
+                else //s exists, but t doesn't, don't do anything.
                 {
                     return;
                 }
@@ -291,8 +297,11 @@ namespace Dependencies
             }
 
         }
+
         /// <summary>
-        /// Applies the same logic as Remove Dependency to dependees.
+        /// Removes dependency (s,t) in dependee.
+        /// Does nothing if (s,t) doesn't belong to this DependencyGraph.
+        /// Requires s != null and t != null.
         /// </summary>
         /// <param name="s"></param>
         /// <param name="t"></param>
@@ -301,7 +310,7 @@ namespace Dependencies
             if (ReferenceEquals(s, null) || ReferenceEquals(t, null))
                 return;
 
-            int firstDimIndex = findInFirstDim(dependees, t);
+            int firstDimIndex = findInFirstDim(dependees, t); //find t's list of dependents
 
             if (firstDimIndex >= 0) //t is already a dependee
             {
@@ -311,7 +320,7 @@ namespace Dependencies
                 {
                     dependees[firstDimIndex].RemoveAt(secondDimIndex);
                 }
-                else //s exists but t doesn't do remove anaything.
+                else //t exists but s doesn't do remove anaything.
                 {
                     return;
                 }
@@ -330,23 +339,35 @@ namespace Dependencies
         /// </summary>
         public void ReplaceDependents(string s, IEnumerable<string> newDependents)
         {
-            //if (ReferenceEquals(s, null))
-            //    return;
+            if (ReferenceEquals(s, null))
+                return;
 
-            //List<String> newDependentsList = newDependents.ToList(); //converts to list.
+            int dependentsRow = findInFirstDim(dependents, s);
 
-            //int firstDimIndex = findInFirstDim(dependees, s); //finds dependent's list.
+            if (dependentsRow >= 0) //s is a dependent in DG.
+            {
+                for (int i = 1; i < dependents[dependentsRow].Count; i++) //removing all dependees for s
+                {
+                    RemoveDependee(s, dependents[dependentsRow][i]); //Remove in dependee
+                    dependents[dependentsRow].RemoveAt(i);           //Remove in dependents
+                    i--;
+                }
 
-            //for (int i = 1; i < dependents[firstDimIndex].Count; i++)
-            //{
-            //    RemoveDependency(s , dependents[firstDimIndex][i]); //Remove Dependency
-            //    i--; //Resolves for-loop removal issue.
-            //}
 
-            //for (int i = 0; i < newDependents.Count(); i++)
-            //{
-            //    AddDependency(s, newDependentsList[i]);
-            //}
+                List<String> newDependentsList = newDependents.ToList();
+                for (int j = 0; j < newDependentsList.Count; j++)          //adding dependees for s
+                {
+                    if (!ReferenceEquals(newDependentsList[j], null))      //null check
+                    {
+                        AddDependency(s, newDependentsList[j]);            //Add Dependency (also modifies dependees)
+                    }
+                }
+            }
+            else //s wansn't a dependent in DG, do nothing..
+            {
+                return;
+            }
+            
         }
 
         /// <summary>
@@ -356,20 +377,32 @@ namespace Dependencies
         /// </summary>
         public void ReplaceDependees(string t, IEnumerable<string> newDependees)
         {
-            //List<String> newDependeesList = newDependees.ToList();
+            if (ReferenceEquals(t, null)) //null check on t
+                return;
 
-            //int firstDimIndex = findInFirstDim(dependees, t); //finds dependent's list.
+            int dependeeRow = findInFirstDim(dependees, t); //find dependent list for t.
 
-            //for (int i = 1; i < dependees[firstDimIndex].Count; i++) //Iterates and removes dependencies
-            //{
-            //    RemoveDependee(t, dependees[firstDimIndex][i]); //Remove Dependee.
-            //    i--; //Resolves for-loop removal issue.
-            //}
+            if (dependeeRow >= 0)
+            {
+                for (int i = 1; i < dependees[dependeeRow].Count; i++) //removing all dependents for t
+                {
+                    RemoveDependency(dependees[dependeeRow][i], t);  //Remove in dependents and dependees.
+                    i--;
+                }
 
-            //for (int i = 0; i < newDependees.Count(); i++) //Iterates and adds 
-            //{
-            //    AddDependee(t, newDependeesList[i]);
-            //}
+                List<String> newDependeesList = newDependees.ToList();
+                for (int j = 0; j < newDependeesList.Count; j++)          //adding dependees for s
+                {
+                    if (!ReferenceEquals(newDependeesList[j], null))      //null check
+                    {
+                        AddDependency(newDependeesList[j], t);            //Add Dependency (also modifies dependees)
+                    }
+                }
+            }
+            else
+            {
+                return;
+            }
         }
     }
 }

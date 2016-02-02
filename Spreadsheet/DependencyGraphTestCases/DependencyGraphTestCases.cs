@@ -289,9 +289,42 @@ namespace DependencyGraphTestCases
 
             CollectionAssert.AreEqual(list1, list2);
 
-            DG.ReplaceDependees("c", new List<String> { "p", "r", "s" });
+            DG.ReplaceDependents("c", new List<String> { "p", "r", "s" });
 
             list1 = DG.GetDependees("c").ToList();
+            list2 = new List<string>() { "p", "r", "s" };
+
+            CollectionAssert.AreEqual(list1, list2);
+        }
+
+        /// <summary>
+        /// Very basic test AddDependencies with no self dependencies. Now with 2 dependents
+        /// </summary>
+        [TestMethod]
+        public void ReplaceDependees1()
+        {
+            DependencyGraph DG = new DependencyGraph();
+
+            DG.AddDependency("a", "b");
+            DG.AddDependency("a", "c");
+            DG.AddDependency("a", "d");
+            DG.AddDependency("b", "a");
+            DG.AddDependency("b", "c");
+            DG.AddDependency("c", "a");
+            DG.AddDependency("c", "c");
+            DG.AddDependency("c", "a");
+            DG.AddDependency("c", "c");
+
+            DG.ReplaceDependees("c", new List<String> { "m", "k", "g" });
+
+            List<string> list1 = DG.GetDependents("c").ToList();
+            List<string> list2 = new List<string>() { "m", "k", "g" };
+
+            CollectionAssert.AreEqual(list1, list2);
+
+            DG.ReplaceDependents("b", new List<String> { "p", "r", "s" });
+
+            list1 = DG.GetDependees("b").ToList();
             list2 = new List<string>() { "p", "r", "s" };
 
             CollectionAssert.AreEqual(list1, list2);
