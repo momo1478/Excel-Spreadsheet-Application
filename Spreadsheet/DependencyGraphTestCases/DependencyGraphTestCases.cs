@@ -60,7 +60,7 @@ namespace DependencyGraphTestCases
         /// Tests HasDependencies and HasDependees as well as Size.
         /// </summary>
         [TestMethod]
-        public void AddDependency2()
+        public void RemoveDependency1()
         {
             DependencyGraph DG = new DependencyGraph();
 
@@ -76,7 +76,17 @@ namespace DependencyGraphTestCases
             CollectionAssert.AreEqual(list1, list2);
             Assert.AreEqual(DG.Size, 5);
 
-            DG.
+            DG.RemoveDependency("a", "e");
+            DG.RemoveDependency("a", "g");
+            DG.RemoveDependency(null, "g");
+            DG.RemoveDependency("a", null);
+            DG.RemoveDependency(null, null);
+            DG.RemoveDependency("d", "a");
+
+            list1 = DG.GetDependees("a").ToList();
+            list2 = new List<string>() { "b", "c", "d", "f" };
+
+            CollectionAssert.AreEqual(list1, list2);
         }
 
         /// <summary>

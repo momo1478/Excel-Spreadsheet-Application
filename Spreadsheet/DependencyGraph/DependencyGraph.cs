@@ -4,6 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using
+using System.Linq;
 
 namespace Dependencies
 {
@@ -232,7 +234,7 @@ namespace Dependencies
 
                 if (dependeeIndex >= 0) //if dependeeIndex >= 0 than (s,t) exists in dependents
                 {
-                    dependees[s].RemoveAt(dependeeIndex); //remove at dependeeIndex, the dependee in dependents.
+                    dependents[s].RemoveAt(dependeeIndex); //remove at dependeeIndex, the dependee in dependents.
                     RemoveDependencyInDependees(s, t);    //sync dependees dictionary
                     count--;                              //Removed a dependency
                 }
@@ -287,6 +289,22 @@ namespace Dependencies
         /// </summary>
         public void ReplaceDependents(string s, IEnumerable<string> newDependents)
         {
+            List<String> dependeeList;
+            if (!ReferenceEquals(s, null) && dependents.TryGetValue(s,out dependeeList)) //null check on s. If not remove it's dependees.
+            {
+                for (int i = 0; i < dependeeList.Count; i++)
+                {
+                    RemoveDependency(s, dependeeList[i]); //Iterate and remove dependencies, manages count too.
+                    i--;                                  //For loop removal compensation.                           
+                }
+            }
+            //Whether or not we removed dependees. Add each dependee from newDependents (the name doesn't make sense)
+            List<String> addList = newDependents.ToList();
+
+            for (int j = 0; j < addList.Count; j++) //Add each dependency. Handles null checks as well and count.
+            {
+                AddDependency(s, addList[j]);
+            }
         }
 
         /// <summary>
@@ -296,6 +314,22 @@ namespace Dependencies
         /// </summary>
         public void ReplaceDependees(string t, IEnumerable<string> newDependees)
         {
+            List<String> dependentList;
+            if (!ReferenceEquals(t, null) && dependees.TryGetValue(t, out dependentList)) //null check on s. If not remove it's dependees.
+            {
+                for (int i = 0; i < dependentList.Count; i++)
+                {
+                    RemoveDependency(dependentList[i] , t); //Iterate and remove dependencies, manages count too.
+                    i--;                                    //For loop removal compensation.                           
+                }
+            }
+            //Whether or not we removed dependees. Add each dependee from newDependents (the name doesn't make sense)
+            List<String> addList = newDependees.ToList();
+
+            for (int j = 0; j < addList.Count; j++) //Add each dependency. Handles null checks as well and count.
+            {
+                AddDependency(addList[j] , t);
+            }
         }
     }
 }
