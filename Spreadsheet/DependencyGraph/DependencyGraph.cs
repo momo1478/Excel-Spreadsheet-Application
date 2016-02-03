@@ -223,25 +223,25 @@ namespace Dependencies
             if (ReferenceEquals(s, null) || ReferenceEquals(t, null)) //null check on s and t.
                 return;
 
-            List<String> dependeeList;                       //null if the dependent doesn't exist.
+            List<String> dependentList;                       //null if the dependee doesn't exist.
 
-            if (dependents.TryGetValue(s, out dependeeList)) //dependent exists  
+            if (dependees.TryGetValue(s, out dependentList)) //dependee exists  
             {
-                int dependeeIndex = dependeeList.BinarySearch(t);
+                int dependentIndex = dependentList.BinarySearch(t);
 
-                if (dependeeIndex >= 0) //if dependeeIndex >= 0 than (s,t) exists in dependents
+                if (dependentIndex >= 0)                    //if dependeeIndex >= 0 than (s,t) exists in dependents
                 {
-                    dependents[s].RemoveAt(dependeeIndex); //remove at dependeeIndex, the dependee in dependents.
-                    RemoveDependencyInDependees(s, t);    //sync dependees dictionary
-                    count--;                              //Removed a dependency
+                    dependees[s].RemoveAt(dependentIndex); //remove at dependeeIndex, the dependee in dependents.
+                    RemoveDependencyInDependents(s, t);     //sync dependees dictionary
+                    count--;                                //Removed a dependency
                 }
-                else                    //dependeeIndex < 0 than s exists but (s,t) doesn't.
+                else                    //dependentIndex < 0, then s exists but (s,t) doesn't.
                 {
                     Debug.WriteLine("(s,t) is not a dependency in DG.");
                     return;
                 }
             }
-            else                                             //dependent doesn't exist.
+            else                                             //dependee doesn't exist.
             {
                 Debug.WriteLine("(s,t) is not a dependency in DG.");
                 return;
@@ -253,20 +253,20 @@ namespace Dependencies
         /// Does nothing if (s,t) doesn't belong to this DependencyGraph.
         /// Requires s != null and t != null.
         /// </summary>
-        private void RemoveDependencyInDependees(string s, string t)
+        private void RemoveDependencyInDependents(string s, string t)
         {
             if (ReferenceEquals(s, null) || ReferenceEquals(t, null)) //null check on s and t.
                 return;
 
-            List<String> dependentList;                       //null if the dependee doesn't exist.
+            List<String> dependeeList;                       //null if the dependent doesn't exist.
 
-            if (dependents.TryGetValue(t, out dependentList)) //dependee exists  
+            if (dependents.TryGetValue(t, out dependeeList)) //dependent exists  
             {
-                int dependentIndex = dependentList.BinarySearch(s);
+                int dependeeIndex = dependeeList.BinarySearch(s);
 
-                if (dependentIndex >= 0)                      //if dependentIndex >= 0 than (s,t) exists in dependees
+                if (dependeeIndex >= 0)                     //if dependentIndex >= 0 than (s,t) exists in dependees
                 {
-                    dependents[t].RemoveAt(dependentIndex);  //remove at dependentsIndex, the dependent in dependees.
+                    dependents[t].RemoveAt(dependeeIndex);  //remove at dependeeIndex, the dependee in dependents.
                 }
                 else                                         //dependeeIndex < 0 than s exists but (s,t) doesn't.
                 {
@@ -286,12 +286,12 @@ namespace Dependencies
         /// </summary>
         public void ReplaceDependents(string s, IEnumerable<string> newDependents)
         {
-            List<String> dependeeList;
-            if (!ReferenceEquals(s, null) && dependents.TryGetValue(s,out dependeeList)) //null check on s. If not remove it's dependees.
+            List<String> dependentList;
+            if (!ReferenceEquals(s, null) && dependees.TryGetValue(s,out dependentList)) //null check on s. If not remove it's dependees.
             {
-                for (int i = 0; i < dependeeList.Count; i++)
+                for (int i = 0; dependentList.Count == 0; i++)
                 {
-                    RemoveDependency(s, dependeeList[i]); //Iterate and remove dependencies, manages count too.
+                    RemoveDependency(s, dependentList[i]); //Iterate and remove dependencies, manages count too.
                     i--;                                  //For loop removal compensation.                           
                 }
             }
@@ -311,13 +311,13 @@ namespace Dependencies
         /// </summary>
         public void ReplaceDependees(string t, IEnumerable<string> newDependees)
         {
-            List<String> dependentList;
-            if (!ReferenceEquals(t, null) && dependees.TryGetValue(t, out dependentList)) //null check on s. If not remove it's dependees.
+            List<String> dependeeList;
+            if (!ReferenceEquals(t, null) && dependents.TryGetValue(t, out dependeeList)) //null check on s. If not remove it's dependees.
             {
-                for (int i = 0; i < dependentList.Count; i++)
+                for (int i = 0; dependeeList.Count == 0; i++)
                 {
-                    RemoveDependency(dependentList[i] , t); //Iterate and remove dependencies, manages count too.
-                    i--;                                    //For loop removal compensation.                           
+                    RemoveDependency(dependeeList[i] , t); //Iterate and remove dependencies, manages count too.
+                    i--;                                   //For loop removal compensation.                           
                 }
             }
             //Whether or not we removed dependees. Add each dependee from newDependents (the name doesn't make sense)
