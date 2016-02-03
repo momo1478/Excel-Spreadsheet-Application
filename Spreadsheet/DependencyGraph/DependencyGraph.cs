@@ -108,8 +108,8 @@ namespace Dependencies
         {
             List<String> dependentsList;  //null if s is not a dependee in DG.
 
-            if (ReferenceEquals(s, null) || !dependents.TryGetValue(s, out dependentsList))
-            //null check on s.          //TryGetValue returns false, meaning s is not in DG.
+            if (ReferenceEquals(s, null) || !dependees.TryGetValue(s, out dependentsList))
+            //null check on s.           //TryGetValue returns false, meaning s is not in DG.
             {
                 yield return "";
                 yield break;
@@ -170,14 +170,16 @@ namespace Dependencies
                 {
                     dependeeList.Insert(~dependeeIndex, t); //Added in dependents.
                     AddDependencyInDependees(s, t);         //Added in dependees
+                    count++;                                //Dependency added.
                 }
             }
             else                                             //dependent doesn't exist.
             {
                 dependents.Add(s, new List<string> { t });   //make a new dictionary entry with s as the dependent and t as first dependee. 
                 AddDependencyInDependees(s, t);              //Add in dependees;
+                count++;                                     //Dependency added.
             }
-            
+
         }
 
         /// <summary>
