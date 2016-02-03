@@ -19,38 +19,38 @@ namespace DependencyGraphTestCases
             DependencyGraph DG = new DependencyGraph();
 
             DG.AddDependency("a", "b");
-            DG.AddDependency("a", "c");
             DG.AddDependency("a", "d");
+            DG.AddDependency("a", "c");
             DG.AddDependency("b", "a");
             DG.AddDependency("b", "c");
 
-            List<string> list1 = DG.GetDependents("a").ToList();
+            List<string> list1 = DG.GetDependees("a").ToList();
             List<string> list2 = new List<string>() { "b" };
 
             CollectionAssert.AreEqual(list1, list2);
 
-            list1 = DG.GetDependees("a").ToList();
-            list2 = new List<string>() { "b", "c", "d" };
+            list1 = DG.GetDependees("b").ToList();
+            list2 = new List<string>() { "a" };
 
             CollectionAssert.AreEqual(list1, list2);
 
             list1 = DG.GetDependents("a").ToList();
-            list2 = new List<string>() { "b" };
+            list2 = new List<string>() { "b" , "c" , "d" };
 
             CollectionAssert.AreEqual(list1, list2);
 
-            list1 = DG.GetDependees("b").ToList();
+            list1 = DG.GetDependents("b").ToList();
             list2 = new List<string>() { "a", "c" };
 
             CollectionAssert.AreEqual(list1, list2);
 
             list1 = DG.GetDependents("c").ToList();
-            list2 = new List<string>() { "a", "b" };
+            list2 = new List<string>() { };
 
             CollectionAssert.AreEqual(list1, list2);
 
             list1 = DG.GetDependees("c").ToList();
-            list2 = new List<string>() { "" };
+            list2 = new List<string>() { "a" , "b" };
 
             CollectionAssert.AreEqual(list1, list2);
         }

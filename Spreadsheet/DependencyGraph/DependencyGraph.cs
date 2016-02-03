@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using
 using System.Linq;
 
 namespace Dependencies
@@ -113,7 +112,6 @@ namespace Dependencies
             if (ReferenceEquals(s, null) || !dependees.TryGetValue(s, out dependentsList))
             //null check on s.           //TryGetValue returns false, meaning s is not in DG.
             {
-                yield return "";
                 yield break;
             }
             else
@@ -135,7 +133,6 @@ namespace Dependencies
             if (ReferenceEquals(s, null) || !dependents.TryGetValue(s, out dependeesList)) 
                 //null check on s.          //TryGetValue returns false, meaning s is not in DG.
             {
-                yield return "";
                 yield break;
             }
             else
@@ -157,29 +154,29 @@ namespace Dependencies
             if (ReferenceEquals(s, null) || ReferenceEquals(t, null)) //null check on s and t.
                 return;
 
-            List<String> dependeeList;                       //null if the dependent doesn't exist.
+            List<String> dependentList;                      //null if the dependee doesn't exist.
 
-            if (dependents.TryGetValue(s, out dependeeList)) //dependent exists  
+            if (dependees.TryGetValue(s, out dependentList)) //dependee exists  
             {
-                int dependeeIndex = dependeeList.BinarySearch(t); 
+                int dependentIndex = dependentList.BinarySearch(t); 
 
-                if (dependeeIndex >= 0) //if dependeeIndex >= 0 than (s,t) exists in dependents
+                if (dependentIndex >= 0) //if dependeeIndex >= 0 than (s,t) exists in dependents
                 {
                     Debug.WriteLine("Dependency exists already in DG.");
                     return;
                 }
                 else                    //dependeeIndex < 0 than s exists but (s,t) doesn't. ~dependeeIndex is where it should go.
                 {
-                    dependeeList.Insert(~dependeeIndex, t); //Added in dependents.
-                    AddDependencyInDependees(s, t);         //Added in dependees
-                    count++;                                //Dependency added.
+                    dependentList.Insert(~dependentIndex, t); //Added in dependents.
+                    AddDependencyInDependents(s, t);          //Added in dependees
+                    count++;                                  //Dependency added.
                 }
             }
-            else                                             //dependent doesn't exist.
+            else                                             //dependee doesn't exist.
             {
-                dependents.Add(s, new List<string> { t });   //make a new dictionary entry with s as the dependent and t as first dependee. 
-                AddDependencyInDependees(s, t);              //Add in dependees;
-                count++;                                     //Dependency added.
+                dependees.Add(s, new List<string> { t });     //make a new dictionary entry with s as the dependee and t as first dependent. 
+                AddDependencyInDependents(s, t);              //Add in dependents;
+                count++;                                      //Dependency added.
             }
 
         }
@@ -189,30 +186,30 @@ namespace Dependencies
         /// This has no effect if (s,t) already belongs to this DependencyGraph.
         /// Requires s != null and t != null.
         /// </summary>
-        private void AddDependencyInDependees(string s, string t)
+        private void AddDependencyInDependents(string s, string t)
         {
             if (ReferenceEquals(s, null) || ReferenceEquals(t, null)) //null check on s and t.
                 return;
 
-            List<String> dependentList;                      //null if the dependee doesn't exist.
+            List<String> dependeeList;                      //null if the dependent doesn't exist.
 
-            if (dependees.TryGetValue(t, out dependentList)) //dependee exists  
+            if (dependents.TryGetValue(t, out dependeeList)) //dependent exists  
             {
-                int dependentIndex = dependentList.BinarySearch(s);
+                int dependeeIndex = dependeeList.BinarySearch(s);
 
-                if (dependentIndex >= 0) //if dependentIndex >= 0 than (s,t) exists in dependees
+                if (dependeeIndex >= 0) //if dependeeIndex >= 0 than (s,t) exists in dependents
                 {
                     Debug.WriteLine("Dependency exists already in DG.");
                     return;
                 }
                 else                    //dependentIndex < 0 than t exists but (s,t) doesn't. ~dependentIndex is where it should go.
                 {
-                    dependentList.Insert(~dependentIndex, s);
+                    dependeeList.Insert(~dependeeIndex, s);
                 }
             }
-            else                                             //dependee doesn't exist.
+            else                                             //dependent doesn't exist.
             {
-                dependees.Add(t, new List<string> { s });   //make a new dictionary entry with s as the dependent and t as first dependee. 
+                dependents.Add(t, new List<string> { s });   //make a new dictionary entry with s as the dependent and t as first dependee. 
             }
         }
 
