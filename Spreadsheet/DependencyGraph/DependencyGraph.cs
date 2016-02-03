@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Dependencies
 {
@@ -51,18 +52,29 @@ namespace Dependencies
     {
         /// <summary>
         /// A Dictionary where the Key (String) is the name of the dependent
-        /// and the value (List<String>) is the List of dependees for that dependent.
+        /// and the value (List<String>) is the List of dependees for that dependent. These lists are always sorted.
         /// </summary>
         private Dictionary<String, List<String>> dependents;
 
+        /// <summary>
+        /// A Dictionary where the Key (String) is the name of the dependee
+        /// and the value (List<String>) is the List of dependents for that dependee. These lists are always sorted.
+        /// </summary>
         private Dictionary<String, List<String>> dependees;
 
+        /// <summary>
+        /// number of dependency in the DependencyGraph.
+        /// </summary>
         private int count;
         /// <summary>
         /// Creates a DependencyGraph containing no dependencies.
         /// </summary>
         public DependencyGraph()
         {
+            dependents = new Dictionary<string, List<string>>();
+            dependees = new Dictionary<string, List<string>>();
+
+            count = 0;
         }
 
         /// <summary>
@@ -70,7 +82,7 @@ namespace Dependencies
         /// </summary>
         public int Size
         {
-            get { return 0; }
+            get { return count; }
         }
 
         /// <summary>
@@ -94,7 +106,21 @@ namespace Dependencies
         /// </summary>
         public IEnumerable<string> GetDependents(string s)
         {
-            return null;
+            List<String> dependentsList;  //null if s is not a dependee in DG.
+
+            if (ReferenceEquals(s, null) || !dependents.TryGetValue(s, out dependentsList))
+            //null check on s.          //TryGetValue returns false, meaning s is not in DG.
+            {
+                yield return "";
+                yield break;
+            }
+            else
+            {
+                for (int i = 0; i < dependentsList.Count; i++)
+                {
+                    yield return dependentsList[i]; //iterate through dependees and return.
+                }
+            }
         }
 
         /// <summary>
@@ -102,7 +128,21 @@ namespace Dependencies
         /// </summary>
         public IEnumerable<string> GetDependees(string s)
         {
-            return null;
+            List<String> dependeesList;  //null if s is not a dependent in DG.
+
+            if (ReferenceEquals(s, null) || !dependents.TryGetValue(s, out dependeesList)) 
+                //null check on s.          //TryGetValue returns false, meaning s is not in DG.
+            {
+                yield return "";
+                yield break;
+            }
+            else
+            {
+                for (int i = 0; i < dependeesList.Count; i++)
+                {
+                    yield return dependeesList[i]; //iterate through dependees and return.
+                }
+            }
         }
 
         /// <summary>
@@ -112,6 +152,64 @@ namespace Dependencies
         /// </summary>
         public void AddDependency(string s, string t)
         {
+            if (ReferenceEquals(s, null) || ReferenceEquals(t, null)) //null check on s and t.
+                return;
+
+            List<String> dependeeList;                       //null if the dependent doesn't exist.
+
+            if (dependents.TryGetValue(s, out dependeeList)) //dependent exists  
+            {
+                int dependeeIndex = dependeeList.BinarySearch(t); 
+
+                if (dependeeIndex >= 0) //if dependeeIndex >= 0 than (s,t) exists in dependents
+                {
+                    Debug.WriteLine("Dependency exists already in DG.");
+                    return;
+                }
+                else                    //dependeeIndex < 0 than s exists but (s,t) doesn't. ~dependeeIndex is where it should go.
+                {
+                    dependeeList.Insert(~dependeeIndex, t); //Added in dependents.
+                    AddDependencyInDependees(s, t);         //Added in dependees
+                }
+            }
+            else                                             //dependent doesn't exist.
+            {
+                dependents.Add(s, new List<string> { t });   //make a new dictionary entry with s as the dependent and t as first dependee. 
+                AddDependencyInDependees(s, t);              //Add in dependees;
+            }
+            
+        }
+
+        /// <summary>
+        /// Manages dependees dictionary. Mimics AddDependency's functionality.
+        /// This has no effect if (s,t) already belongs to this DependencyGraph.
+        /// Requires s != null and t != null.
+        /// </summary>
+        private void AddDependencyInDependees(string s, string t)
+        {
+            if (ReferenceEquals(s, null) || ReferenceEquals(t, null)) //null check on s and t.
+                return;
+
+            List<String> dependentList;                      //null if the dependee doesn't exist.
+
+            if (dependees.TryGetValue(t, out dependentList)) //dependee exists  
+            {
+                int dependentIndex = dependentList.BinarySearch(s);
+
+                if (dependentIndex >= 0) //if dependentIndex >= 0 than (s,t) exists in dependees
+                {
+                    Debug.WriteLine("Dependency exists already in DG.");
+                    return;
+                }
+                else                    //dependentIndex < 0 than t exists but (s,t) doesn't. ~dependentIndex is where it should go.
+                {
+                    dependentList.Insert(~dependentIndex, s);
+                }
+            }
+            else                                             //dependee doesn't exist.
+            {
+                dependees.Add(t, new List<string> { s });   //make a new dictionary entry with s as the dependent and t as first dependee. 
+            }
         }
 
         /// <summary>
