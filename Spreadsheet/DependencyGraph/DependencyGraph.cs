@@ -354,27 +354,25 @@ namespace Dependencies
                 }
 
 
-                List<String> newDependentsList = newDependents.ToList();
-                for (int j = 0; j < newDependentsList.Count; j++)          //adding dependees for s
+                
+            }
+            //add regardless of removing.
+            List<String> newDependentsList = newDependents.ToList();
+            for (int j = 0; j < newDependentsList.Count; j++)          //adding dependees for s
+            {
+                if (!ReferenceEquals(newDependentsList[j], null))      //null check
                 {
-                    if (!ReferenceEquals(newDependentsList[j], null))      //null check
-                    {
-                        AddDependency(s, newDependentsList[j]);            //Add Dependency (also modifies dependees)
-                    }
+                    AddDependency(s, newDependentsList[j]);            //Add Dependency (also modifies dependees)
                 }
             }
-            else //s wansn't a dependent in DG, do nothing..
-            {
-                return;
-            }
-            
+
         }
 
         /// <summary>
         /// Removes all existing dependencies of the form (r,t).  Then, for each 
         /// s in newDependees, adds the dependency (s,t).
         /// Requires s != null and t != null.
-        /// </summary>
+        /// </summary> 
         public void ReplaceDependees(string t, IEnumerable<string> newDependees)
         {
             if (ReferenceEquals(t, null)) //null check on t
@@ -389,19 +387,15 @@ namespace Dependencies
                     RemoveDependency(dependees[dependeeRow][i], t);  //Remove in dependents and dependees.
                     i--;
                 }
-
-                List<String> newDependeesList = newDependees.ToList();
-                for (int j = 0; j < newDependeesList.Count; j++)          //adding dependees for s
-                {
-                    if (!ReferenceEquals(newDependeesList[j], null))      //null check
-                    {
-                        AddDependency(newDependeesList[j], t);            //Add Dependency (also modifies dependees)
-                    }
-                }
             }
-            else
+
+            List<String> newDependeesList = newDependees.ToList();
+            for (int j = 0; j < newDependeesList.Count; j++)          //adding dependees for s
             {
-                return;
+                if (!ReferenceEquals(newDependeesList[j], null))      //null check
+                {
+                    AddDependency(newDependeesList[j], t);            //Add Dependency (also modifies dependees)
+                }
             }
         }
     }
