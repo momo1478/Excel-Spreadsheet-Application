@@ -90,7 +90,7 @@ namespace Dependencies
         /// </summary>
         public bool HasDependents(string s)
         {
-            return false;
+            return !ReferenceEquals(s, null) && dependees[s].Count > 0;
         }
 
         /// <summary>
@@ -98,7 +98,7 @@ namespace Dependencies
         /// </summary>
         public bool HasDependees(string s)
         {
-            return false;
+            return !ReferenceEquals(s, null) && dependents[s].Count > 0;
         }
 
         /// <summary>
@@ -233,6 +233,7 @@ namespace Dependencies
                 if (dependeeIndex >= 0) //if dependeeIndex >= 0 than (s,t) exists in dependents
                 {
                     dependees[s].RemoveAt(dependeeIndex); //remove at dependeeIndex, the dependee in dependents.
+                    RemoveDependencyInDependees(s, t);    //sync dependees dictionary
                     count--;                              //Removed a dependency
                 }
                 else                    //dependeeIndex < 0 than s exists but (s,t) doesn't.
