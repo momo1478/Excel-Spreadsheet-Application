@@ -221,6 +221,62 @@ namespace Dependencies
         /// </summary>
         public void RemoveDependency(string s, string t)
         {
+            if (ReferenceEquals(s, null) || ReferenceEquals(t, null)) //null check on s and t.
+                return;
+
+            List<String> dependeeList;                       //null if the dependent doesn't exist.
+
+            if (dependents.TryGetValue(s, out dependeeList)) //dependent exists  
+            {
+                int dependeeIndex = dependeeList.BinarySearch(t);
+
+                if (dependeeIndex >= 0) //if dependeeIndex >= 0 than (s,t) exists in dependents
+                {
+                    dependees[s].RemoveAt(dependeeIndex); //remove at dependeeIndex, the dependee in dependents.
+                    count--;                              //Removed a dependency
+                }
+                else                    //dependeeIndex < 0 than s exists but (s,t) doesn't.
+                {
+                    Debug.WriteLine("(s,t) is not a dependency in DG.");
+                    return;
+                }
+            }
+            else                                             //dependent doesn't exist.
+            {
+                Debug.WriteLine("(s,t) is not a dependency in DG.");
+                return;
+            }
+        }
+
+        /// <summary>
+        /// Manages dependees dictionary. Mimics RemoveDependency's functionality.
+        /// Does nothing if (s,t) doesn't belong to this DependencyGraph.
+        /// Requires s != null and t != null.
+        /// </summary>
+        private void RemoveDependencyInDependees(string s, string t)
+        {
+            if (ReferenceEquals(s, null) || ReferenceEquals(t, null)) //null check on s and t.
+                return;
+
+            List<String> dependentList;                       //null if the dependee doesn't exist.
+
+            if (dependents.TryGetValue(t, out dependentList)) //dependee exists  
+            {
+                int dependentIndex = dependentList.BinarySearch(s);
+
+                if (dependentIndex >= 0)                      //if dependentIndex >= 0 than (s,t) exists in dependees
+                {
+                    dependents[t].RemoveAt(dependentIndex);  //remove at dependentsIndex, the dependent in dependees.
+                }
+                else                                         //dependeeIndex < 0 than s exists but (s,t) doesn't.
+                {
+                    return;
+                }
+            }
+            else                                             //dependent doesn't exist.
+            {
+                return;
+            }
         }
 
         /// <summary>
