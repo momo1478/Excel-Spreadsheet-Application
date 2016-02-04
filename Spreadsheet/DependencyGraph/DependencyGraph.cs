@@ -91,7 +91,7 @@ namespace Dependencies
         /// </summary>
         public bool HasDependents(string s)
         {
-            return !ReferenceEquals(s, null) && dependees[s].Count > 0;
+            return !ReferenceEquals(s, null) && dependees.ContainsKey(s) && dependees[s].Count > 0;
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace Dependencies
         /// </summary>
         public bool HasDependees(string s)
         {
-            return !ReferenceEquals(s, null) && dependents[s].Count > 0;
+            return !ReferenceEquals(s, null) && dependents.ContainsKey(s) &&  dependents[s].Count > 0;
         }
 
         /// <summary>
@@ -199,6 +199,7 @@ namespace Dependencies
 
                 if (dependeeIndex >= 0) //if dependeeIndex >= 0 than (s,t) exists in dependents
                 {
+                    //Unreachable code
                     Debug.WriteLine("Dependency exists already in DG.");
                     return;
                 }
@@ -270,11 +271,13 @@ namespace Dependencies
                 }
                 else                                         //dependeeIndex < 0 than s exists but (s,t) doesn't.
                 {
+                    //Unreachable Code : Here to see remblance to other Remove Dependency.
                     return;
                 }
             }
             else                                             //dependent doesn't exist.
             {
+                //Unreachable Code : Here to see remblance to other Remove Dependency.
                 return;
             }
         }
@@ -289,7 +292,7 @@ namespace Dependencies
             List<String> dependentList;
             if (!ReferenceEquals(s, null) && dependees.TryGetValue(s,out dependentList)) //null check on s. If not remove it's dependees.
             {
-                for (int i = 0; dependentList.Count == 0; i++)
+                for (int i = 0; dependentList.Count > 0; i++)
                 {
                     RemoveDependency(s, dependentList[i]); //Iterate and remove dependencies, manages count too.
                     i--;                                  //For loop removal compensation.                           
@@ -314,7 +317,7 @@ namespace Dependencies
             List<String> dependeeList;
             if (!ReferenceEquals(t, null) && dependents.TryGetValue(t, out dependeeList)) //null check on s. If not remove it's dependees.
             {
-                for (int i = 0; dependeeList.Count == 0; i++)
+                for (int i = 0; dependeeList.Count > 0; i++)
                 {
                     RemoveDependency(dependeeList[i] , t); //Iterate and remove dependencies, manages count too.
                     i--;                                   //For loop removal compensation.                           
