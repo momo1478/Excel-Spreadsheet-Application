@@ -18,29 +18,36 @@ namespace DependencyGraphTestCases
         {
             DependencyGraph DG = new DependencyGraph();
 
+            /*
             DG.AddDependency("a", "b");
             DG.AddDependency("a", "d");
             DG.AddDependency("a", "c");
             DG.AddDependency("b", "a");
             DG.AddDependency("b", "c");
+            */
 
-            List<string> list1 = DG.GetDependees("a").ToList();
-            List<string> list2 = new List<string>() { "b" };
+            DG.AddDependency("a", "b");
+            DG.AddDependency("a", "c");
+            DG.AddDependency("b", "d");
+            DG.AddDependency("d", "d");
+
+            List<string> list1 = DG.GetDependents("a").ToList();
+            List<string> list2 = new List<string>() { "b" ,"c"};
+
+            CollectionAssert.AreEqual(list1, list2);
+
+            list1 = DG.GetDependees("a").ToList();
+            list2 = new List<string>() { };
+
+            CollectionAssert.AreEqual(list1, list2);
+
+            list1 = DG.GetDependents("b").ToList();
+            list2 = new List<string>() { "d" };
 
             CollectionAssert.AreEqual(list1, list2);
 
             list1 = DG.GetDependees("b").ToList();
             list2 = new List<string>() { "a" };
-
-            CollectionAssert.AreEqual(list1, list2);
-
-            list1 = DG.GetDependents("a").ToList();
-            list2 = new List<string>() { "b", "c", "d" };
-
-            CollectionAssert.AreEqual(list1, list2);
-
-            list1 = DG.GetDependents("b").ToList();
-            list2 = new List<string>() { "a", "c" };
 
             CollectionAssert.AreEqual(list1, list2);
 
@@ -50,7 +57,17 @@ namespace DependencyGraphTestCases
             CollectionAssert.AreEqual(list1, list2);
 
             list1 = DG.GetDependees("c").ToList();
-            list2 = new List<string>() { "a", "b" };
+            list2 = new List<string>() { "a" };
+
+            CollectionAssert.AreEqual(list1, list2);
+
+            list1 = DG.GetDependees("d").ToList();
+            list2 = new List<string>() { "b" , "d" };
+
+            CollectionAssert.AreEqual(list1, list2);
+
+            list1 = DG.GetDependents("d").ToList();
+            list2 = new List<string>() { "d" };
 
             CollectionAssert.AreEqual(list1, list2);
         }
