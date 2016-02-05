@@ -188,7 +188,7 @@ namespace Dependencies
         /// </summary>
         private void AddDependencyInDependents(string s, string t)
         {
-            if (ReferenceEquals(s, null) || ReferenceEquals(t, null)) //null check on s and t.
+            if (ReferenceEquals(s, null) || ReferenceEquals(t, null)) //null check on s and t. //should be unreachable.
                 return;
 
             List<String> dependeeList;                      //null if the dependent doesn't exist.
@@ -256,7 +256,7 @@ namespace Dependencies
         /// </summary>
         private void RemoveDependencyInDependents(string s, string t)
         {
-            if (ReferenceEquals(s, null) || ReferenceEquals(t, null)) //null check on s and t.
+            if (ReferenceEquals(s, null) || ReferenceEquals(t, null)) //null check on s and t. Should be unreachable
                 return;
 
             List<String> dependeeList;                       //null if the dependent doesn't exist.
@@ -299,7 +299,7 @@ namespace Dependencies
                 }
             }
             //Whether or not we removed dependees. Add each dependee from newDependents (the name doesn't make sense)
-            List<String> addList = newDependents.ToList();
+            List<String> addList = newDependents?.ToList() ?? new List<string>();
 
             for (int j = 0; j < addList.Count; j++) //Add each dependency. Handles null checks as well and count.
             {
@@ -324,7 +324,7 @@ namespace Dependencies
                 }
             }
             //Whether or not we removed dependees. Add each dependee from newDependents (the name doesn't make sense)
-            List<String> addList = newDependees.ToList();
+            List<String> addList = newDependees?.ToList() ?? new List<String>();
 
             for (int j = 0; j < addList.Count; j++) //Add each dependency. Handles null checks as well and count.
             {
