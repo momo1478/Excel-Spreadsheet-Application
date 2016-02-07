@@ -55,13 +55,13 @@ namespace Dependencies
         /// A Dictionary where the Key (String) is the name of the dependent
         /// and the value (List<String>) is the List of dependees for that dependent. These lists are always sorted.
         /// </summary>
-        private Dictionary<String, List<String>> dependents;
+        private Dictionary<String, HashSet<String>> dependents;
 
         /// <summary>
         /// A Dictionary where the Key (String) is the name of the dependee
         /// and the value (List<String>) is the List of dependents for that dependee. These lists are always sorted.
         /// </summary>
-        private Dictionary<String, List<String>> dependees;
+        private Dictionary<String, HashSet<String>> dependees;
 
         /// <summary>
         /// number of dependency in the DependencyGraph.
@@ -72,8 +72,8 @@ namespace Dependencies
         /// </summary>
         public DependencyGraph()
         {
-            dependents = new Dictionary<string, List<string>>();
-            dependees = new Dictionary<string, List<string>>();
+            dependents = new Dictionary<string, HashSet<string>>();
+            dependees = new Dictionary<string, HashSet<string>>();
 
             count = 0;
         }
@@ -107,15 +107,16 @@ namespace Dependencies
         /// </summary>
         public IEnumerable<string> GetDependents(string s)
         {
-            List<String> dependentsList;  //null if s is not a dependee in DG.
+            HashSet<String> dependentsHash;  //null if s is not a dependee in DG.
 
-            if (ReferenceEquals(s, null) || !dependees.TryGetValue(s, out dependentsList))
+            if (ReferenceEquals(s, null) || !dependees.TryGetValue(s, out dependentsHash))
             //null check on s.           //TryGetValue returns false, meaning s is not in DG.
             {
                 yield break;
             }
             else
             {
+                List<String> dependentsList = dependentsHash.ToList();
                 for (int i = 0; i < dependentsList.Count; i++)
                 {
                     yield return dependentsList[i]; //iterate through dependees and return.
@@ -128,15 +129,16 @@ namespace Dependencies
         /// </summary>
         public IEnumerable<string> GetDependees(string s)
         {
-            List<String> dependeesList;  //null if s is not a dependent in DG.
+            HashSet<String> dependeesHash;  //null if s is not a dependent in DG.
 
-            if (ReferenceEquals(s, null) || !dependents.TryGetValue(s, out dependeesList)) 
+            if (ReferenceEquals(s, null) || !dependents.TryGetValue(s, out dependeesHash)) 
                 //null check on s.          //TryGetValue returns false, meaning s is not in DG.
             {
                 yield break;
             }
             else
             {
+                List<String> dependeesList = dependeesHash.ToList();
                 for (int i = 0; i < dependeesList.Count; i++)
                 {
                     yield return dependeesList[i]; //iterate through dependees and return.
@@ -154,27 +156,27 @@ namespace Dependencies
             if (ReferenceEquals(s, null) || ReferenceEquals(t, null)) //null check on s and t.
                 return;
 
-            List<String> dependentList;                      //null if the dependee doesn't exist.
+            HashSet<String> dependentHash;                      //null if the dependee doesn't exist.
 
-            if (dependees.TryGetValue(s, out dependentList)) //dependee exists  
+            if (dependees.TryGetValue(s, out dependentHash)) //dependee exists  
             {
-                int dependentIndex = dependentList.BinarySearch(t); 
+                //int dependentIndex = dependentList.BinarySearch(t); 
 
-                if (dependentIndex >= 0) //if dependeeIndex >= 0 than (s,t) exists in dependents
+                if (dependentHash.Contains(t)) //if dependeeIndex >= 0 than (s,t) exists in dependents
                 {
                     Debug.WriteLine("Dependency exists already in DG.");
                     return;
                 }
                 else                    //dependeeIndex < 0 than s exists but (s,t) doesn't. ~dependeeIndex is where it should go.
                 {
-                    dependentList.Insert(~dependentIndex, t); //Added in dependents.
+                    dependentHash.Add(t); //Added in dependents.
                     AddDependencyInDependents(s, t);          //Added in dependees
                     count++;                                  //Dependency added.
                 }
             }
             else                                             //dependee doesn't exist.
             {
-                dependees.Add(s, new List<string> { t });     //make a new dictionary entry with s as the dependee and t as first dependent. 
+                dependees.Add(s, new HashSet<string> { t });  //make a new dictionary entry with s as the dependee and t as first dependent. 
                 AddDependencyInDependents(s, t);              //Add in dependents;
                 count++;                                      //Dependency added.
             }
@@ -191,13 +193,13 @@ namespace Dependencies
             if (ReferenceEquals(s, null) || ReferenceEquals(t, null)) //null check on s and t. //should be unreachable.
                 return;
 
-            List<String> dependeeList;                      //null if the dependent doesn't exist.
+            HashSet<String> dependeeHash;                      //null if the dependent doesn't exist.
 
-            if (dependents.TryGetValue(t, out dependeeList)) //dependent exists  
+            if (dependents.TryGetValue(t, out dependeeHash)) //dependent exists  
             {
-                int dependeeIndex = dependeeList.BinarySearch(s);
+                //int dependeeIndex = dependeeList.BinarySearch(s);
 
-                if (dependeeIndex >= 0) //if dependeeIndex >= 0 than (s,t) exists in dependents
+                if (dependeeHash.Contains(s)) //if dependeeIndex >= 0 than (s,t) exists in dependents
                 {
                     //Unreachable code
                     Debug.WriteLine("Dependency exists already in DG.");
@@ -205,12 +207,12 @@ namespace Dependencies
                 }
                 else                    //dependentIndex < 0 than t exists but (s,t) doesn't. ~dependentIndex is where it should go.
                 {
-                    dependeeList.Insert(~dependeeIndex, s);
+                    dependeeHash.Add(s);
                 }
             }
             else                                             //dependent doesn't exist.
             {
-                dependents.Add(t, new List<string> { s });   //make a new dictionary entry with s as the dependent and t as first dependee. 
+                dependents.Add(t, new HashSet<string> { s });   //make a new dictionary entry with s as the dependent and t as first dependee. 
             }
         }
 
@@ -224,15 +226,15 @@ namespace Dependencies
             if (ReferenceEquals(s, null) || ReferenceEquals(t, null)) //null check on s and t.
                 return;
 
-            List<String> dependentList;                       //null if the dependee doesn't exist.
+            HashSet<String> dependentHash;                       //null if the dependee doesn't exist.
 
-            if (dependees.TryGetValue(s, out dependentList)) //dependee exists  
+            if (dependees.TryGetValue(s, out dependentHash)) //dependee exists  
             {
-                int dependentIndex = dependentList.BinarySearch(t);
+                //int dependentIndex = dependentList.BinarySearch(t);
 
-                if (dependentIndex >= 0)                    //if dependeeIndex >= 0 than (s,t) exists in dependents
+                if (dependentHash.Contains(t))                    //if dependeeIndex >= 0 than (s,t) exists in dependents
                 {
-                    dependees[s].RemoveAt(dependentIndex); //remove at dependeeIndex, the dependee in dependents.
+                    dependees[s].Remove(t); //remove at dependeeIndex, the dependee in dependents.
                     RemoveDependencyInDependents(s, t);     //sync dependees dictionary
                     count--;                                //Removed a dependency
                 }
@@ -259,15 +261,15 @@ namespace Dependencies
             if (ReferenceEquals(s, null) || ReferenceEquals(t, null)) //null check on s and t. Should be unreachable
                 return;
 
-            List<String> dependeeList;                       //null if the dependent doesn't exist.
+            HashSet<String> dependeeHash;                       //null if the dependent doesn't exist.
 
-            if (dependents.TryGetValue(t, out dependeeList)) //dependent exists  
+            if (dependents.TryGetValue(t, out dependeeHash)) //dependent exists  
             {
-                int dependeeIndex = dependeeList.BinarySearch(s);
+                //int dependeeIndex = dependeeList.BinarySearch(s);
 
-                if (dependeeIndex >= 0)                     //if dependentIndex >= 0 than (s,t) exists in dependees
+                if (dependeeHash.Contains(s))                     //if dependentIndex >= 0 than (s,t) exists in dependees
                 {
-                    dependents[t].RemoveAt(dependeeIndex);  //remove at dependeeIndex, the dependee in dependents.
+                    dependents[t].Remove(s);               //remove at dependeeIndex, the dependee in dependents.
                 }
                 else                                         //dependeeIndex < 0 than s exists but (s,t) doesn't.
                 {
@@ -289,13 +291,16 @@ namespace Dependencies
         /// </summary>
         public void ReplaceDependents(string s, IEnumerable<string> newDependents)
         {
-            List<String> dependentList;
-            if (!ReferenceEquals(s, null) && dependees.TryGetValue(s,out dependentList)) //null check on s. If not remove it's dependees.
+            HashSet<String> dependentHash;
+            
+
+            if (!ReferenceEquals(s, null) && dependees.TryGetValue(s, out dependentHash)) //null check on s. If not remove it's dependees.
             {
-                for (int i = 0; dependentList.Count > 0; i++)
+                List<String> dependentList = dependentHash.ToList();
+
+                for (int i = 0; dependentHash.Count > 0; i++)
                 {
-                    RemoveDependency(s, dependentList[i]); //Iterate and remove dependencies, manages count too.
-                    i--;                                  //For loop removal compensation.                           
+                    RemoveDependency(s, dependentList[i]); //Iterate and remove dependencies, manages count too.                  
                 }
             }
             //Whether or not we removed dependees. Add each dependee from newDependents (the name doesn't make sense)
@@ -314,13 +319,14 @@ namespace Dependencies
         /// </summary>
         public void ReplaceDependees(string t, IEnumerable<string> newDependees)
         {
-            List<String> dependeeList;
-            if (!ReferenceEquals(t, null) && dependents.TryGetValue(t, out dependeeList)) //null check on s. If not remove it's dependees.
+            HashSet<String> dependeeHash;
+            if (!ReferenceEquals(t, null) && dependents.TryGetValue(t, out dependeeHash)) //null check on s. If not remove it's dependees.
             {
-                for (int i = 0; dependeeList.Count > 0; i++)
+                List<String> dependeeList = dependeeHash.ToList();
+
+                for (int i = 0; dependeeHash.Count > 0; i++)
                 {
-                    RemoveDependency(dependeeList[i] , t); //Iterate and remove dependencies, manages count too.
-                    i--;                                   //For loop removal compensation.                           
+                    RemoveDependency(dependeeList[i] , t); //Iterate and remove dependencies, manages count too.                       
                 }
             }
             //Whether or not we removed dependees. Add each dependee from newDependents (the name doesn't make sense)
