@@ -78,6 +78,19 @@ namespace Dependencies
             count = 0;
         }
 
+        public DependencyGraph(DependencyGraph DG)
+        {
+            foreach (KeyValuePair<string, HashSet<String>> dependency in dependees)
+            {
+                List<String> valueList = dependency.Value.ToList();
+
+                for (int i = 0; i < dependency.Value.Count; i++)
+                {
+                    this.AddDependency(dependency.Key, valueList[i]);
+                }
+            }
+        }
+
         /// <summary>
         /// The number of dependencies in the DependencyGraph.
         /// </summary>
@@ -91,6 +104,11 @@ namespace Dependencies
         /// </summary>
         public bool HasDependents(string s)
         {
+            if (ReferenceEquals(s, null))
+            {
+                throw new ArgumentNullException("One of your parameters is null.");
+            }
+
             return !ReferenceEquals(s, null) && dependees.ContainsKey(s) && dependees[s].Count > 0;
         }
 
@@ -99,7 +117,11 @@ namespace Dependencies
         /// </summary>
         public bool HasDependees(string s)
         {
-            return !ReferenceEquals(s, null) && dependents.ContainsKey(s) &&  dependents[s].Count > 0;
+            if (ReferenceEquals(s, null))
+            {
+                throw new ArgumentNullException("One of your parameters is null.");
+            }
+            return !ReferenceEquals(s, null) && dependents.ContainsKey(s) && dependents[s].Count > 0;
         }
 
         /// <summary>
@@ -108,6 +130,11 @@ namespace Dependencies
         public IEnumerable<string> GetDependents(string s)
         {
             HashSet<String> dependentsHash;  //null if s is not a dependee in DG.
+
+            if (ReferenceEquals(s, null))
+            {
+                throw new ArgumentNullException("One of your parameters is null.");
+            }
 
             if (ReferenceEquals(s, null) || !dependees.TryGetValue(s, out dependentsHash))
             //null check on s.           //TryGetValue returns false, meaning s is not in DG.
@@ -131,8 +158,13 @@ namespace Dependencies
         {
             HashSet<String> dependeesHash;  //null if s is not a dependent in DG.
 
-            if (ReferenceEquals(s, null) || !dependents.TryGetValue(s, out dependeesHash)) 
-                //null check on s.          //TryGetValue returns false, meaning s is not in DG.
+            if (ReferenceEquals(s, null))
+            {
+                throw new ArgumentNullException("One of your parameters is null.");
+            }
+
+            if (ReferenceEquals(s, null) || !dependents.TryGetValue(s, out dependeesHash))
+            //null check on s.          //TryGetValue returns false, meaning s is not in DG.
             {
                 yield break;
             }
@@ -154,7 +186,9 @@ namespace Dependencies
         public void AddDependency(string s, string t)
         {
             if (ReferenceEquals(s, null) || ReferenceEquals(t, null)) //null check on s and t.
-                return;
+            {
+                throw new ArgumentNullException("One of your parameters is null.");
+            }
 
             HashSet<String> dependentHash;                      //null if the dependee doesn't exist.
 
@@ -191,7 +225,9 @@ namespace Dependencies
         private void AddDependencyInDependents(string s, string t)
         {
             if (ReferenceEquals(s, null) || ReferenceEquals(t, null)) //null check on s and t. //should be unreachable.
-                return;
+            {
+                throw new ArgumentNullException("One of your parameters is null.");
+            }
 
             HashSet<String> dependeeHash;                      //null if the dependent doesn't exist.
 
@@ -224,7 +260,9 @@ namespace Dependencies
         public void RemoveDependency(string s, string t)
         {
             if (ReferenceEquals(s, null) || ReferenceEquals(t, null)) //null check on s and t.
-                return;
+            {
+                throw new ArgumentNullException("One of your parameters is null.");
+            }
 
             HashSet<String> dependentHash;                       //null if the dependee doesn't exist.
 
@@ -259,7 +297,9 @@ namespace Dependencies
         private void RemoveDependencyInDependents(string s, string t)
         {
             if (ReferenceEquals(s, null) || ReferenceEquals(t, null)) //null check on s and t. Should be unreachable
-                return;
+            {
+                throw new ArgumentNullException("One of your parameters is null.");
+            }
 
             HashSet<String> dependeeHash;                       //null if the dependent doesn't exist.
 
@@ -292,7 +332,11 @@ namespace Dependencies
         public void ReplaceDependents(string s, IEnumerable<string> newDependents)
         {
             HashSet<String> dependentHash;
-            
+
+            if (ReferenceEquals(s, null))
+            {
+                throw new ArgumentNullException("One of your parameters is null.");
+            }
 
             if (!ReferenceEquals(s, null) && dependees.TryGetValue(s, out dependentHash)) //null check on s. If not remove it's dependees.
             {
@@ -320,13 +364,19 @@ namespace Dependencies
         public void ReplaceDependees(string t, IEnumerable<string> newDependees)
         {
             HashSet<String> dependeeHash;
+
+            if (ReferenceEquals(t, null))
+            {
+                throw new ArgumentNullException("One of your parameters is null.");
+            }
+
             if (!ReferenceEquals(t, null) && dependents.TryGetValue(t, out dependeeHash)) //null check on s. If not remove it's dependees.
             {
                 List<String> dependeeList = dependeeHash.ToList();
 
                 for (int i = 0; dependeeHash.Count > 0; i++)
                 {
-                    RemoveDependency(dependeeList[i] , t); //Iterate and remove dependencies, manages count too.                       
+                    RemoveDependency(dependeeList[i], t); //Iterate and remove dependencies, manages count too.                       
                 }
             }
             //Whether or not we removed dependees. Add each dependee from newDependents (the name doesn't make sense)
@@ -334,7 +384,7 @@ namespace Dependencies
 
             for (int j = 0; j < addList.Count; j++) //Add each dependency. Handles null checks as well and count.
             {
-                AddDependency(addList[j] , t);
+                AddDependency(addList[j], t);
             }
         }
     }

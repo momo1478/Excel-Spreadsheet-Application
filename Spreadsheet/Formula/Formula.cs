@@ -17,7 +17,7 @@ namespace Formulas
     /// the four binary operator symbols +, -, *, and /.  (The unary operators + and -
     /// are not allowed.)
     /// </summary>
-    public class Formula
+    public struct Formula
     {
         /// <summary>
         /// Creates a Formula from a string that consists of a standard infix expression composed
@@ -43,9 +43,26 @@ namespace Formulas
         
         //instance varible to hold the string form of the formula for use in other methods.
         private string stringFormula;
+
+        /// <summary>
+        /// Returns the formula into a normalized format.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public delegate string Normalizer(string s);
+
+        /// <summary>
+        /// Checks if the formula is within certain requirements.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public delegate bool Validator(string s);
+
         public Formula(String formula)
         {
             stringFormula = formula;
+            Normalizer n = new Normalizer(s => s);
+            Validator v = new Validator(s => true);
 
             List<String> tokens = GetTokens(formula).ToList<String>();
 
@@ -110,6 +127,18 @@ namespace Formulas
 
         }
 
+        public Formula(String formula, Normalizer norm, Validator valid)
+        {
+            Formula formulaTest = new Formula(formula); //Run formula into the default constructor, to make sure it's fine.
+
+            stringFormula = norm(formula);              //make instance variable the normalized form of the formula.
+
+            if (!valid(stringFormula))                  //Normalized formula is not valid?
+            {
+                throw new FormulaFormatException("Input formula failed the validator!");
+            }
+        }
+
         private static bool isValidToken(string token)
         {
             if (isNumber(token) || isOperator(token) || isVar(token) || isParen(token))
@@ -168,6 +197,34 @@ namespace Formulas
         }
 
         /// <summary>
+        ///  Returns an ISet<string> that contains each distinct
+        ///  variable (in normalized form) that appears in the Formula.
+        /// </summary>
+        /// <returns></returns>
+        public ISet<String> GetVariables()
+        {
+            List<String> tokens = stringFormula.Split().ToList();
+            ISet<String> vars = (ISet<String>)(new List<String>());
+            foreach (var token in tokens)
+            {
+                if (isVar(token))
+                {
+                    vars.Add(token);
+                }
+            }
+            return vars;
+
+        }
+        /// <summary>
+        /// Returns string form of formula. Overrides object's ToString().
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return stringFormula;
+        }
+
+        /// <summary>
         /// Evaluates this Formula, using the Lookup delegate to determine the values of variables.  (The
         /// delegate takes a variable name as a parameter and returns its value (if it has one) or throws
         /// an UndefinedVariableException (otherwise).  Uses the standard precedence rules when doing the evaluation.
@@ -176,8 +233,11 @@ namespace Formulas
         /// this Formula, its value is returned.  Otherwise, throws a FormulaEvaluationException  
         /// with an explanatory Message. 
         /// </summary>
+
         public double Evaluate(Lookup lookup)
         {
+            
+
             List<String> tokens = GetTokens(this.stringFormula).ToList();
 
             Stack<double> values = new Stack<double>();
@@ -338,6 +398,12 @@ namespace Formulas
                 }
             }
         }
+
+        /// <summary>
+        /// Returns the type of a given token to help Evaluate decipher each token.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
         private static string readToken(string token)
         {
             if (isNumber(token))
