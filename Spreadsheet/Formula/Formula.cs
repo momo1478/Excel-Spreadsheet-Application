@@ -44,20 +44,6 @@ namespace Formulas
         //instance varible to hold the string form of the formula for use in other methods.
         private string stringFormula;
 
-        /// <summary>
-        /// Returns the formula into a normalized format.
-        /// </summary>
-        /// <param name="s"></param>
-        /// <returns></returns>
-        public delegate string Normalizer(string s);
-
-        /// <summary>
-        /// Checks if the formula is within certain requirements.
-        /// </summary>
-        /// <param name="s"></param>
-        /// <returns></returns>
-        public delegate bool Validator(string s);
-
         public Formula(String formula)
         {
             stringFormula = formula;
@@ -127,18 +113,31 @@ namespace Formulas
 
         }
 
+        /// <summary>
+        /// This formula constructor cont
+        /// </summary>
+        /// <param name="formula"></param>
+        /// <param name="norm"></param>
+        /// <param name="valid"></param>
         public Formula(String formula, Normalizer norm, Validator valid)
         {
             Formula formulaTest = new Formula(formula); //Run formula into the default constructor, to make sure it's fine.
 
-            stringFormula = norm(formula);              //make instance variable the normalized form of the formula.
+            stringFormula = norm(formula);              //Normalize before passing into constructor.
+
+            formulaTest = new Formula(formula);         //Run formula into the default constructor, to make sure it's fine.
 
             if (!valid(stringFormula))                  //Normalized formula is not valid?
             {
-                throw new FormulaFormatException("Input formula failed the validator!");
+                throw new FormulaFormatException("Input formula failed the validator! Check your variables.");
             }
         }
 
+        /// <summary>
+        /// Is the given string ok to be in a formula?
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
         private static bool isValidToken(string token)
         {
             if (isNumber(token) || isOperator(token) || isVar(token) || isParen(token))
@@ -213,10 +212,9 @@ namespace Formulas
                 }
             }
             return vars;
-
         }
         /// <summary>
-        /// Returns string form of formula. Overrides object's ToString().
+        /// Returns string form of formula. Overrides object's ToString(). Abstraction function for Formula.
         /// </summary>
         /// <returns></returns>
         public override string ToString()
@@ -470,6 +468,20 @@ namespace Formulas
     /// don't is up to the implementation of the method.
     /// </summary>
     public delegate double Lookup(string s);
+
+    /// <summary>
+    /// Changes a given formula's variables into a normalized format.
+    /// </summary>
+    /// <param name="s"></param>
+    /// <returns></returns>
+    public delegate string Normalizer(string s);
+
+    /// <summary>
+    /// Imposes extra restrictions on a given formula.
+    /// </summary>
+    /// <param name="s"></param>
+    /// <returns></returns>
+    public delegate bool Validator(string s);
 
     /// <summary>
     /// Used to report that a Lookup delegate is unable to determine the value

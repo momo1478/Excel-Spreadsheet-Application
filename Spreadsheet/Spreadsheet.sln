@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DependencyGraph", "Dependen
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DependencyGraphTestCases", "DependencyGraphTestCases\DependencyGraphTestCases.csproj", "{D27E2A55-1E08-40F8-A09B-0A8EEA9A0C4F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtensionTestCases", "ExtensionTestCases\ExtensionTestCases.csproj", "{4D22AA24-7A0C-41DA-9480-9D73C95A4C3B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{D27E2A55-1E08-40F8-A09B-0A8EEA9A0C4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D27E2A55-1E08-40F8-A09B-0A8EEA9A0C4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D27E2A55-1E08-40F8-A09B-0A8EEA9A0C4F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4D22AA24-7A0C-41DA-9480-9D73C95A4C3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D22AA24-7A0C-41DA-9480-9D73C95A4C3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D22AA24-7A0C-41DA-9480-9D73C95A4C3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D22AA24-7A0C-41DA-9480-9D73C95A4C3B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
