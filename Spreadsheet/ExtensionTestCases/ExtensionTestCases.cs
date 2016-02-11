@@ -80,8 +80,8 @@ namespace ExtensionTestCases
         [ExpectedException(typeof(FormulaFormatException))]
         public void ToString2()
         {
-            Formula myFormula = new Formula(null, s => s, s => true);
-            Assert.IsTrue(myFormula.ToString().Equals("7 * 3 / 2"));
+            Formula myFormula = new Formula(null, s => null, s => true);
+            Assert.IsTrue(myFormula.ToString() == null);
         }
 
         /// <summary>

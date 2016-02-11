@@ -195,29 +195,28 @@ namespace Dependencies
                 throw new ArgumentNullException("One of your parameters is null.");
             }
 
-            HashSet<String> dependentHash;                      //null if the dependee doesn't exist.
+            HashSet<String> dependentHash;                            //null if the dependee doesn't exist.
 
-            if (dependees.TryGetValue(s, out dependentHash)) //dependee exists  
+            if (dependees.TryGetValue(s, out dependentHash))          //dependee exists  
             {
-                //int dependentIndex = dependentList.BinarySearch(t); 
-
-                if (dependentHash.Contains(t)) //if dependeeIndex >= 0 than (s,t) exists in dependents
+                                                                      
+                if (dependentHash.Contains(t))                        //if dependeeIndex >= 0 than (s,t) exists in dependents
                 {
                     Debug.WriteLine("Dependency exists already in DG.");
                     return;
                 }
-                else                    //dependeeIndex < 0 than s exists but (s,t) doesn't. ~dependeeIndex is where it should go.
+                else                                                  //dependeeIndex < 0 than s exists but (s,t) doesn't. ~dependeeIndex is where it should go.
                 {
-                    dependentHash.Add(t); //Added in dependents.
-                    AddDependencyInDependents(s, t);          //Added in dependees
-                    count++;                                  //Dependency added.
+                    dependentHash.Add(t);                             //Added in dependents.
+                    AddDependencyInDependents(s, t);                  //Added in dependees
+                    count++;                                          //Dependency added.
                 }
             }
-            else                                             //dependee doesn't exist.
+            else                                                      //dependee doesn't exist.
             {
-                dependees.Add(s, new HashSet<string> { t });  //make a new dictionary entry with s as the dependee and t as first dependent. 
-                AddDependencyInDependents(s, t);              //Add in dependents;
-                count++;                                      //Dependency added.
+                dependees.Add(s, new HashSet<string> { t });          //make a new dictionary entry with s as the dependee and t as first dependent. 
+                AddDependencyInDependents(s, t);                      //Add in dependents;
+                count++;                                              //Dependency added.
             }
 
         }
@@ -234,26 +233,25 @@ namespace Dependencies
                 throw new ArgumentNullException("One of your parameters is null.");
             }
 
-            HashSet<String> dependeeHash;                      //null if the dependent doesn't exist.
+            HashSet<String> dependeeHash;                             //null if the dependent doesn't exist.
 
-            if (dependents.TryGetValue(t, out dependeeHash)) //dependent exists  
+            if (dependents.TryGetValue(t, out dependeeHash))          //dependent exists  
             {
-                //int dependeeIndex = dependeeList.BinarySearch(s);
 
-                if (dependeeHash.Contains(s)) //if dependeeIndex >= 0 than (s,t) exists in dependents
+                if (dependeeHash.Contains(s))                         //if dependeeIndex >= 0 than (s,t) exists in dependents
                 {
-                    //Unreachable code
+                                                                      //Unreachable code
                     Debug.WriteLine("Dependency exists already in DG.");
                     return;
                 }
-                else                    //dependentIndex < 0 than t exists but (s,t) doesn't. ~dependentIndex is where it should go.
+                else                                                  //dependentIndex < 0 than t exists but (s,t) doesn't. ~dependentIndex is where it should go.
                 {
                     dependeeHash.Add(s);
                 }
             }
-            else                                             //dependent doesn't exist.
+            else                                                      //dependent doesn't exist.
             {
-                dependents.Add(t, new HashSet<string> { s });   //make a new dictionary entry with s as the dependent and t as first dependee. 
+                dependents.Add(t, new HashSet<string> { s });         //make a new dictionary entry with s as the dependent and t as first dependee. 
             }
         }
 
@@ -269,25 +267,24 @@ namespace Dependencies
                 throw new ArgumentNullException("One of your parameters is null.");
             }
 
-            HashSet<String> dependentHash;                       //null if the dependee doesn't exist.
+            HashSet<String> dependentHash;                            //null if the dependee doesn't exist.
 
-            if (dependees.TryGetValue(s, out dependentHash)) //dependee exists  
+            if (dependees.TryGetValue(s, out dependentHash))          //dependee exists  
             {
-                //int dependentIndex = dependentList.BinarySearch(t);
 
-                if (dependentHash.Contains(t))                    //if dependeeIndex >= 0 than (s,t) exists in dependents
+                if (dependentHash.Contains(t))                        //if dependeeIndex >= 0 than (s,t) exists in dependents
                 {
-                    dependees[s].Remove(t); //remove at dependeeIndex, the dependee in dependents.
-                    RemoveDependencyInDependents(s, t);     //sync dependees dictionary
-                    count--;                                //Removed a dependency
+                    dependees[s].Remove(t);                           //remove at dependeeIndex, the dependee in dependents.
+                    RemoveDependencyInDependents(s, t);               //sync dependees dictionary
+                    count--;                                          //Removed a dependency
                 }
-                else                    //dependentIndex < 0, then s exists but (s,t) doesn't.
+                else                                                  //dependentIndex < 0, then s exists but (s,t) doesn't.
                 {
                     Debug.WriteLine("(s,t) is not a dependency in DG.");
                     return;
                 }
             }
-            else                                             //dependee doesn't exist.
+            else                                                      //dependee doesn't exist.
             {
                 Debug.WriteLine("(s,t) is not a dependency in DG.");
                 return;
@@ -306,25 +303,24 @@ namespace Dependencies
                 throw new ArgumentNullException("One of your parameters is null.");
             }
 
-            HashSet<String> dependeeHash;                       //null if the dependent doesn't exist.
+            HashSet<String> dependeeHash;                             //null if the dependent doesn't exist.
 
-            if (dependents.TryGetValue(t, out dependeeHash)) //dependent exists  
+            if (dependents.TryGetValue(t, out dependeeHash))          //dependent exists  
             {
-                //int dependeeIndex = dependeeList.BinarySearch(s);
 
-                if (dependeeHash.Contains(s))                     //if dependentIndex >= 0 than (s,t) exists in dependees
+                if (dependeeHash.Contains(s))                         //if dependentIndex >= 0 than (s,t) exists in dependees
                 {
-                    dependents[t].Remove(s);               //remove at dependeeIndex, the dependee in dependents.
+                    dependents[t].Remove(s);                          //remove at dependeeIndex, the dependee in dependents.
                 }
-                else                                         //dependeeIndex < 0 than s exists but (s,t) doesn't.
+                else                                                  //dependeeIndex < 0 than s exists but (s,t) doesn't.
                 {
-                    //Unreachable Code : Here to see remblance to other Remove Dependency.
+                                                                      //Unreachable Code : Here to see remblance to other Remove Dependency.
                     return;
                 }
             }
-            else                                             //dependent doesn't exist.
+            else                                                      //dependent doesn't exist.
             {
-                //Unreachable Code : Here to see remblance to other Remove Dependency.
+                                                                      //Unreachable Code : Here to see remblance to other Remove Dependency.
                 return;
             }
         }
@@ -349,13 +345,13 @@ namespace Dependencies
 
                 for (int i = 0; dependentHash.Count > 0; i++)
                 {
-                    RemoveDependency(s, dependentList[i]); //Iterate and remove dependencies, manages count too.                  
+                    RemoveDependency(s, dependentList[i]);                                //Iterate and remove dependencies, manages count too.                  
                 }
             }
             //Whether or not we removed dependees. Add each dependee from newDependents (the name doesn't make sense)
             List<String> addList = newDependents?.ToList() ?? new List<string>();
 
-            for (int j = 0; j < addList.Count; j++) //Add each dependency. Handles null checks as well and count.
+            for (int j = 0; j < addList.Count; j++)                                       //Add each dependency. Handles null checks as well and count.
             {
                 AddDependency(s, addList[j]);
             }
@@ -381,13 +377,13 @@ namespace Dependencies
 
                 for (int i = 0; dependeeHash.Count > 0; i++)
                 {
-                    RemoveDependency(dependeeList[i], t); //Iterate and remove dependencies, manages count too.                       
+                    RemoveDependency(dependeeList[i], t);                                 //Iterate and remove dependencies, manages count too.                       
                 }
             }
             //Whether or not we removed dependees. Add each dependee from newDependents (the name doesn't make sense)
             List<String> addList = newDependees?.ToList() ?? new List<String>();
 
-            for (int j = 0; j < addList.Count; j++) //Add each dependency. Handles null checks as well and count.
+            for (int j = 0; j < addList.Count; j++)                                        //Add each dependency. Handles null checks as well and count.
             {
                 AddDependency(addList[j], t);
             }

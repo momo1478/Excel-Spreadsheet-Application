@@ -44,11 +44,15 @@ namespace Formulas
         //instance varible to hold the string form of the formula for use in other methods.
         private string stringFormula;
 
-        public Formula(String formula)
+        public Formula(String formula, Normalizer N = null , Validator V = null)
         {
             stringFormula = formula;
-            Normalizer n = new Normalizer(s => s);
-            Validator v = new Validator(s => true);
+
+            if(ReferenceEquals(N , null))
+                N = new Normalizer(s => s);
+            if(ReferenceEquals(V, null))
+                V = new Validator(s => true);
+
 
             if (ReferenceEquals(formula , null))
             {
@@ -116,26 +120,28 @@ namespace Formulas
                 throw new FormulaFormatException("Check your last item!");
             }
 
-        }
-
-        /// <summary>
-        /// This formula constructor cont
-        /// </summary>
-        /// <param name="formula"></param>
-        /// <param name="norm"></param>
-        /// <param name="valid"></param>
-        public Formula(String formula, Normalizer norm, Validator valid)
-        {
-            Formula formulaTest = new Formula(formula); //Run formula into the default constructor, to make sure it's fine.
-
-            stringFormula = norm(formula);              //Normalize before passing into constructor.
-
-            formulaTest = new Formula(stringFormula);         //Run formula into the default constructor, to make sure it's fine.
-
-            if (!valid(stringFormula))                  //Normalized formula is not valid?
+            stringFormula = "";
+            for (int j = 0; j < tokens.Count; j++)
             {
-                throw new FormulaFormatException("Input formula failed the validator! Check your variables.");
+                if (isVar(tokens[j]))
+                {
+                    if (N(tokens[j]) != null && V(N(tokens[j])))
+                    {
+                        tokens[j] = N(tokens[j]);
+                        stringFormula = stringFormula + tokens[j] + " ";
+                    }
+                    else
+                    {
+                        throw new FormulaFormatException("Normalized variable is not valid.");
+                    }
+                }
+                else
+                {
+                    stringFormula = stringFormula + tokens[j] + " ";
+                }
             }
+            stringFormula = stringFormula.Substring(0, stringFormula.Length - 1);
+
         }
 
         /// <summary>
@@ -185,7 +191,7 @@ namespace Formulas
         /// <returns></returns>
         private static bool isVar(string token)
         {
-            if (!char.IsLetter(token[0]))
+            if (token.Length <= 0 || !char.IsLetter(token[0]))
                 return false;
 
             return true;
