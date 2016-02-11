@@ -230,7 +230,8 @@ namespace Formulas
         /// <returns></returns>
         public override string ToString()
         {
-            return stringFormula;
+            string temp = stringFormula;
+            return temp;
         }
 
         /// <summary>

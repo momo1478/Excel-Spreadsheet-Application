@@ -69,8 +69,11 @@ namespace ExtensionTestCases
         [TestMethod]
         public void ToString1()
         {
-            Formula myFormula = new Formula("7 * 3 / 2", s => s, s => true);
+            Formula myFormula = new Formula("7 * 3/2", s => s, s => true);
             Assert.IsTrue(myFormula.ToString().Equals("7 * 3 / 2"));
+            Formula myFormula1 = new Formula(myFormula.ToString(), s => s, s => true);
+            Formula myFormula2 = new Formula(myFormula1.ToString(), s => s, s => true);
+
         }
 
         /// <summary>
