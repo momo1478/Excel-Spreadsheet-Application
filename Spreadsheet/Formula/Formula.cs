@@ -50,6 +50,11 @@ namespace Formulas
             Normalizer n = new Normalizer(s => s);
             Validator v = new Validator(s => true);
 
+            if (ReferenceEquals(formula , null))
+            {
+                throw new FormulaFormatException("Your formula is null!");
+            }
+
             List<String> tokens = GetTokens(formula).ToList<String>();
 
             if (tokens.Count == 0)
@@ -125,7 +130,7 @@ namespace Formulas
 
             stringFormula = norm(formula);              //Normalize before passing into constructor.
 
-            formulaTest = new Formula(formula);         //Run formula into the default constructor, to make sure it's fine.
+            formulaTest = new Formula(stringFormula);         //Run formula into the default constructor, to make sure it's fine.
 
             if (!valid(stringFormula))                  //Normalized formula is not valid?
             {
@@ -203,7 +208,7 @@ namespace Formulas
         public ISet<String> GetVariables()
         {
             List<String> tokens = stringFormula.Split().ToList();
-            ISet<String> vars = (ISet<String>)(new List<String>());
+            ISet<String> vars = new HashSet<String>();
             foreach (var token in tokens)
             {
                 if (isVar(token))

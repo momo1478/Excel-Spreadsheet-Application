@@ -80,7 +80,12 @@ namespace Dependencies
 
         public DependencyGraph(DependencyGraph DG)
         {
-            foreach (KeyValuePair<string, HashSet<String>> dependency in dependees)
+            dependents = new Dictionary<string, HashSet<string>>();
+            dependees = new Dictionary<string, HashSet<string>>();
+
+            count = 0;
+
+            foreach (KeyValuePair<string, HashSet<String>> dependency in DG.dependees)
             {
                 List<String> valueList = dependency.Value.ToList();
 
@@ -387,5 +392,6 @@ namespace Dependencies
                 AddDependency(addList[j], t);
             }
         }
+
     }
 }
