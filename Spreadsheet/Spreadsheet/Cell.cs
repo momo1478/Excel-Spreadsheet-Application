@@ -12,12 +12,12 @@ namespace Spreadsheet
         /// <summary>
         /// Contents of Cell. Can be a string, a double, or a FormulaError.
         /// </summary>
-        object contents;
+        internal object contents;
 
         /// <summary>
         /// Value of Cell. Can be a string, a double, or a FormulaError.
         /// </summary>
-        object value;
+        internal object value;
 
         /// <summary>
         /// Constructs a cell with a given contents, and value.

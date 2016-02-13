@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Formulas;
 using SS;
+using System.Text.RegularExpressions;
 
 namespace Spreadsheet
 {
@@ -33,14 +34,16 @@ namespace Spreadsheet
         /// </summary>
         public override object GetCellContents(string name)
         {
-            if (ReferenceEquals(name, null))
+            if (ReferenceEquals(name, null) && !isValidName(name))
             {
-                throw new InvalidNameException("name is null.");
+                throw new InvalidNameException();
             }
 
             Cell cell;
 
-            cells.TryGetValue(name);
+            cells.TryGetValue(name ,out cell);
+
+            return cell.contents;
         }
 
         public override IEnumerable<string> GetNamesOfAllNonemptyCells()
@@ -75,7 +78,7 @@ namespace Spreadsheet
         /// <returns></returns>
         private bool isValidName(string name)
         {
-
+            return !ReferenceEquals(name, null) && Regex.IsMatch(name, "([A-Za-z]+[0-9]*)");
         }
     }
 }
