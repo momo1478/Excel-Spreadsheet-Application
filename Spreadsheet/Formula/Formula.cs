@@ -46,20 +46,25 @@ namespace Formulas
 
         public Formula(String formula, Normalizer N = null , Validator V = null)
         {
-            stringFormula = formula;
+            stringFormula = formula != null ? formula : "0";
 
-            if(ReferenceEquals(N , null))
+            bool defaultN = false;
+
+            if (ReferenceEquals(N, null))
+            {
+                defaultN = true;
                 N = new Normalizer(s => s);
+            }
             if(ReferenceEquals(V, null))
                 V = new Validator(s => true);
 
 
-            if (ReferenceEquals(formula , null))
+            if (ReferenceEquals(stringFormula , null))
             {
                 throw new FormulaFormatException("Your formula is null!");
             }
 
-            List<String> tokens = GetTokens(formula).ToList<String>();
+            List<String> tokens = GetTokens(stringFormula).ToList<String>();
 
             if (tokens.Count == 0)
             {
@@ -142,6 +147,9 @@ namespace Formulas
             }
             stringFormula = stringFormula.Substring(0, stringFormula.Length - 1);
 
+            Formula normalizedTest;
+            if (!defaultN)
+               normalizedTest = new Formula(stringFormula);
         }
 
         /// <summary>
@@ -213,7 +221,7 @@ namespace Formulas
         /// <returns></returns>
         public ISet<String> GetVariables()
         {
-            List<String> tokens = stringFormula.Split().ToList();
+            List<String> tokens = stringFormula?.Split().ToList() == null ? new List<string>() : stringFormula?.Split().ToList();
             ISet<String> vars = new HashSet<String>();
             foreach (var token in tokens)
             {
@@ -246,9 +254,7 @@ namespace Formulas
 
         public double Evaluate(Lookup lookup)
         {
-            
-
-            List<String> tokens = GetTokens(this.stringFormula).ToList();
+            List<String> tokens = stringFormula != null && stringFormula.Length > 0 ? GetTokens(this.stringFormula).ToList() : new List<string>() { "0" };
 
             Stack<double> values = new Stack<double>();
             Stack<string> operators = new Stack<string>();
