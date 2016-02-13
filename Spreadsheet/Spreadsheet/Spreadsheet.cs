@@ -78,14 +78,13 @@ namespace Spreadsheet
         /// </summary>
         public override ISet<string> SetCellContents(string name, double number)
         {
-            //if (ReferenceEquals(name, null) && !isValidName(name)) //null or invalid check
-            //{
-            //    throw new InvalidNameException();
-            //}
-            //cells[name].contents = number;                         //set cell's contents to number.
+            if (ReferenceEquals(name, null) && !isValidName(name)) //null or invalid check
+            {
+                throw new InvalidNameException();
+            }
+            cells[name].contents = number;                         //set cell's contents to number.
 
-            //HashSet<string> cellDependencies = new HashSet<string>();
-
+            return (ISet<string>)GetDirectDependents(name);
         }
 
         public override ISet<string> SetCellContents(string name, Formula formula)
