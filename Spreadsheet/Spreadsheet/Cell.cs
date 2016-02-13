@@ -22,7 +22,6 @@ namespace Spreadsheet
         /// <summary>
         /// Constructs a cell with a given contents, and value.
         /// </summary>
-        /// <param name="iName"></param>
         /// <param name="iContents"></param>
         /// <param name="iValue"></param>
         internal Cell(object iContents = null, object iValue = null)
