@@ -8,7 +8,7 @@ using SS;
 using Dependencies;
 using System.Text.RegularExpressions;
 
-namespace Spreadsheet
+namespace SS
 {
     public class Spreadsheet : AbstractSpreadsheet
     {
@@ -41,6 +41,8 @@ namespace Spreadsheet
         /// </summary>
         public override object GetCellContents(string name)
         {
+            name = name.ToUpper();                                 //"ignore case"
+
             if (ReferenceEquals(name, null) && !isValidName(name)) //null or invalid check
             {
                 throw new InvalidNameException();
@@ -49,7 +51,7 @@ namespace Spreadsheet
             Cell cell;                                             //will be null if cannot find appropriate cell.
             cells.TryGetValue(name ,out cell);
 
-            return cell.contents;
+            return cell?.contents == null ? 0 : cell.contents;
         }
         
         /// <summary>
@@ -57,9 +59,9 @@ namespace Spreadsheet
         /// </summary>
         public override IEnumerable<string> GetNamesOfAllNonemptyCells()
         {
-            foreach (string cellName in cells.Keys)                     //Enumerate through cell names.
+            foreach (string cellName in cells.Keys)                              //Enumerate through cell names.
             {
-                if ( (string)cells[cellName].contents != string.Empty)  //If a cell's contents contains an empty string, then it is considered empty.
+                if (Convert.ToString(cells[cellName].contents) != string.Empty)  //If a cell's contents contains an empty string, then it is considered empty.
                 {
                     yield return cellName;
                 }
@@ -78,19 +80,65 @@ namespace Spreadsheet
         /// </summary>
         public override ISet<string> SetCellContents(string name, double number)
         {
+            name = name.ToUpper();
             if (ReferenceEquals(name, null) && !isValidName(name)) //null or invalid check
             {
                 throw new InvalidNameException();
             }
-            cells[name].contents = number;                         //set cell's contents to number.
+            Cell cellWithName;                                     //null if name isn't found in spreadsheet.
 
-            return (ISet<string>)GetDirectDependents(name);
+            if (cells.TryGetValue(name, out cellWithName))
+            {
+                cellWithName.contents = number;                    //set cell's contents to number.
+            }
+            else
+            {
+                cells.Add(name, new Cell(number, number));         //or create a cell if it isn't in cells.
+            }
+
+
+            return new HashSet<string>(GetDirectDependents(name));
         }
 
+        /// <summary>
+        /// If formula parameter is null, throws an ArgumentNullException.
+        /// 
+        /// Otherwise, if name is null or invalid, throws an InvalidNameException.
+        /// 
+        /// Otherwise, if changing the contents of the named cell to be the formula would cause a 
+        /// circular dependency, throws a CircularException.
+        /// 
+        /// Otherwise, the contents of the named cell becomes formula.  The method returns a
+        /// Set consisting of name plus the names of all other cells whose value depends,
+        /// directly or indirectly, on the named cell.
+        /// 
+        /// For example, if name is A1, B1 contains A1*2, and C1 contains B1+A1, the
+        /// set {A1, B1, C1} is returned.
+        /// </summary>
         public override ISet<string> SetCellContents(string name, Formula formula)
         {
-            throw new NotImplementedException();
+            if (ReferenceEquals(formula, null))
+                throw new ArgumentNullException("formula is null.");
+
+            if (ReferenceEquals(name, null) || !isValidName(name))
+                throw new InvalidNameException();
+
+            Cell cellWithName;                                     //null if name isn't found in spreadsheet.
+
+            if (cells.TryGetValue(name.ToUpper(), out cellWithName))
+            {
+                cellWithName.contents = formula;                   //set cell's contents to number.
+            }
+            else
+            {
+                cells.Add(name, new Cell(formula));                //or create a cell if it isn't in cells.
+            }
+
+
+            return new HashSet<String>(GetDirectDependents(name));
+
         }
+
 
         public override ISet<string> SetCellContents(string name, string text)
         {
@@ -147,7 +195,7 @@ namespace Spreadsheet
         /// <returns></returns>
         private bool isValidName(string name)
         {
-            return !ReferenceEquals(name, null) && Regex.IsMatch(name, "([A-Za-z]+[0-9]*)");
+            return !ReferenceEquals(name, null) && Regex.IsMatch(name, "([A-Za-z]+[1-9]{0}[0-9]*)");
         }
     }
 }

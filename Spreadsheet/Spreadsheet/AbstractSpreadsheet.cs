@@ -104,7 +104,7 @@ namespace SS
         /// <summary>
         /// If name is null or invalid, throws an InvalidNameException.
         /// 
-        /// Otherwise, the contents of the named cell becomes number.  The method returns a
+        /// Otherwise, the contents of the named cell becomes number. The method returns a
         /// set consisting of name plus the names of all other cells whose value depends, 
         /// directly or indirectly, on the named cell.
         /// 
