@@ -51,7 +51,7 @@ namespace SS
             Cell cell;                                             //will be null if cannot find appropriate cell.
             cells.TryGetValue(name ,out cell);
 
-            return cell?.contents == null ? 0 : cell.contents;
+            return cell?.contents ?? 0; 
         }
         
         /// <summary>
