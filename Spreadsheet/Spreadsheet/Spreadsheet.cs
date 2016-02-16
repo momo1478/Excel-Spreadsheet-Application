@@ -96,8 +96,7 @@ namespace SS
                 cells.Add(name, new Cell(number, number));         //or create a cell if it isn't in cells.
             }
 
-
-            return new HashSet<string>(GetDirectDependents(name));
+            return new HashSet<string>(GetCellsToRecalculate(name));
         }
 
         /// <summary>
@@ -117,6 +116,7 @@ namespace SS
         /// </summary>
         public override ISet<string> SetCellContents(string name, Formula formula)
         {
+            name = name.ToUpper();
             if (ReferenceEquals(formula, null))
                 throw new ArgumentNullException("formula is null.");
 
@@ -125,18 +125,31 @@ namespace SS
 
             Cell cellWithName;                                     //null if name isn't found in spreadsheet.
 
-            if (cells.TryGetValue(name.ToUpper(), out cellWithName))
+            if (cells.TryGetValue(name, out cellWithName))
             {
+                //performs in case the current cell's contents wasn't already a formula.
+                HashSet<String> cellWithNameContents = cellWithName.contents is Formula ? (HashSet<string>)((Formula)cellWithName.contents).GetVariables() : new HashSet<string>();
+
+                foreach (string cellName in cellWithNameContents)  //remove old dependencies
+                {         
+                    dg.RemoveDependency(name, cellName);
+                }
                 cellWithName.contents = formula;                   //set cell's contents to number.
+                foreach (string cellName in formula.GetVariables())//add new dependencies
+                {
+                    dg.AddDependency(name, cellName);
+                }
             }
             else
             {
-                cells.Add(name, new Cell(formula));                //or create a cell if it isn't in cells.
+                cells.Add(name, new Cell(formula));                      //or create a cell if it isn't in cells
+                foreach (string cellName in formula.GetVariables())      //add new dependencies
+                {         
+                      dg.AddDependency(name, cellName);
+                }
             }
-
-
-            return new HashSet<String>(GetDirectDependents(name));
-
+            
+            return new HashSet<string>(GetCellsToRecalculate(name));
         }
 
 
@@ -169,22 +182,9 @@ namespace SS
             if (!isValidName(name))                                             //valid name check
                 throw new InvalidNameException();
 
-            HashSet<string> enumeratedCellNames = new HashSet<string>();        //a hashset to ensure return value has no duplicates.
-
-            foreach (string cellName in cells.Keys)                             //Iterate through cell names.
+            foreach (var dependent in dg.GetDependents(name))
             {
-                if(cells[cellName].contents is Formula)                         //Check to see if the contents of a cell is even a Formula.
-                {
-                    Formula currentFormula = (Formula)cells[cellName].contents; //Cast outside of if because VS is strange.
-
-                    if (currentFormula.ToString().Contains(name))               //Check if formula contains the name.
-                    if (!enumeratedCellNames.Contains(name))                    //Check if we've returned if before.
-                    {
-                            enumeratedCellNames.Add(name);
-                            yield return name;
-                    }
-                }
-                
+                yield return dependent;
             }
         }
 
