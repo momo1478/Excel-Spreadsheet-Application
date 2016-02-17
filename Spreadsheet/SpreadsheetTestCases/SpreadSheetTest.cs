@@ -25,6 +25,41 @@ namespace SpreadsheetTestCases
             Assert.AreEqual((double)sheet.GetCellContents("B2"), 5.5e5);
             Assert.AreEqual((string)sheet.GetCellContents("a5"), default(string));
         }
+        [ExpectedException(typeof(InvalidNameException))]
+        [TestMethod]
+        public void SCCDoublesNull()
+        {
+            AbstractSpreadsheet sheet = new Spreadsheet();
+
+            CollectionAssert.AreEqual(sheet.SetCellContents(null, 2e5).ToList(), new List<string> { "B2" });
+        }
+
+        [ExpectedException(typeof(InvalidNameException))]
+        [TestMethod]
+        public void SCCDoublesInvalid()
+        {
+            AbstractSpreadsheet sheet = new Spreadsheet();
+
+            CollectionAssert.AreEqual(sheet.SetCellContents("10Azaz", 2e5).ToList(), new List<string> { "B1" });
+        }
+
+        [ExpectedException(typeof(InvalidNameException))]
+        [TestMethod]
+        public void SCCTextNull()
+        {
+            AbstractSpreadsheet sheet = new Spreadsheet();
+
+            CollectionAssert.AreEqual(sheet.SetCellContents(null, "").ToList(), new List<string> { "B2" });
+        }
+
+        [ExpectedException(typeof(InvalidNameException))]
+        [TestMethod]
+        public void SCCTextInvalid()
+        {
+            AbstractSpreadsheet sheet = new Spreadsheet();
+
+            CollectionAssert.AreEqual(sheet.SetCellContents("10Azaz", "    ").ToList(), new List<string> { "B1" });
+        }
 
         [TestMethod]
         public void SCCText()
@@ -33,8 +68,9 @@ namespace SpreadsheetTestCases
             CollectionAssert.AreEqual(sheet.SetCellContents("a12", "hello").ToList(), new List<string> { "A12" });
             CollectionAssert.AreEqual(sheet.SetCellContents("Black71", "BrOThaPls").ToList(), new List<string> { "BLACK71" });
             CollectionAssert.AreEqual(sheet.SetCellContents("AzUlE1472", "").ToList(), new List<string> { "AZULE1472" });
+            CollectionAssert.AreEqual(sheet.SetCellContents("a12", "hey!").ToList(), new List<string> { "A12" });
 
-            Assert.AreEqual((string)sheet.GetCellContents("a12"), "hello");
+            Assert.AreEqual((string)sheet.GetCellContents("a12"), "hey!");
             Assert.AreEqual((string)sheet.GetCellContents("Black71"), "BrOThaPls");
             Assert.AreEqual((string)sheet.GetCellContents("AzulE1472"), "");
             try { Assert.AreEqual((string)sheet.GetCellContents("))))"), default(string)); }

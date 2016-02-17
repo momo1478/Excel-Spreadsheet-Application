@@ -80,6 +80,7 @@ namespace SS
         /// </summary>
         public override ISet<string> SetCellContents(string name, double number)
         {
+            //TODO : If CircularException then don't modify Spreadsheet. Double
             name = name?.ToUpper();
             if (ReferenceEquals(name, null) || !isValidName(name)) //null or invalid check
             {
@@ -116,7 +117,7 @@ namespace SS
         /// </summary>
         public override ISet<string> SetCellContents(string name, Formula formula)
         {
-            //TODO : If CircularException then don't modify Spreadsheet.
+            //TODO : If CircularException then don't modify Spreadsheet. Formula
             name = name?.ToUpper();
             if (ReferenceEquals(formula, null))
                 throw new ArgumentNullException("formula is null.");
@@ -168,6 +169,7 @@ namespace SS
         /// </summary>
         public override ISet<string> SetCellContents(string name, string text)
         {
+            //TODO : If CircularException then don't modify Spreadsheet. String
             name = name?.ToUpper();
             if (ReferenceEquals(name, null) || !isValidName(name))//null or invalid check
             {
