@@ -51,7 +51,7 @@ namespace SS
             Cell cell;                                             //will be null if cannot find appropriate cell.
             cells.TryGetValue(name ,out cell);
 
-            return cell?.contents == null ? 0 : cell.contents;
+            return cell?.contents ?? 0; 
         }
         
         /// <summary>
@@ -155,7 +155,23 @@ namespace SS
 
         public override ISet<string> SetCellContents(string name, string text)
         {
-            throw new NotImplementedException();
+            name = name.ToUpper();
+            if (ReferenceEquals(name, null) && !isValidName(name))//null or invalid check
+            {
+                throw new InvalidNameException();
+            }
+            Cell cellWithName;                                    //null if name isn't found in spreadsheet.
+
+            if (cells.TryGetValue(name, out cellWithName))
+            {
+                cellWithName.contents = text;                     //set cell's contents to number.
+            }
+            else
+            {
+                cells.Add(name, new Cell(text, text));            //or create a cell if it isn't in cells.
+            }
+
+            return new HashSet<string>(GetCellsToRecalculate(name));
         }
 
         /// <summary>
@@ -195,7 +211,7 @@ namespace SS
         /// <returns></returns>
         private bool isValidName(string name)
         {
-            return !ReferenceEquals(name, null) && Regex.IsMatch(name, "([A-Za-z]+[1-9]{0}[0-9]*)");
+            return !ReferenceEquals(name, null) && Regex.IsMatch(name, "([A-Za-z]+[1-9]{1}[0-9]*)");
         }
     }
 }
