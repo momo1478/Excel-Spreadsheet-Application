@@ -132,12 +132,12 @@ namespace SS
 
                 foreach (string cellName in cellWithNameContents)  //remove old dependencies
                 {         
-                    dg.RemoveDependency(name, cellName);
+                    dg.RemoveDependency(name, cellName.ToUpper());
                 }
                 cellWithName.contents = formula;                   //set cell's contents to number.
                 foreach (string cellName in formula.GetVariables())//add new dependencies
                 {
-                    dg.AddDependency(name, cellName);
+                    dg.AddDependency(name, cellName.ToUpper());
                 }
             }
             else
@@ -145,7 +145,7 @@ namespace SS
                 cells.Add(name, new Cell(formula));                      //or create a cell if it isn't in cells
                 foreach (string cellName in formula.GetVariables())      //add new dependencies
                 {         
-                      dg.AddDependency(name, cellName);
+                      dg.AddDependency(name, cellName.ToUpper());
                 }
             }
             

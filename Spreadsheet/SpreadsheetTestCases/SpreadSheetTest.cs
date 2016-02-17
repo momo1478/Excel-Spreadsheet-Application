@@ -15,9 +15,9 @@ namespace SpreadsheetTestCases
             AbstractSpreadsheet sheet = new Spreadsheet();
 
             sheet.SetCellContents("a1", 5);
+            sheet.SetCellContents("a2", new Formula("A3 + 5"));
+            sheet.SetCellContents("a3", new Formula("B1 + 5"));
             sheet.SetCellContents("b1", new Formula("A2 + 5"));
-            sheet.SetCellContents("a2", new Formula("B2 + 5"));
-            sheet.SetCellContents("b2", new Formula("A2 + 5"));
 
             sheet.GetNamesOfAllNonemptyCells().ToList();
         }
