@@ -41,9 +41,9 @@ namespace SS
         /// </summary>
         public override object GetCellContents(string name)
         {
-            name = name.ToUpper();                                 //"ignore case"
+            name = name?.ToUpper();                                 //"ignore case"
 
-            if (ReferenceEquals(name, null) && !isValidName(name)) //null or invalid check
+            if (ReferenceEquals(name, null) || !isValidName(name)) //null or invalid check
             {
                 throw new InvalidNameException();
             }
@@ -51,7 +51,7 @@ namespace SS
             Cell cell;                                             //will be null if cannot find appropriate cell.
             cells.TryGetValue(name ,out cell);
 
-            return cell?.contents ?? 0; 
+            return cell?.contents ?? default(string); 
         }
         
         /// <summary>
@@ -80,8 +80,8 @@ namespace SS
         /// </summary>
         public override ISet<string> SetCellContents(string name, double number)
         {
-            name = name.ToUpper();
-            if (ReferenceEquals(name, null) && !isValidName(name)) //null or invalid check
+            name = name?.ToUpper();
+            if (ReferenceEquals(name, null) || !isValidName(name)) //null or invalid check
             {
                 throw new InvalidNameException();
             }
@@ -93,7 +93,7 @@ namespace SS
             }
             else
             {
-                cells.Add(name, new Cell(number, number));         //or create a cell if it isn't in cells.
+                cells.Add(name, new Cell(number));         //or create a cell if it isn't in cells.
             }
 
             return new HashSet<string>(GetCellsToRecalculate(name));
@@ -116,7 +116,8 @@ namespace SS
         /// </summary>
         public override ISet<string> SetCellContents(string name, Formula formula)
         {
-            name = name.ToUpper();
+            //TODO : If CircularException then don't modify Spreadsheet.
+            name = name?.ToUpper();
             if (ReferenceEquals(formula, null))
                 throw new ArgumentNullException("formula is null.");
 
@@ -139,6 +140,7 @@ namespace SS
                 {
                     dg.AddDependency(name, cellName.ToUpper());
                 }
+                GetCellsToRecalculate(name);
             }
             else
             {
@@ -152,11 +154,22 @@ namespace SS
             return new HashSet<string>(GetCellsToRecalculate(name));
         }
 
-
+        /// <summary>
+        /// If text is null, throws an ArgumentNullException.
+        /// 
+        /// Otherwise, if name is null or invalid, throws an InvalidNameException.
+        /// 
+        /// Otherwise, the contents of the named cell becomes text.  The method returns a
+        /// set consisting of name plus the names of all other cells whose value depends, 
+        /// directly or indirectly, on the named cell.
+        /// 
+        /// For example, if name is A1, B1 contains A1*2, and C1 contains B1+A1, the
+        /// set {A1, B1, C1} is returned.
+        /// </summary>
         public override ISet<string> SetCellContents(string name, string text)
         {
-            name = name.ToUpper();
-            if (ReferenceEquals(name, null) && !isValidName(name))//null or invalid check
+            name = name?.ToUpper();
+            if (ReferenceEquals(name, null) || !isValidName(name))//null or invalid check
             {
                 throw new InvalidNameException();
             }
@@ -168,13 +181,13 @@ namespace SS
             }
             else
             {
-                cells.Add(name, new Cell(text, text));            //or create a cell if it isn't in cells.
+                cells.Add(name, new Cell(text));            //or create a cell if it isn't in cells.
             }
 
             return new HashSet<string>(GetCellsToRecalculate(name));
         }
 
-        /// <summary>
+        ///<summary>
         /// If name is null, throws an ArgumentNullException.
         /// 
         /// Otherwise, if name isn't a valid cell name, throws an InvalidNameException.
@@ -211,7 +224,7 @@ namespace SS
         /// <returns></returns>
         private bool isValidName(string name)
         {
-            return !ReferenceEquals(name, null) && Regex.IsMatch(name, "([A-Za-z]+[1-9]{1}[0-9]*)");
+            return !ReferenceEquals(name, null) && Regex.IsMatch(name, "([A-Za-z]+[1-9]{1}[0-9]*)$");
         }
     }
 }
