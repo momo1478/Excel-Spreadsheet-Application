@@ -122,6 +122,121 @@ namespace SpreadsheetTestCases
             sheet.GetCellContents("B4123C");
         }
 
-        
+        [TestMethod]
+        public void SCCFormula()
+        {
+            AbstractSpreadsheet sheet = new Spreadsheet();
+
+            CollectionAssert.AreEqual(sheet.SetCellContents("a1", new Formula("5 + 10 * 4 / (2/2)")).ToList(), new List<string> { "A1" });
+            CollectionAssert.AreEqual(sheet.SetCellContents("b1", new Formula("a1 + 4*3")).ToList(), new List<string> { "B1" , "A1" });
+            CollectionAssert.AreEqual(sheet.SetCellContents("cARSON1", new Formula("B1 + b1")).ToList(), new List<string> { "CARSON1" , "B1", "A1" });
+            CollectionAssert.AreEqual(sheet.SetCellContents("d1", new Formula("cARSON1/3")).ToList(), new List<string> { "D1", "CARSON1" , "B1" , "A1" });
+            CollectionAssert.AreEqual(sheet.SetCellContents("e1", 0).ToList(), new List<string> { "E1" });
+            CollectionAssert.AreEqual(sheet.SetCellContents("e1", new Formula("5 + 10*70 * 4 / (2/2)")).ToList(), new List<string> { "E1" });
+
+            Assert.AreEqual(sheet.GetCellContents("A1"), new Formula("5 +10 *4 /(2 / 2)"));
+            Assert.AreEqual(sheet.GetCellContents("b1"), new Formula("a1+4*3"));
+            Assert.AreEqual(sheet.GetCellContents("CaRsOn1").ToString(), new Formula("b1+B1").ToString() , true);
+            Assert.AreEqual(sheet.GetCellContents("d1"), new Formula("cARSON1/3"));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(CircularException))]
+        public void SCCFormulaCircular()
+        {
+            AbstractSpreadsheet sheet = new Spreadsheet();
+
+            CollectionAssert.AreEqual(sheet.SetCellContents("a1", new Formula("5 + 10 * 4 / (2/2)")).ToList(), new List<string> { "A1" });
+            CollectionAssert.AreEqual(sheet.SetCellContents("b1", new Formula("a1 + 4*3")).ToList(), new List<string> { "B1", "A1" });
+            CollectionAssert.AreEqual(sheet.SetCellContents("cARSON1", new Formula("B1 + b1")).ToList(), new List<string> { "CARSON1", "B1", "A1" });
+            CollectionAssert.AreEqual(sheet.SetCellContents("d1", new Formula("e1/3")).ToList(), new List<string> { "D1" , "E1" });
+            CollectionAssert.AreEqual(sheet.SetCellContents("e1", new Formula("(g1) * 5")).ToList(), new List<string> { "E1", "G1" });
+            CollectionAssert.AreEqual(sheet.SetCellContents("e1", new Formula("(d1) * 5")).ToList(), new List<string> { "E1", "D1" });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidNameException))]
+        public void SCCFormulaNullName()
+        {
+            AbstractSpreadsheet sheet = new Spreadsheet();
+
+            CollectionAssert.AreEqual(sheet.SetCellContents("a1", new Formula("5 + 10 * 4 / (2/2)")).ToList(), new List<string> { "A1" });
+            CollectionAssert.AreEqual(sheet.SetCellContents("b1", new Formula("a1 + 4*5*a1")).ToList(), new List<string> { "B1", "A1" });
+            CollectionAssert.AreEqual(sheet.SetCellContents("bRo1023", new Formula("B1 / b1")).ToList(), new List<string> { "BRO1023", "B1", "A1" });
+            CollectionAssert.AreEqual(sheet.SetCellContents(null, new Formula("a1 + 4*5*a1")).ToList(), new List<string> { "B1", "A1" });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidNameException))]
+        public void SCCFormulaInvalidName1()
+        {
+            AbstractSpreadsheet sheet = new Spreadsheet();
+
+            CollectionAssert.AreEqual(sheet.SetCellContents("a0", new Formula("a1 + 4*5*a1")).ToList(), new List<string> { "A0", "A1" });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidNameException))]
+        public void SCCFormulaInvalidName2()
+        {
+            AbstractSpreadsheet sheet = new Spreadsheet();
+
+            CollectionAssert.AreEqual(sheet.SetCellContents("a10b12", new Formula("a1 + 4*5*a1")).ToList(), new List<string> { "A10B12", "A1" });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidNameException))]
+        public void SCCFormulaInvalidName3()
+        {
+            AbstractSpreadsheet sheet = new Spreadsheet();
+
+            CollectionAssert.AreEqual(sheet.SetCellContents("abDDDf01232", new Formula("a1 + 4*5*a1")).ToList(), new List<string> { "ABDDDF01232", "A1" });
+        }
+
+        [TestMethod]
+        public void SCCFormulaZeroArg()
+        {
+            AbstractSpreadsheet sheet = new Spreadsheet();
+
+            CollectionAssert.AreEqual(sheet.SetCellContents("abDDDf1232", new Formula()).ToList(), new List<string> { "ABDDDF1232" });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(FormulaFormatException))]
+        public void SCCFormulaEmptyArg()
+        {
+            AbstractSpreadsheet sheet = new Spreadsheet();
+
+            CollectionAssert.AreEqual(sheet.SetCellContents("abDDDf1232", new Formula("")).ToList(), new List<string> { "ABDDDF1232" });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(FormulaFormatException))]
+        public void SCCFormulaSpaceArg()
+        {
+            AbstractSpreadsheet sheet = new Spreadsheet();
+
+            CollectionAssert.AreEqual(sheet.SetCellContents("abDDDf1232", new Formula("   ")).ToList(), new List<string> { "abDDDf1232" });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(CircularException))]
+        public void SCCFormulaCircularNoSet()
+        {
+            AbstractSpreadsheet sheet = new Spreadsheet();
+
+            CollectionAssert.AreEqual(sheet.SetCellContents("f1", new Formula("(g1) * 5e5")).ToList(), new List<string> { "F1", "G1" });
+            CollectionAssert.AreEqual(sheet.SetCellContents("g1", new Formula("f1 * 2.4/3")).ToList(), new List<string> { "G1", "F1" });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(CircularException))]
+        public void SCCFormulaSelfCircular()
+        {
+            AbstractSpreadsheet sheet = new Spreadsheet();
+
+            CollectionAssert.AreEqual(sheet.SetCellContents("a1", new Formula("5 + 10 * 4 / (a1/2)")).ToList(), new List<string> { "A1" });
+        }
+
     }
 }

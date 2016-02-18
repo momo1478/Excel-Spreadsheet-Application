@@ -80,7 +80,6 @@ namespace SS
         /// </summary>
         public override ISet<string> SetCellContents(string name, double number)
         {
-            //TODO : If CircularException then don't modify Spreadsheet. Double
             name = name?.ToUpper();
             if (ReferenceEquals(name, null) || !isValidName(name)) //null or invalid check
             {
@@ -117,43 +116,70 @@ namespace SS
         /// </summary>
         public override ISet<string> SetCellContents(string name, Formula formula)
         {
-            //TODO : If CircularException then don't modify Spreadsheet. Formula
             name = name?.ToUpper();
-            if (ReferenceEquals(formula, null))
-                throw new ArgumentNullException("formula is null.");
 
-            if (ReferenceEquals(name, null) || !isValidName(name))
+            if (!isValidName(name))
                 throw new InvalidNameException();
 
             Cell cellWithName;                                     //null if name isn't found in spreadsheet.
 
+            DependencyGraph dgBackup = this.dg;                    //save the dependency graph in case the new Formula causes a CircularException.
+
             if (cells.TryGetValue(name, out cellWithName))
             {
                 //performs in case the current cell's contents wasn't already a formula.
-                HashSet<String> cellWithNameContents = cellWithName.contents is Formula ? (HashSet<string>)((Formula)cellWithName.contents).GetVariables() : new HashSet<string>();
-
-                foreach (string cellName in cellWithNameContents)  //remove old dependencies
+                HashSet<String> cellWithNameVariables = cellWithName.contents is Formula ? (HashSet<string>)((Formula)cellWithName.contents).GetVariables() : new HashSet<string>();
+                foreach (string oldCellNames in cellWithNameVariables)  //remove old cell dependencies
                 {         
-                    dg.RemoveDependency(name, cellName.ToUpper());
+                    dg.RemoveDependency(name, oldCellNames.ToUpper());
                 }
-                cellWithName.contents = formula;                   //set cell's contents to number.
-                foreach (string cellName in formula.GetVariables())//add new dependencies
+                cellWithName.contents = formula;                       //set cell's contents to number.
+                foreach (string newCellNames in formula.GetVariables())//add new cell dependencies
                 {
-                    dg.AddDependency(name, cellName.ToUpper());
+                    dg.AddDependency(name, newCellNames.ToUpper());
                 }
-                GetCellsToRecalculate(name);
+
+                try                                 //Test for CircularException.
+                {
+                    GetCellsToRecalculate(name);
+                }
+                catch (CircularException)           //If so replace new contents with the old one, restore old DG, and throw CircularException.
+                {
+                    cells[name].contents = cellWithName.contents;
+                    this.dg = new DependencyGraph(dgBackup);
+                    throw new CircularException();
+                }
             }
             else
             {
-                cells.Add(name, new Cell(formula));                      //or create a cell if it isn't in cells
-                foreach (string cellName in formula.GetVariables())      //add new dependencies
+                cellWithName = new Cell(formula);                        //assign for helper method.
+
+                cells.Add(name, cellWithName);                           //or create a cell if it isn't in cells
+                foreach (string cellName in formula.GetVariables())      //add new cell dependencies
                 {         
                       dg.AddDependency(name, cellName.ToUpper());
                 }
+
+                try                                 //Test for CircularException.
+                {
+                    GetCellsToRecalculate(name);
+                }
+                catch (CircularException)           //If so remove newly created cell, restore old DG, and throw CircularException.
+                {
+                    cells.Remove(name);
+                    this.dg = new DependencyGraph(dgBackup);
+                    throw new CircularException();
+                }        
             }
-            
+
             return new HashSet<string>(GetCellsToRecalculate(name));
         }
+
+        /// <summary>
+        /// Helps SetCellContents(string name, Formula formula) determine if there is a circular dependency.
+        /// If the new replacement cell causes a circular dependency then replaces the new cell with it's oldCellName
+        /// and Dependencies.
+        /// </summary>
 
         /// <summary>
         /// If text is null, throws an ArgumentNullException.
@@ -169,9 +195,8 @@ namespace SS
         /// </summary>
         public override ISet<string> SetCellContents(string name, string text)
         {
-            //TODO : If CircularException then don't modify Spreadsheet. String
             name = name?.ToUpper();
-            if (ReferenceEquals(name, null) || !isValidName(name))//null or invalid check
+            if (ReferenceEquals(name, null) || !isValidName(name)) //null or invalid check
             {
                 throw new InvalidNameException();
             }
@@ -226,7 +251,8 @@ namespace SS
         /// <returns></returns>
         private bool isValidName(string name)
         {
-            return !ReferenceEquals(name, null) && Regex.IsMatch(name, "([A-Za-z]+[1-9]{1}[0-9]*)$");
+            return !ReferenceEquals(name , null) && Regex.Matches(name, "([A-Za-z]+[1-9]{1}[0-9]*)$").Count == 1 && Regex.Matches(name, "([A-Za-z]+[1-9]{1}[0-9]*)$")[0].Value.Equals(name);
+            
         }
     }
 }
