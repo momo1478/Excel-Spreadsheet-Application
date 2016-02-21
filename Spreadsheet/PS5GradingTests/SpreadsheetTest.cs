@@ -10,7 +10,7 @@ namespace GradingTests
     /// These are grading tests for PS5
     ///</summary>
     [TestClass()]
-    public class SpreadsheetTest
+    public class SpreadsheetTest : Spreadsheet
     {
         /// <summary>
         /// Used to make assertions about set equality.  Everything is converted first to

@@ -93,7 +93,7 @@ namespace SS
         /// For example, if name is A1, B1 contains A1*2, and C1 contains B1+A1, the
         /// set {A1, B1, C1} is returned.
         /// </summary>
-        public override ISet<string> SetCellContents(string name, double number)
+        protected override ISet<string> SetCellContents(string name, double number)
         {
             name = name?.ToUpper();
             if (ReferenceEquals(name, null) || !isValidName(name)) //null or invalid check
@@ -129,7 +129,7 @@ namespace SS
         /// For example, if name is A1, B1 contains A1*2, and C1 contains B1+A1, the
         /// set {A1, B1, C1} is returned.
         /// </summary>
-        public override ISet<string> SetCellContents(string name, Formula formula)
+        protected override ISet<string> SetCellContents(string name, Formula formula)
         {
             name = name?.ToUpper();
 
@@ -214,7 +214,7 @@ namespace SS
         /// For example, if name is A1, B1 contains A1*2, and C1 contains B1+A1, the
         /// set {A1, B1, C1} is returned.
         /// </summary>
-        public override ISet<string> SetCellContents(string name, string text)
+        protected override ISet<string> SetCellContents(string name, string text)
         {
             name = name?.ToUpper();
             if (ReferenceEquals(text, null))
