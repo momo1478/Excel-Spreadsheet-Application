@@ -25,26 +25,74 @@ namespace SS
         /// </summary>
         DependencyGraph dg;
 
+        /// <summary>
+        /// isValid Regex for the current 
+        /// </summary>
+        Regex isValid;
+
+        /// <summary>
+        /// Determines if the spreadsheethas been modified since it was created or saved.
+        /// Turns False : on created or save.
+        /// Turns True : on modification.
+        /// </summary>
+        bool hasChanged;
+
+        //TODO: implement hasChanged everywhere.
+        /// <summary>
+        /// True if this spreadsheet has been modified since it was created or saved
+        /// (whichever happened most recently); false otherwise.
+        /// </summary>
         public override bool Changed
         {
             get
             {
-                throw new NotImplementedException();
+                return hasChanged;
             }
 
             protected set
             {
-                throw new NotImplementedException();
+                hasChanged = value;
             }
         }
 
         /// <summary>
-        /// Contructs an empty spreadsheet, with an empty dependency graph.
+        /// Creates an empty Spreadsheet whose IsValid regular expression accepts every string.
         /// </summary>
         public Spreadsheet()
         {
             cells = new Dictionary<string, Cell>();
             dg = new DependencyGraph();
+
+            hasChanged = false;
+
+            this.isValid = new Regex(".*?");
+        }
+
+        /// Creates an empty Spreadsheet whose IsValid regular expression is provided as the parameter
+        public Spreadsheet(Regex isValid)
+        {
+            cells = new Dictionary<string, Cell>();
+            dg = new DependencyGraph();
+
+            hasChanged = false;
+
+            this.isValid = isValid;
+        }
+
+        //TODO : Spreadsheet(TextReader source)
+        /// <summary>
+        /// Creates a Spreadsheet that is a duplicate of the spreadsheet saved in source.
+        ///See the AbstractSpreadsheet.Save method and Spreadsheet.xsd for the file format
+        ///specification.  If there's a problem reading source, throws an IOException
+        ///If the contents of source are not consistent with the schema in Spreadsheet.xsd,
+        ///throws a SpreadsheetReadException.If there is an invalid cell name, or a
+        ///duplicate cell name, or an invalid formula in the source, throws a SpreadsheetReadException.
+        ///If there's a Formula that causes a circular dependency, throws a SpreadsheetReadException. 
+        /// </summary>
+        /// <param name="source"></param>
+        public Spreadsheet(TextReader source)
+        {
+            
         }
 
         /// <summary>
@@ -110,7 +158,8 @@ namespace SS
             {
                 cells.Add(name, new Cell(number));                 //or create a cell if it isn't in cells.
             }
-           
+
+            hasChanged = true;
             return new HashSet<string>(GetCellsToRecalculate(new HashSet<String>(GetDirectDependents(name)))) { name };
         }
 
@@ -163,6 +212,7 @@ namespace SS
                 try                                 //Test for CircularException.
                 {
                     GetCellsToRecalculate(name);
+                    hasChanged = true;
                 }
                 catch (CircularException)           //If so replace new contents with the old one, restore old DG, and throw CircularException.
                 {
@@ -184,6 +234,7 @@ namespace SS
                 try                                 //Test for CircularException.
                 {
                     GetCellsToRecalculate(name);
+                    hasChanged = true;
                 }
                 catch (CircularException)           //If so remove newly created cell, restore old DG, and throw CircularException.
                 {
@@ -237,6 +288,7 @@ namespace SS
                 cells.Add(name, new Cell(text));            //or create a cell if it isn't in cells.
             }
 
+            hasChanged = true;
             return new HashSet<string>(GetCellsToRecalculate(new HashSet<String>(GetDirectDependents(name)))) { name };
         }
 
@@ -270,6 +322,7 @@ namespace SS
             }
         }
 
+        //HACK : isValid.IsMatch() could need fixing.
         /// <summary>
         /// Determines if a given string is a valid Cell name.
         /// </summary>
@@ -277,22 +330,82 @@ namespace SS
         /// <returns></returns>
         private bool isValidName(string name)
         {
-            return !ReferenceEquals(name , null) && Regex.Matches(name, "([A-Za-z]+[1-9]{1}[0-9]*)$").Count == 1 && Regex.Matches(name, "([A-Za-z]+[1-9]{1}[0-9]*)$")[0].Value.Equals(name); 
+            return !ReferenceEquals(name , null) && Regex.Matches(name, "([A-Za-z]+[1-9]{1}[0-9]*)$").Count == 1
+                   && Regex.Matches(name, "([A-Za-z]+[1-9]{1}[0-9]*)$")[0].Value.Equals(name)
+                   && isValid.IsMatch(name); 
         }
 
+        //TODO: Save(TextWriter dest)
         public override void Save(TextWriter dest)
         {
+            hasChanged = false;
             throw new NotImplementedException();
         }
 
+        //TODO: GetCellValue(string name)
         public override object GetCellValue(string name)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// If content is null, throws an ArgumentNullException.
+        ///
+        /// Otherwise, if name is null or invalid, throws an InvalidNameException.
+        ///
+        /// Otherwise, if content parses as a double, the contents of the named
+        /// cell becomes that double.
+        ///
+        /// Otherwise, if content begins with the character '=', an attempt is made
+        /// to parse the remainder of content into a Formula f using the Formula
+        /// constructor with s => s.ToUpper() as the normalizer and a validator that
+        /// checks that s is a valid cell name as defined in the AbstractSpreadsheet
+        /// class comment.  There are then three possibilities:
+        ///
+        ///   (1) If the remainder of content cannot be parsed into a Formula, a
+        ///       Formulas.FormulaFormatException is thrown.
+        ///
+        ///   (2) Otherwise, if changing the contents of the named cell to be f
+        ///       would cause a circular dependency, a CircularException is thrown.
+        ///
+        ///   (3) Otherwise, the contents of the named cell becomes f.
+        ///
+        /// Otherwise, the contents of the named cell becomes content.
+        ///
+        /// If an exception is not thrown, the method returns a set consisting of
+        /// name plus the names of all other cells whose value depends, directly
+        /// or indirectly, on the named cell.
+        ///
+        /// For example, if name is A1, B1 contains A1*2, and C1 contains B1+A1, the
+        /// set {A1, B1, C1} is returned.
+        /// </summary>
         public override ISet<string> SetContentsOfCell(string name, string content)
         {
-            throw new NotImplementedException();
+            if (content == null)
+            {
+                throw new ArgumentNullException();
+            }
+            if (name == null || !isValidName(name))
+            {
+                throw new InvalidNameException();
+            }
+
+            double doubleContent;
+            if (Double.TryParse(content, out doubleContent)) //Set contents to a double
+            {
+                return SetCellContents(name, doubleContent);
+            }
+
+            else if (content.StartsWith("="))                //Set contents to a formula.
+            {
+                Formula formulaContent = new Formula(content, s => s.ToUpper(), s => isValidName(s) == true);
+                return SetCellContents(name, formulaContent);
+            }
+
+            else                                             //Set contents to the given string.
+            {
+                return SetCellContents(name, content);
+            }
         }
     }
 }
