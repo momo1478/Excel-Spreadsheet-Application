@@ -7,6 +7,7 @@ using Formulas;
 using SS;
 using Dependencies;
 using System.Text.RegularExpressions;
+using System.IO;
 
 namespace SS
 {
@@ -23,6 +24,19 @@ namespace SS
         /// Setup a new dependency graph for variable lookup and circular dependency checks. 
         /// </summary>
         DependencyGraph dg;
+
+        public override bool Changed
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+
+            protected set
+            {
+                throw new NotImplementedException();
+            }
+        }
 
         /// <summary>
         /// Contructs an empty spreadsheet, with an empty dependency graph.
@@ -51,7 +65,8 @@ namespace SS
             Cell cell;                                             //will be null if cannot find appropriate cell.
             cells.TryGetValue(name ,out cell);
 
-            return cell?.contents ?? default(string); 
+            object obj = (cell?.contents) ?? "";
+            return obj;
         }
         
         /// <summary>
@@ -93,10 +108,10 @@ namespace SS
             }
             else
             {
-                cells.Add(name, new Cell(number));         //or create a cell if it isn't in cells.
+                cells.Add(name, new Cell(number));                 //or create a cell if it isn't in cells.
             }
-
-            return new HashSet<string>(GetCellsToRecalculate(name));
+           
+            return new HashSet<string>(GetCellsToRecalculate(new HashSet<String>(GetDirectDependents(name)))) { name };
         }
 
         /// <summary>
@@ -117,6 +132,9 @@ namespace SS
         public override ISet<string> SetCellContents(string name, Formula formula)
         {
             name = name?.ToUpper();
+
+            if (ReferenceEquals(formula, null))
+                throw new ArgumentNullException();
 
             if (!isValidName(name))
                 throw new InvalidNameException();
@@ -172,7 +190,7 @@ namespace SS
                 }        
             }
 
-            return new HashSet<string>(GetCellsToRecalculate(name));
+            return new HashSet<string>(GetCellsToRecalculate(new HashSet<String>(GetDirectDependents(name)))) { name }; ;
         }
 
         /// <summary>
@@ -196,6 +214,11 @@ namespace SS
         public override ISet<string> SetCellContents(string name, string text)
         {
             name = name?.ToUpper();
+            if (ReferenceEquals(text, null))
+            {
+                throw new ArgumentNullException();
+            }
+
             if (ReferenceEquals(name, null) || !isValidName(name)) //null or invalid check
             {
                 throw new InvalidNameException();
@@ -211,7 +234,7 @@ namespace SS
                 cells.Add(name, new Cell(text));            //or create a cell if it isn't in cells.
             }
 
-            return new HashSet<string>(GetCellsToRecalculate(name));
+            return new HashSet<string>(GetCellsToRecalculate(new HashSet<String>(GetDirectDependents(name)))) { name };
         }
 
         ///<summary>
@@ -238,9 +261,9 @@ namespace SS
             if (!isValidName(name))                                             //valid name check
                 throw new InvalidNameException();
 
-            foreach (var dependent in dg.GetDependents(name))
+            foreach (var dependee in dg.GetDependees(name))
             {
-                yield return dependent;
+                yield return dependee;
             }
         }
 
@@ -251,8 +274,22 @@ namespace SS
         /// <returns></returns>
         private bool isValidName(string name)
         {
-            return !ReferenceEquals(name , null) && Regex.Matches(name, "([A-Za-z]+[1-9]{1}[0-9]*)$").Count == 1 && Regex.Matches(name, "([A-Za-z]+[1-9]{1}[0-9]*)$")[0].Value.Equals(name);
-            
+            return !ReferenceEquals(name , null) && Regex.Matches(name, "([A-Za-z]+[1-9]{1}[0-9]*)$").Count == 1 && Regex.Matches(name, "([A-Za-z]+[1-9]{1}[0-9]*)$")[0].Value.Equals(name); 
+        }
+
+        public override void Save(TextWriter dest)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override object GetCellValue(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override ISet<string> SetContentsOfCell(string name, string content)
+        {
+            throw new NotImplementedException();
         }
     }
 }
