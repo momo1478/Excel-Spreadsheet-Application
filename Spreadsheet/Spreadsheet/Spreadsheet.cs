@@ -140,6 +140,7 @@ namespace SS
                 throw new InvalidNameException();
 
             Cell cellWithName;                                     //null if name isn't found in spreadsheet.
+            
 
             DependencyGraph dgBackup = this.dg;                    //save the dependency graph in case the new Formula causes a CircularException.
 
@@ -147,6 +148,8 @@ namespace SS
             {
                 //performs in case the current cell's contents wasn't already a formula.
                 HashSet<String> cellWithNameVariables = cellWithName.contents is Formula ? (HashSet<string>)((Formula)cellWithName.contents).GetVariables() : new HashSet<string>();
+                object oldContents = cellWithName.contents;             //save old contents in case of circular exception.
+
                 foreach (string oldCellNames in cellWithNameVariables)  //remove old cell dependencies
                 {         
                     dg.RemoveDependency(name, oldCellNames.ToUpper());
@@ -163,7 +166,7 @@ namespace SS
                 }
                 catch (CircularException)           //If so replace new contents with the old one, restore old DG, and throw CircularException.
                 {
-                    cells[name].contents = cellWithName.contents;
+                    cells[name].contents = oldContents;
                     this.dg = new DependencyGraph(dgBackup);
                     throw new CircularException();
                 }
