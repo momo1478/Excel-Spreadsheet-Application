@@ -160,7 +160,7 @@ namespace SS
             }
 
             hasChanged = true;
-            return new HashSet<string>(GetCellsToRecalculate(new HashSet<String>(GetDirectDependents(name)))) { name };
+            return new HashSet<string>(GetCellsToRecalculate(name));
         }
 
         /// <summary>
@@ -244,7 +244,7 @@ namespace SS
                 }        
             }
 
-            return new HashSet<string>(GetCellsToRecalculate(new HashSet<String>(GetDirectDependents(name)))) { name }; ;
+            return new HashSet<string>(GetCellsToRecalculate(name));
         }
 
         /// <summary>
@@ -289,7 +289,7 @@ namespace SS
             }
 
             hasChanged = true;
-            return new HashSet<string>(GetCellsToRecalculate(new HashSet<String>(GetDirectDependents(name)))) { name };
+            return new HashSet<string>(GetCellsToRecalculate(name));
         }
 
         ///<summary>
