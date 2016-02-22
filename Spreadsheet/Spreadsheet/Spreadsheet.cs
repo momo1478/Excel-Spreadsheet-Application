@@ -153,10 +153,27 @@ namespace SS
             if (cells.TryGetValue(name, out cellWithName))
             {
                 cellWithName.contents = number;                    //set cell's contents to number.
+                cellWithName.value = number;
             }
             else
             {
-                cells.Add(name, new Cell(number));                 //or create a cell if it isn't in cells.
+                cells.Add(name, new Cell(number, number));                 //or create a cell if it isn't in cells.
+            }
+
+            foreach (string cellName in GetCellsToRecalculate(name))
+            {
+                if (cells[cellName].contents is Formula)
+                {
+                    try
+                    {
+                        cells[cellName].value = ((Formula)cells[cellName].contents).Evaluate(lookup);
+                    }
+                    catch (UndefinedVariableException)
+                    {
+                        cells[cellName].value = new FormulaError();
+                    }
+
+                }
             }
 
             hasChanged = true;
@@ -244,7 +261,36 @@ namespace SS
                 }        
             }
 
+            foreach (string cellName in GetCellsToRecalculate(name))
+            {
+                if (cells[cellName].contents is Formula)
+                {
+                    try
+                    {
+                        cells[cellName].value = ((Formula)cells[cellName].contents).Evaluate(lookup);
+                    }
+                    catch(UndefinedVariableException)
+                    {
+                        cells[cellName].value = new FormulaError();
+                    }
+                    
+                }
+            }
+
+            hasChanged = true;
             return new HashSet<string>(GetCellsToRecalculate(name));
+        }
+
+        private double lookup(string variable)
+        {
+            if (cells[variable].value is double)
+            {
+                return (double)cells[variable].value;
+            }
+            else
+            {
+                throw new UndefinedVariableException(variable + "is undefined or is not a double.");
+            }
         }
 
         /// <summary>
@@ -282,10 +328,27 @@ namespace SS
             if (cells.TryGetValue(name, out cellWithName))
             {
                 cellWithName.contents = text;                     //set cell's contents to number.
+                cellWithName.value = text;
             }
             else
             {
-                cells.Add(name, new Cell(text));            //or create a cell if it isn't in cells.
+                cells.Add(name, new Cell(text,text));            //or create a cell if it isn't in cells.
+            }
+
+            foreach (string cellName in GetCellsToRecalculate(name))
+            {
+                if (cells[cellName].contents is Formula)
+                {
+                    try
+                    {
+                        cells[cellName].value = ((Formula)cells[cellName].contents).Evaluate(lookup);
+                    }
+                    catch (UndefinedVariableException)
+                    {
+                        cells[cellName].value = new FormulaError();
+                    }
+
+                }
             }
 
             hasChanged = true;
@@ -336,6 +399,25 @@ namespace SS
         }
 
         //TODO: Save(TextWriter dest)
+        /// <summary>
+        /// Writes the contents of this spreadsheet to dest using an XML format.
+        /// The XML elements should be structured as follows:
+        ///
+        /// <spreadsheet IsValid="IsValid regex goes here">
+        ///   <cell name="cell name goes here" contents="cell contents go here"></cell>
+        ///   <cell name="cell name goes here" contents="cell contents go here"></cell>
+        ///   <cell name="cell name goes here" contents="cell contents go here"></cell>
+        /// </spreadsheet>
+        ///
+        /// The value of the isvalid attribute should be IsValid.ToString()
+        /// 
+        /// There should be one cell element for each non-empty cell in the spreadsheet.
+        /// If the cell contains a string, the string (without surrounding double quotes) should be written as the contents.
+        /// If the cell contains a double d, d.ToString() should be written as the contents.
+        /// If the cell contains a Formula f, f.ToString() with "=" prepended should be written as the contents.
+        ///
+        /// If there are any problems writing to dest, the method should throw an IOException.
+        /// </summary>
         public override void Save(TextWriter dest)
         {
             hasChanged = false;
@@ -343,9 +425,19 @@ namespace SS
         }
 
         //TODO: GetCellValue(string name)
+        /// <summary>
+        /// If name is null or invalid, throws an InvalidNameException.
+        ///
+        /// Otherwise, returns the value (as opposed to the contents) of the named cell.  The return
+        /// value should be either a string, a double, or a FormulaError.
+        /// </summary>
         public override object GetCellValue(string name)
         {
-            throw new NotImplementedException();
+            if (name == null || !isValidName(name))
+            {
+                throw new InvalidNameException();
+            }
+            return cells[name].value;
         }
 
         /// <summary>
@@ -398,7 +490,7 @@ namespace SS
 
             else if (content.StartsWith("="))                //Set contents to a formula.
             {
-                Formula formulaContent = new Formula(content, s => s.ToUpper(), s => isValidName(s) == true);
+                Formula formulaContent = new Formula(content.Substring(1), s => s.ToUpper(), s => isValidName(s) == true);
                 return SetCellContents(name, formulaContent);
             }
 
