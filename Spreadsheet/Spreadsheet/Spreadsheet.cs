@@ -8,6 +8,8 @@ using SS;
 using Dependencies;
 using System.Text.RegularExpressions;
 using System.IO;
+using System.Xml;
+using System.Xml.Schema;
 
 namespace SS
 {
@@ -26,7 +28,7 @@ namespace SS
         DependencyGraph dg;
 
         /// <summary>
-        /// isValid Regex for the current 
+        /// isValid Regex for the current Spreadsheet instance
         /// </summary>
         Regex isValid;
 
@@ -37,6 +39,7 @@ namespace SS
         /// </summary>
         bool hasChanged;
 
+        //Added PS6
         //TODO: implement hasChanged everywhere.
         /// <summary>
         /// True if this spreadsheet has been modified since it was created or saved
@@ -68,17 +71,19 @@ namespace SS
             this.isValid = new Regex(".*?");
         }
 
+        //Added in PS6
         /// Creates an empty Spreadsheet whose IsValid regular expression is provided as the parameter
-        public Spreadsheet(Regex isValid)
+        public Spreadsheet(Regex IsValid)
         {
             cells = new Dictionary<string, Cell>();
             dg = new DependencyGraph();
 
             hasChanged = false;
 
-            this.isValid = isValid;
+            this.isValid = IsValid;
         }
 
+        //Added in PS6
         //TODO : Spreadsheet(TextReader source)
         /// <summary>
         /// Creates a Spreadsheet that is a duplicate of the spreadsheet saved in source.
@@ -92,7 +97,49 @@ namespace SS
         /// <param name="source"></param>
         public Spreadsheet(TextReader source)
         {
-            
+            // Create the XmlSchemaSet class.  Anything with the namespace "urn:states-schema" will
+            // be validated against states3.xsd.
+            XmlSchemaSet sc = new XmlSchemaSet();
+
+            // NOTE: To read states3.xsd this way, it must be stored in the same folder with the
+            // executable.  To arrange this, I set the "Copy to Output Directory" propery of states3.xsd to
+            // "Copy If Newer", which will copy states3.xsd as part of each build (if it has changed
+            // since the last build).
+            sc.Add("urn:states-schema", "states3.xsd");
+
+            // Configure validation.
+            XmlReaderSettings settings = new XmlReaderSettings();
+            settings.ValidationType = ValidationType.Schema;
+            settings.Schemas = sc;
+            settings.ValidationEventHandler += ValidationCallback;
+
+            using (XmlReader reader = XmlReader.Create("../../states3.xml", settings))
+            {
+                while (reader.Read())
+                {
+                    if (reader.IsStartElement())
+                    {
+                        switch (reader.Name)
+                        {
+                            case "States":
+                                break;
+
+                            case "State":
+                                Console.WriteLine();
+                                Console.WriteLine("State name = " + reader["Name"]);
+                                Console.WriteLine("State capital = " + reader["Capital"]);
+                                break;
+                        }
+                    }
+                }
+            }
+
+        }
+
+        // Display any validation errors.
+        private static void ValidationCallback(object sender, ValidationEventArgs e)
+        {
+            Console.WriteLine(" *** Validation Error: {0}", e.Message);
         }
 
         /// <summary>
@@ -281,6 +328,11 @@ namespace SS
             return new HashSet<string>(GetCellsToRecalculate(name));
         }
 
+        /// <summary>
+        /// Helper method for SetCellContents that allows the method to find out the values of variables.
+        /// </summary>
+        /// <param name="variable"></param>
+        /// <returns></returns>
         private double lookup(string variable)
         {
             if (cells[variable].value is double)
@@ -399,6 +451,7 @@ namespace SS
         }
 
         //TODO: Save(TextWriter dest)
+        //Added in PS6
         /// <summary>
         /// Writes the contents of this spreadsheet to dest using an XML format.
         /// The XML elements should be structured as follows:
@@ -420,11 +473,49 @@ namespace SS
         /// </summary>
         public override void Save(TextWriter dest)
         {
+            if (!hasChanged)
+                return;
+            //"../../MySpreadsheet.xml"
+            try
+            {
+                using (XmlWriter writer = XmlWriter.Create(dest))
+                {
+                    writer.WriteStartDocument();
+                    writer.WriteStartElement("spreadsheet");
+                    writer.WriteAttributeString("IsValid=", isValid.ToString());
+
+                    foreach (KeyValuePair<string, Cell> cell in cells)
+                    {
+                        writer.WriteStartElement("cell");
+                        writer.WriteAttributeString("name", cell.Key);
+                        if (cell.Value.contents is Formula)
+                        {
+                            writer.WriteAttributeString("contents", "=" + cell.Value.contents.ToString());
+                        }
+                        else if (cell.Value.contents is double)
+                        {
+                            writer.WriteAttributeString("contents", ((double)cell.Value.contents).ToString());
+                        }
+                        else
+                        {
+                            writer.WriteAttributeString("contents", ((string)cell.Value.contents).ToString());
+                        }
+                        writer.WriteEndElement();
+                    }
+                    writer.WriteEndElement();
+                    writer.WriteEndDocument();
+                }
+            }
+            catch (Exception)
+            {
+                throw new IOException("Exception occured within Save.");
+            }
             hasChanged = false;
-            throw new NotImplementedException();
+
         }
 
         //TODO: GetCellValue(string name)
+        //Added in PS6
         /// <summary>
         /// If name is null or invalid, throws an InvalidNameException.
         ///
@@ -440,6 +531,7 @@ namespace SS
             return cells[name].value;
         }
 
+        //Added in PS6
         /// <summary>
         /// If content is null, throws an ArgumentNullException.
         ///
