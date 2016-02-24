@@ -92,10 +92,15 @@ namespace SS
         ///If the contents of source are not consistent with the schema in Spreadsheet.xsd,
         ///throws a SpreadsheetReadException.If there is an invalid cell name, or a
         ///duplicate cell name, or an invalid formula in the source, throws a SpreadsheetReadException.
-        ///If there's a Formula that causes a circular dependency, throws a SpreadsheetReadException. 
+        ///If there's a Formula that causes a circular dependency, throws a SpreadsheetReadException.
+        /// <spreadsheet IsValid="IsValid regex goes here">
+        ///   <cell name="cell name goes here" contents="cell contents go here"></cell>
+        ///   <cell name="cell name goes here" contents="cell contents go here"></cell>
+        ///   <cell name="cell name goes here" contents="cell contents go here"></cell>
+        /// </spreadsheet>
         /// </summary>
         /// <param name="source"></param>
-        public Spreadsheet(TextReader source)
+        public Spreadsheet(TextReader source) : this()
         {
             // Create the XmlSchemaSet class.  Anything with the namespace "urn:states-schema" will
             // be validated against states3.xsd.
@@ -105,7 +110,7 @@ namespace SS
             // executable.  To arrange this, I set the "Copy to Output Directory" propery of states3.xsd to
             // "Copy If Newer", which will copy states3.xsd as part of each build (if it has changed
             // since the last build).
-            sc.Add("urn:states-schema", "states3.xsd");
+            sc.Add("urn:spreadsheet-schema", "Spreadsheet.xsd");
 
             // Configure validation.
             XmlReaderSettings settings = new XmlReaderSettings();
@@ -113,25 +118,36 @@ namespace SS
             settings.Schemas = sc;
             settings.ValidationEventHandler += ValidationCallback;
 
-            using (XmlReader reader = XmlReader.Create("../../states3.xml", settings))
+            try
             {
-                while (reader.Read())
+                using (XmlReader reader = XmlReader.Create(source))
                 {
-                    if (reader.IsStartElement())
+                    while (reader.Read())
                     {
-                        switch (reader.Name)
+                        if (reader.IsStartElement())
                         {
-                            case "States":
-                                break;
+                            switch (reader.Name)
+                            {
+                                case "spreadsheet":
+                                    reader.MoveToFirstAttribute();
+                                    isValid = new Regex(reader.GetAttribute(0));
+                                    break;
 
-                            case "State":
-                                Console.WriteLine();
-                                Console.WriteLine("State name = " + reader["Name"]);
-                                Console.WriteLine("State capital = " + reader["Capital"]);
-                                break;
+                                case "cell":
+                                    reader.MoveToFirstAttribute();
+                                    string cellNameAttribute = reader.Value;
+                                    reader.MoveToNextAttribute();
+                                    string cellContentsAttribute = reader.Value;
+                                    SetContentsOfCell(cellNameAttribute, cellContentsAttribute);
+                                    break;
+                            }
                         }
                     }
                 }
+            }
+            catch (Exception)
+            {
+
             }
 
         }
@@ -481,7 +497,7 @@ namespace SS
                 using (XmlWriter writer = XmlWriter.Create(dest))
                 {
                     writer.WriteStartDocument();
-                    writer.WriteStartElement("spreadsheet");
+                    writer.WriteStartElement("", "spreadsheet", "urn:spreadsheet-schema");
                     writer.WriteAttributeString("IsValid=", isValid.ToString());
 
                     foreach (KeyValuePair<string, Cell> cell in cells)
