@@ -21,7 +21,7 @@ namespace SS
         /// Value = Cell object.
         /// </summary>
         Dictionary<string, Cell> cells;
-        
+
         /// <summary>
         /// Setup a new dependency graph for variable lookup and circular dependency checks. 
         /// </summary>
@@ -93,6 +93,7 @@ namespace SS
         ///throws a SpreadsheetReadException.If there is an invalid cell name, or a
         ///duplicate cell name, or an invalid formula in the source, throws a SpreadsheetReadException.
         ///If there's a Formula that causes a circular dependency, throws a SpreadsheetReadException.
+        /// Reads according to the following format.
         /// <spreadsheet IsValid="IsValid regex goes here">
         ///   <cell name="cell name goes here" contents="cell contents go here"></cell>
         ///   <cell name="cell name goes here" contents="cell contents go here"></cell>
@@ -102,15 +103,9 @@ namespace SS
         /// <param name="source"></param>
         public Spreadsheet(TextReader source) : this()
         {
-            // Create the XmlSchemaSet class.  Anything with the namespace "urn:states-schema" will
-            // be validated against states3.xsd.
             XmlSchemaSet sc = new XmlSchemaSet();
 
-            // NOTE: To read states3.xsd this way, it must be stored in the same folder with the
-            // executable.  To arrange this, I set the "Copy to Output Directory" propery of states3.xsd to
-            // "Copy If Newer", which will copy states3.xsd as part of each build (if it has changed
-            // since the last build).
-            sc.Add("urn:spreadsheet-schema", "Spreadsheet.xsd");
+            sc.Add(null, "Spreadsheet.xsd");
 
             // Configure validation.
             XmlReaderSettings settings = new XmlReaderSettings();
@@ -120,8 +115,7 @@ namespace SS
 
             try
             {
-                using (XmlReader reader = XmlReader.Create(source))
-                {
+                using (XmlReader reader = XmlReader.Create(source, settings))
                     while (reader.Read())
                     {
                         if (reader.IsStartElement())
@@ -143,7 +137,6 @@ namespace SS
                             }
                         }
                     }
-                }
             }
             catch (Exception)
             {
@@ -174,12 +167,12 @@ namespace SS
             }
 
             Cell cell;                                             //will be null if cannot find appropriate cell.
-            cells.TryGetValue(name ,out cell);
+            cells.TryGetValue(name, out cell);
 
             object obj = (cell?.contents) ?? "";
             return obj;
         }
-        
+
         /// <summary>
         /// Enumerates the names of all the non-empty cells in the spreadsheet.
         /// </summary>
@@ -269,7 +262,7 @@ namespace SS
                 throw new InvalidNameException();
 
             Cell cellWithName;                                     //null if name isn't found in spreadsheet.
-            
+
 
             DependencyGraph dgBackup = this.dg;                    //save the dependency graph in case the new Formula causes a CircularException.
 
@@ -280,7 +273,7 @@ namespace SS
                 object oldContents = cellWithName.contents;             //save old contents in case of circular exception.
 
                 foreach (string oldCellNames in cellWithNameVariables)  //remove old cell dependencies
-                {         
+                {
                     dg.RemoveDependency(name, oldCellNames.ToUpper());
                 }
                 cellWithName.contents = formula;                       //set cell's contents to number.
@@ -307,8 +300,8 @@ namespace SS
 
                 cells.Add(name, cellWithName);                           //or create a cell if it isn't in cells
                 foreach (string cellName in formula.GetVariables())      //add new cell dependencies
-                {         
-                      dg.AddDependency(name, cellName.ToUpper());
+                {
+                    dg.AddDependency(name, cellName.ToUpper());
                 }
 
                 try                                 //Test for CircularException.
@@ -321,7 +314,7 @@ namespace SS
                     cells.Remove(name);
                     this.dg = new DependencyGraph(dgBackup);
                     throw new CircularException();
-                }        
+                }
             }
 
             foreach (string cellName in GetCellsToRecalculate(name))
@@ -332,11 +325,11 @@ namespace SS
                     {
                         cells[cellName].value = ((Formula)cells[cellName].contents).Evaluate(lookup);
                     }
-                    catch(UndefinedVariableException)
+                    catch (UndefinedVariableException)
                     {
                         cells[cellName].value = new FormulaError();
                     }
-                    
+
                 }
             }
 
@@ -400,7 +393,7 @@ namespace SS
             }
             else
             {
-                cells.Add(name, new Cell(text,text));            //or create a cell if it isn't in cells.
+                cells.Add(name, new Cell(text, text));            //or create a cell if it isn't in cells.
             }
 
             foreach (string cellName in GetCellsToRecalculate(name))
@@ -442,7 +435,7 @@ namespace SS
         /// </summary>
         protected override IEnumerable<string> GetDirectDependents(string name)
         {
-            if(ReferenceEquals(name, null))                                     //null check
+            if (ReferenceEquals(name, null))                                     //null check
                 throw new ArgumentNullException("name is null");
             if (!isValidName(name))                                             //valid name check
                 throw new InvalidNameException();
@@ -461,9 +454,9 @@ namespace SS
         /// <returns></returns>
         private bool isValidName(string name)
         {
-            return !ReferenceEquals(name , null) && Regex.Matches(name, "([A-Za-z]+[1-9]{1}[0-9]*)$").Count == 1
+            return !ReferenceEquals(name, null) && Regex.Matches(name, "([A-Za-z]+[1-9]{1}[0-9]*)$").Count == 1
                    && Regex.Matches(name, "([A-Za-z]+[1-9]{1}[0-9]*)$")[0].Value.Equals(name)
-                   && isValid.IsMatch(name); 
+                   && isValid.IsMatch(name);
         }
 
         //TODO: Save(TextWriter dest)
@@ -497,8 +490,8 @@ namespace SS
                 using (XmlWriter writer = XmlWriter.Create(dest))
                 {
                     writer.WriteStartDocument();
-                    writer.WriteStartElement("", "spreadsheet", "urn:spreadsheet-schema");
-                    writer.WriteAttributeString("IsValid=", isValid.ToString());
+                    writer.WriteStartElement("spreadsheet");
+                    writer.WriteAttributeString("IsValid", isValid.ToString());
 
                     foreach (KeyValuePair<string, Cell> cell in cells)
                     {
