@@ -49,9 +49,9 @@ namespace MyPS6Tests
             Spreadsheet sheet = new Spreadsheet();
 
             CollectionAssert.AreEquivalent(sheet.SetContentsOfCell("a1", "=2.5").ToList(), new List<string>() { "A1" });
-            CollectionAssert.AreEquivalent(sheet.SetContentsOfCell("A10", "=a1 * 3").ToList(), new List<string>() { "A10" , "A1" });
-            CollectionAssert.AreEquivalent(sheet.SetContentsOfCell("a11", "=a10/A1").ToList(), new List<string>() { "A11" , "A10" , "A1" });
-            CollectionAssert.AreEquivalent(sheet.SetContentsOfCell("a12", "=A1 * A1").ToList(), new List<string>() { "A12" , "A1"  });
+            CollectionAssert.AreEquivalent(sheet.SetContentsOfCell("A10", "=a1 * 3").ToList(), new List<string>() { "A10" });
+            CollectionAssert.AreEquivalent(sheet.SetContentsOfCell("a11", "=a10/A1").ToList(), new List<string>() { "A11" });
+            CollectionAssert.AreEquivalent(sheet.SetContentsOfCell("a12", "=A1 * A1").ToList(), new List<string>() { "A12" });
 
             Assert.AreEqual(2.5, sheet.GetCellValue("a1"));
             Assert.AreEqual(7.5, sheet.GetCellValue("a10"));
@@ -65,16 +65,16 @@ namespace MyPS6Tests
             Spreadsheet sheet = new Spreadsheet();
 
             CollectionAssert.AreEquivalent(sheet.SetContentsOfCell("a1", "=2.5").ToList(), new List<string>() { "A1" });
-            CollectionAssert.AreEquivalent(sheet.SetContentsOfCell("A10", "=a1 * 3").ToList(), new List<string>() { "A10", "A1" });
-            CollectionAssert.AreEquivalent(sheet.SetContentsOfCell("a11", "=a10/A1 + 4/2 * 5 + a1").ToList(), new List<string>() { "A11", "A10", "A1" });
-            CollectionAssert.AreEquivalent(sheet.SetContentsOfCell("a12", "=A1 * A1 / A1").ToList(), new List<string>() { "A12", "A1" });
+            CollectionAssert.AreEquivalent(sheet.SetContentsOfCell("A10", "=a1 * 3").ToList(), new List<string>() { "A10" });
+            CollectionAssert.AreEquivalent(sheet.SetContentsOfCell("a11", "=a10/A1 + 4/2 * 5 + a1").ToList(), new List<string>() { "A11" });
+            CollectionAssert.AreEquivalent(sheet.SetContentsOfCell("a12", "=A1 * A1 / A1").ToList(), new List<string>() { "A12" });
 
             Assert.AreEqual(2.5, sheet.GetCellValue("a1"));
             Assert.AreEqual(7.5, sheet.GetCellValue("a10"));
             Assert.AreEqual(15.5, sheet.GetCellValue("a11"));
             Assert.AreEqual(2.5, sheet.GetCellValue("a12"));
 
-            CollectionAssert.AreEquivalent(sheet.SetContentsOfCell("a12", "=3 + A1").ToList(), new List<string>() { "A12", "A1" });
+            CollectionAssert.AreEquivalent(sheet.SetContentsOfCell("a12", "=3 + A1").ToList(), new List<string>() { "A12" });
 
             Assert.AreEqual(5.5, sheet.GetCellValue("a12"));
         }
@@ -86,8 +86,8 @@ namespace MyPS6Tests
             Spreadsheet sheet = new Spreadsheet();
 
             CollectionAssert.AreEquivalent(sheet.SetContentsOfCell("a1", "2.5").ToList(), new List<string>() { "A1" });
-            CollectionAssert.AreEquivalent(sheet.SetContentsOfCell("A10", "=a1 * 3").ToList(), new List<string>() { "A10", "A1" });
-            CollectionAssert.AreEquivalent(sheet.SetContentsOfCell("a11", "=a10/A1").ToList(), new List<string>() { "A11", "A10", "A1" });
+            CollectionAssert.AreEquivalent(sheet.SetContentsOfCell("A10", "=a1 * 3").ToList(), new List<string>() { "A10" });
+            CollectionAssert.AreEquivalent(sheet.SetContentsOfCell("a11", "=a10/A1").ToList(), new List<string>() { "A11" });
             CollectionAssert.AreEquivalent(sheet.SetContentsOfCell("a12", "Yoink!").ToList(), new List<string>() { "A12" });
 
             Assert.AreEqual(2.5, sheet.GetCellValue("a1"));
@@ -113,8 +113,9 @@ namespace MyPS6Tests
             Spreadsheet sheet = new Spreadsheet(new Regex("([A-Zb-z]+[1-9]{1}[0-9]*)"));
 
             CollectionAssert.AreEquivalent(sheet.SetContentsOfCell("A1", "2.5").ToList(), new List<string>() { "A1" });
-            CollectionAssert.AreEquivalent(sheet.SetContentsOfCell("A10", "=a1 * 3").ToList(), new List<string>() { "A10", "A1" });
-            CollectionAssert.AreEquivalent(sheet.SetContentsOfCell("A11", "=a10/A1").ToList(), new List<string>() { "A11", "A10", "A1" });
+            CollectionAssert.AreEquivalent(sheet.SetContentsOfCell("A10", "=a1 * 3").ToList(), new List<string>() { "A10" });
+            CollectionAssert.AreEquivalent(sheet.SetContentsOfCell("A11", "=a10/A1").ToList(), new List<string>() { "A11" });
+            CollectionAssert.AreEquivalent(sheet.SetContentsOfCell("A11", "=a10/A1").ToList(), new List<string>() { "A11" });
             CollectionAssert.AreEquivalent(sheet.SetContentsOfCell("a12", "Yoink!").ToList(), new List<string>() { "A12" });
 
             Assert.AreEqual(2.5, sheet.GetCellValue("a1"));

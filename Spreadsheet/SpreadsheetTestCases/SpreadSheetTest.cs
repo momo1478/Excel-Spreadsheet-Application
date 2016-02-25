@@ -128,7 +128,7 @@ namespace SpreadsheetTestCases
             AbstractSpreadsheet sheet = new Spreadsheet();
 
             CollectionAssert.AreEqual(sheet.SetCellContents("a1", new Formula("5 + 10 * 4 / (2/2)")).ToList(), new List<string> { "A1" });
-            //CollectionAssert.AreEquivalent(sheet.SetCellContents("b1", new Formula("a1 + 4*3")).ToList(), new List<string> { "B1" , "A1" });
+            CollectionAssert.AreEquivalent(sheet.SetCellContents("b1", new Formula("a1 + 4*3")).ToList(), new List<string> { "B1" , "A1" });
             CollectionAssert.AreEquivalent(sheet.SetCellContents("cARSON1", new Formula("B1 + b1")).ToList(), new List<string> { "CARSON1" , "B1", "A1" });
             CollectionAssert.AreEquivalent(sheet.SetCellContents("d1", new Formula("cARSON1/3")).ToList(), new List<string> { "D1", "CARSON1" , "B1" , "A1" });
             CollectionAssert.AreEquivalent(sheet.SetCellContents("e1", 0).ToList(), new List<string> { "E1" });
