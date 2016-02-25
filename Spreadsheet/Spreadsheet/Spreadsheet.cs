@@ -113,7 +113,7 @@ namespace SS
             settings.Schemas = sc;
             settings.ValidationEventHandler += ValidationCallback;
 
-            try
+            //try
             {
                 using (XmlReader reader = XmlReader.Create(source, settings))
                     while (reader.Read())
@@ -138,14 +138,11 @@ namespace SS
                         }
                     }
             }
-            catch (Exception)
-            {
 
-            }
 
         }
 
-        // Display any validation errors.
+        // Display any validation errors. Helper for Spreadsheet(TextReader source)
         private static void ValidationCallback(object sender, ValidationEventArgs e)
         {
             Console.WriteLine(" *** Validation Error: {0}", e.Message);
@@ -232,7 +229,7 @@ namespace SS
                 }
             }
 
-            hasChanged = true;
+            Changed = true;
             return new HashSet<string>(GetCellsToRecalculate(name));
         }
 
@@ -285,7 +282,7 @@ namespace SS
                 try                                 //Test for CircularException.
                 {
                     GetCellsToRecalculate(name);
-                    hasChanged = true;
+                    Changed = true;
                 }
                 catch (CircularException)           //If so replace new contents with the old one, restore old DG, and throw CircularException.
                 {
@@ -307,7 +304,7 @@ namespace SS
                 try                                 //Test for CircularException.
                 {
                     GetCellsToRecalculate(name);
-                    hasChanged = true;
+                    Changed = true;
                 }
                 catch (CircularException)           //If so remove newly created cell, restore old DG, and throw CircularException.
                 {
@@ -333,7 +330,7 @@ namespace SS
                 }
             }
 
-            hasChanged = true;
+            Changed = true;
             return new HashSet<string>(GetCellsToRecalculate(name));
         }
 
@@ -412,7 +409,7 @@ namespace SS
                 }
             }
 
-            hasChanged = true;
+            Changed = true;
             return new HashSet<string>(GetCellsToRecalculate(name));
         }
 
@@ -440,9 +437,9 @@ namespace SS
             if (!isValidName(name))                                             //valid name check
                 throw new InvalidNameException();
 
-            foreach (var dependee in dg.GetDependees(name))
+            foreach (var dependent in dg.GetDependents(name))
             {
-                yield return dependee;
+                yield return dependent;
             }
         }
 
@@ -482,7 +479,7 @@ namespace SS
         /// </summary>
         public override void Save(TextWriter dest)
         {
-            if (!hasChanged)
+            if (!Changed)
                 return;
             //"../../MySpreadsheet.xml"
             try
@@ -519,7 +516,7 @@ namespace SS
             {
                 throw new IOException("Exception occured within Save.");
             }
-            hasChanged = false;
+            Changed = false;
 
         }
 
@@ -533,6 +530,7 @@ namespace SS
         /// </summary>
         public override object GetCellValue(string name)
         {
+            name = name?.ToUpper();
             if (name == null || !isValidName(name))
             {
                 throw new InvalidNameException();
