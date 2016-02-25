@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.IO;
 using Formulas;
+using System.Xml;
 
 
 namespace MyPS6Tests
@@ -161,7 +162,7 @@ namespace MyPS6Tests
             CollectionAssert.AreEqual(sheet.SetContentsOfCell("a12", "Wow it does work!").ToList(), new List<string>() { "A12" });
             CollectionAssert.AreEqual(sheet.SetContentsOfCell("a1", "=3.5" ).ToList(), new List<string>() { "A1" });
             CollectionAssert.AreEqual(sheet.SetContentsOfCell("a11", "3.5e5").ToList(), new List<string>() { "A11" });
-
+            CollectionAssert.AreEqual(sheet.SetContentsOfCell("a12", "=3.5e5 + a10").ToList(), new List<string>() { "A12" });
             sheet.Save(destination);
         }
 
@@ -169,23 +170,22 @@ namespace MyPS6Tests
         public void BasicConstruct()
         {
             Spreadsheet sheet = new Spreadsheet(new Regex("[A-Za-z]+[1-9]"));
-            TextWriter destination = File.CreateText("../../MySpreadsheet.xml");
+            //TextWriter destination = File.CreateText("../../MySpreadsheet.xml");
 
-            CollectionAssert.AreEqual(sheet.SetContentsOfCell("a12", "I hope this works!").ToList(), new List<string>() { "A12" });
-            CollectionAssert.AreEqual(sheet.SetContentsOfCell("a12", "Wow it does work!").ToList(), new List<string>() { "A12" });
-            CollectionAssert.AreEqual(sheet.SetContentsOfCell("a1", "=3.5").ToList(), new List<string>() { "A1" });
-            CollectionAssert.AreEqual(sheet.SetContentsOfCell("a11", "3.5e5").ToList(), new List<string>() { "A11" });
+            //CollectionAssert.AreEqual(sheet.SetContentsOfCell("a12", "I hope this works!").ToList(), new List<string>() { "A12" });
+            //CollectionAssert.AreEqual(sheet.SetContentsOfCell("a12", "Wow it does work!").ToList(), new List<string>() { "A12" });
+            //CollectionAssert.AreEqual(sheet.SetContentsOfCell("a1", "=3.5").ToList(), new List<string>() { "A1" });
+            //CollectionAssert.AreEqual(sheet.SetContentsOfCell("a11", "3.5e5").ToList(), new List<string>() { "A11" });
+            //CollectionAssert.AreEqual(sheet.SetContentsOfCell("a12", "=3.5e5 + a10").ToList(), new List<string>() { "A11" });
+            //sheet.Save(destination);
 
-            using (var reader = File.OpenRead("../../MySpreadsheet.xml"))
+            using (XmlReader reader = XmlReader.Create("../../MySpreadsheet.xml"))
             {
-                sheet.Save(destination);
-
                 TextReader source = File.OpenText("../../MySpreadsheet.xml");
 
                 sheet = new Spreadsheet(source);
             }
 
-            
         }
 
     }
