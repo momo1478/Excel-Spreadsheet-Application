@@ -23,7 +23,7 @@ namespace SpreadsheetTestCases
             Assert.AreEqual((double)sheet.GetCellContents("a1"), 5);
             Assert.AreEqual((double)sheet.GetCellContents("B1"), 10);
             Assert.AreEqual((double)sheet.GetCellContents("B2"), 5.5e5);
-            Assert.AreEqual((string)sheet.GetCellContents("a5"), default(string));
+            Assert.AreEqual((string)sheet.GetCellContents("a5"), "");
         }
         [ExpectedException(typeof(InvalidNameException))]
         [TestMethod]
@@ -128,11 +128,11 @@ namespace SpreadsheetTestCases
             AbstractSpreadsheet sheet = new Spreadsheet();
 
             CollectionAssert.AreEqual(sheet.SetCellContents("a1", new Formula("5 + 10 * 4 / (2/2)")).ToList(), new List<string> { "A1" });
-            CollectionAssert.AreEqual(sheet.SetCellContents("b1", new Formula("a1 + 4*3")).ToList(), new List<string> { "B1" , "A1" });
-            CollectionAssert.AreEqual(sheet.SetCellContents("cARSON1", new Formula("B1 + b1")).ToList(), new List<string> { "CARSON1" , "B1", "A1" });
-            CollectionAssert.AreEqual(sheet.SetCellContents("d1", new Formula("cARSON1/3")).ToList(), new List<string> { "D1", "CARSON1" , "B1" , "A1" });
-            CollectionAssert.AreEqual(sheet.SetCellContents("e1", 0).ToList(), new List<string> { "E1" });
-            CollectionAssert.AreEqual(sheet.SetCellContents("e1", new Formula("5 + 10*70 * 4 / (2/2)")).ToList(), new List<string> { "E1" });
+            //CollectionAssert.AreEquivalent(sheet.SetCellContents("b1", new Formula("a1 + 4*3")).ToList(), new List<string> { "B1" , "A1" });
+            CollectionAssert.AreEquivalent(sheet.SetCellContents("cARSON1", new Formula("B1 + b1")).ToList(), new List<string> { "CARSON1" , "B1", "A1" });
+            CollectionAssert.AreEquivalent(sheet.SetCellContents("d1", new Formula("cARSON1/3")).ToList(), new List<string> { "D1", "CARSON1" , "B1" , "A1" });
+            CollectionAssert.AreEquivalent(sheet.SetCellContents("e1", 0).ToList(), new List<string> { "E1" });
+            CollectionAssert.AreEquivalent(sheet.SetCellContents("e1", new Formula("5 + 10*70 * 4 / (2/2)")).ToList(), new List<string> { "E1" });
 
             Assert.AreEqual(sheet.GetCellContents("A1"), new Formula("5 +10 *4 /(2 / 2)"));
             Assert.AreEqual(sheet.GetCellContents("b1"), new Formula("a1+4*3"));

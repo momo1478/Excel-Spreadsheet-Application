@@ -116,6 +116,7 @@ namespace SS
             //try
             {
                 using (XmlReader reader = XmlReader.Create(source, settings))
+                {
                     while (reader.Read())
                     {
                         if (reader.IsStartElement())
@@ -137,6 +138,7 @@ namespace SS
                             }
                         }
                     }
+                }
             }
 
 
@@ -194,7 +196,7 @@ namespace SS
         /// For example, if name is A1, B1 contains A1*2, and C1 contains B1+A1, the
         /// set {A1, B1, C1} is returned.
         /// </summary>
-        protected override ISet<string> SetCellContents(string name, double number)
+        public override ISet<string> SetCellContents(string name, double number)
         {
             name = name?.ToUpper();
             if (ReferenceEquals(name, null) || !isValidName(name)) //null or invalid check
@@ -213,24 +215,12 @@ namespace SS
                 cells.Add(name, new Cell(number, number));                 //or create a cell if it isn't in cells.
             }
 
-            foreach (string cellName in GetCellsToRecalculate(name))
-            {
-                if (cells[cellName].contents is Formula)
-                {
-                    try
-                    {
-                        cells[cellName].value = ((Formula)cells[cellName].contents).Evaluate(lookup);
-                    }
-                    catch (UndefinedVariableException)
-                    {
-                        cells[cellName].value = new FormulaError();
-                    }
-
-                }
-            }
-
             Changed = true;
-            return new HashSet<string>(GetCellsToRecalculate(name));
+
+            HashSet<String> result =  new HashSet<string>(GetCellsToRecalculate(name));
+            result.Add(name);
+
+            return result;
         }
 
         /// <summary>
@@ -248,7 +238,7 @@ namespace SS
         /// For example, if name is A1, B1 contains A1*2, and C1 contains B1+A1, the
         /// set {A1, B1, C1} is returned.
         /// </summary>
-        protected override ISet<string> SetCellContents(string name, Formula formula)
+        public override ISet<string> SetCellContents(string name, Formula formula)
         {
             name = name?.ToUpper();
 
@@ -259,6 +249,8 @@ namespace SS
                 throw new InvalidNameException();
 
             Cell cellWithName;                                     //null if name isn't found in spreadsheet.
+
+            List<String> cellsToRecalculate;
 
 
             DependencyGraph dgBackup = this.dg;                    //save the dependency graph in case the new Formula causes a CircularException.
@@ -281,7 +273,7 @@ namespace SS
 
                 try                                 //Test for CircularException.
                 {
-                    GetCellsToRecalculate(name);
+                   cellsToRecalculate = GetCellsToRecalculate(name).ToList();
                     Changed = true;
                 }
                 catch (CircularException)           //If so replace new contents with the old one, restore old DG, and throw CircularException.
@@ -303,7 +295,7 @@ namespace SS
 
                 try                                 //Test for CircularException.
                 {
-                    GetCellsToRecalculate(name);
+                    cellsToRecalculate = GetCellsToRecalculate(name).ToList();
                     Changed = true;
                 }
                 catch (CircularException)           //If so remove newly created cell, restore old DG, and throw CircularException.
@@ -314,24 +306,33 @@ namespace SS
                 }
             }
 
-            foreach (string cellName in GetCellsToRecalculate(name))
+            if(cellsToRecalculate == null)
+                cellsToRecalculate = GetCellsToRecalculate(name).ToList();
+
+            foreach (string cellName in cellsToRecalculate)
             {
-                if (cells[cellName].contents is Formula)
+                Cell cellWithNameA;
+                cells.TryGetValue(cellName, out cellWithNameA);
+
+                if (cellWithNameA?.contents is Formula)
                 {
                     try
                     {
                         cells[cellName].value = ((Formula)cells[cellName].contents).Evaluate(lookup);
                     }
-                    catch (UndefinedVariableException)
+                    catch (Exception)
                     {
-                        cells[cellName].value = new FormulaError();
+                        cells[cellName].value = new FormulaError("Variable not defined or is not double.");
                     }
 
                 }
             }
 
             Changed = true;
-            return new HashSet<string>(GetCellsToRecalculate(name));
+            HashSet<String> result = new HashSet<string>(GetCellsToRecalculate(name));
+            result.Add(name);
+
+            return result;
         }
 
         /// <summary>
@@ -341,7 +342,10 @@ namespace SS
         /// <returns></returns>
         private double lookup(string variable)
         {
-            if (cells[variable].value is double)
+            Cell cellWithName;
+            cells.TryGetValue(variable, out cellWithName);
+
+            if (cellWithName?.value is double)
             {
                 return (double)cells[variable].value;
             }
@@ -369,7 +373,7 @@ namespace SS
         /// For example, if name is A1, B1 contains A1*2, and C1 contains B1+A1, the
         /// set {A1, B1, C1} is returned.
         /// </summary>
-        protected override ISet<string> SetCellContents(string name, string text)
+        public override ISet<string> SetCellContents(string name, string text)
         {
             name = name?.ToUpper();
             if (ReferenceEquals(text, null))
@@ -393,24 +397,12 @@ namespace SS
                 cells.Add(name, new Cell(text, text));            //or create a cell if it isn't in cells.
             }
 
-            foreach (string cellName in GetCellsToRecalculate(name))
-            {
-                if (cells[cellName].contents is Formula)
-                {
-                    try
-                    {
-                        cells[cellName].value = ((Formula)cells[cellName].contents).Evaluate(lookup);
-                    }
-                    catch (UndefinedVariableException)
-                    {
-                        cells[cellName].value = new FormulaError();
-                    }
-
-                }
-            }
-
             Changed = true;
-            return new HashSet<string>(GetCellsToRecalculate(name));
+
+            HashSet<String> result = new HashSet<string>(GetCellsToRecalculate(name));
+            result.Add(name);
+
+            return result;
         }
 
         ///<summary>
@@ -437,10 +429,10 @@ namespace SS
             if (!isValidName(name))                                             //valid name check
                 throw new InvalidNameException();
 
-            foreach (var dependent in dg.GetDependents(name))
-            {
-                yield return dependent;
-            }
+                foreach (var dependents in dg.GetDependees(name))
+                {
+                    yield return dependents;
+                }
         }
 
         //HACK : isValid.IsMatch() could need fixing.
