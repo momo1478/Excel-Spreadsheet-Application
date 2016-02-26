@@ -365,5 +365,29 @@ namespace MyPS6Tests
 
         }
 
+        //Basic Load Spreadsheet
+        [TestMethod]
+        public void StressTestConstruct()
+        {
+            Spreadsheet sheet = new Spreadsheet(new Regex("[A-Za-z]+[1-9]"));
+            //TextWriter destination = File.CreateText("../../MySpreadsheet.xml");
+
+            //CollectionAssert.AreEqual(sheet.SetContentsOfCell("a12", "I hope this works!").ToList(), new List<string>() { "A12" });
+            //CollectionAssert.AreEqual(sheet.SetContentsOfCell("a12", "Wow it does work!").ToList(), new List<string>() { "A12" });
+            //CollectionAssert.AreEqual(sheet.SetContentsOfCell("a1", "=3.5").ToList(), new List<string>() { "A1" });
+            //CollectionAssert.AreEqual(sheet.SetContentsOfCell("a11", "3.5e5").ToList(), new List<string>() { "A11" });
+            //CollectionAssert.AreEqual(sheet.SetContentsOfCell("a12", "=3.5e5 + a10").ToList(), new List<string>() { "A11" });
+            //sheet.Save(destination);
+
+            using (XmlReader reader = XmlReader.Create("../../StressTest.xml"))
+            {
+                TextReader source = File.OpenText("../../StressTest.xml");
+
+                sheet = new Spreadsheet(source);
+
+                reader.Dispose();
+            }
+
+        }
     }
 }
