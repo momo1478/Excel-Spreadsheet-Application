@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<spreadsheet IsValid="[A-Za-z]+[1-9]">
+  <cell name="A12" contents="=3.5e5 + A10" />
+  <cell name="A1" contents="=3.5" />
+  <cell name="A11" contents="350000" />
+</spreadsheet>

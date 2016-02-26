@@ -92,6 +92,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="MySpreadsheet.xml" />
+    <Content Include="MySpreadsheetChain.xml" />
+    <Content Include="MySpreadsheetCopy.xml" />
+    <Content Include="MySpreadsheetCorrupt.xml" />
+    <Content Include="MySpreadsheetDuplicate.xml" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<spreadsheet IsValid="[A-Za-z]+[1-9]">
+  <cell name="A12" contents="=3.5e5 + A10" />
+  <cell name="A7" contents="=3.5" />
+  <cell name="A11" contents="350000" />
+  <cell name="A1" contents="3" />
+  <cell name="A2" contents="=A1 * 3" />
+  <cell name="A3" contents="=A2 / 3" />
+  <cell name="A4" contents="=A3 / 4" />
+  <cell name="A5" contents="=A4 * 4" />
+  <cell name="A6" contents="=A4 / 5" />
+</spreadsheet>

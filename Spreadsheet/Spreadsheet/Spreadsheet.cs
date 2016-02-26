@@ -87,9 +87,8 @@ namespace SS
         }
 
         //Added in PS6
-        //TODO : Spreadsheet(TextReader source)
         /// <summary>
-        /// Creates a Spreadsheet that is a duplicate of the spreadsheet saved in source.
+        ///Creates a Spreadsheet that is a duplicate of the spreadsheet saved in source.
         ///See the AbstractSpreadsheet.Save method and Spreadsheet.xsd for the file format
         ///specification.  If there's a problem reading source, throws an IOException
         ///If the contents of source are not consistent with the schema in Spreadsheet.xsd,
@@ -137,6 +136,8 @@ namespace SS
                                     string cellNameAttribute = reader.Value;
                                     reader.MoveToNextAttribute();
                                     string cellContentsAttribute = reader.Value;
+                                    if (cells.ContainsKey(cellNameAttribute))
+                                        throw new SpreadsheetReadException("Duplicate cell name detected!");
                                     SetContentsOfCell(cellNameAttribute, cellContentsAttribute);
                                     break;
                             }
@@ -371,12 +372,7 @@ namespace SS
             }
         }
 
-        /// <summary>
-        /// Helps SetCellContents(string name, Formula formula) determine if there is a circular dependency.
-        /// If the new replacement cell causes a circular dependency then replaces the new cell with it's oldCellName
-        /// and Dependencies.
-        /// </summary>
-
+        
         /// <summary>
         /// If text is null, throws an ArgumentNullException.
         /// 
@@ -451,7 +447,6 @@ namespace SS
                 }
         }
 
-        //HACK : isValid.IsMatch() could need fixing.
         /// <summary>
         /// Determines if a given string is a valid Cell name.
         /// </summary>
@@ -464,7 +459,6 @@ namespace SS
                    && isValid.IsMatch(name);
         }
 
-        //TODO: Save(TextWriter dest)
         //Added in PS6
         /// <summary>
         /// Writes the contents of this spreadsheet to dest using an XML format.
@@ -520,7 +514,7 @@ namespace SS
                     writer.WriteEndDocument();
                 }
             }
-            catch (Exception)
+            catch(Exception)
             {
                 throw new IOException("Exception occured within Save.");
             }
@@ -528,7 +522,6 @@ namespace SS
 
         }
 
-        //TODO: GetCellValue(string name)
         //Added in PS6
         /// <summary>
         /// If name is null or invalid, throws an InvalidNameException.
@@ -543,7 +536,10 @@ namespace SS
             {
                 throw new InvalidNameException();
             }
-            return cells[name].value;
+            Cell cellWithName;
+            cells.TryGetValue(name, out cellWithName);
+
+            return cellWithName?.value ?? "";
         }
 
         //Added in PS6
