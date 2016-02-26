@@ -312,7 +312,7 @@ namespace SS
 
                 try                                 //Test for CircularException.
                 {
-                    cellsToRecalculate = GetCellsToRecalculate(name).ToList();
+                    cellsToRecalculate = GetCellsToRecalculate(name).ToList(); 
                     Changed = true;
                 }
                 catch (CircularException)           //If so remove newly created cell, restore old DG, and throw CircularException.
