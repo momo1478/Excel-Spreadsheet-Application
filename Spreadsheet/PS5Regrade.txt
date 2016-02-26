@@ -1,0 +1,3 @@
+-Changed GetDirectDependents to return the Dependees of a name instead of the Dependents (Fixed 13 tests)
+-I didn't find it because I had misinterpreted what SetCellContents was supposed to return.
+-Many Operations (all SetCellContents and GetCellsToRecalculate) relied on this method being correct which allowed many tests to be failed.

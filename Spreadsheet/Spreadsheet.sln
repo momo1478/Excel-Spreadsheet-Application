@@ -19,6 +19,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PS4GradingTests", "PS4Gradi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpreadsheetTestCases", "SpreadsheetTestCases\SpreadsheetTestCases.csproj", "{AEA2D7A3-85E6-4901-B8AB-F3247DCDC460}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PS5GradingTests", "PS5GradingTests\PS5GradingTests.csproj", "{85DCAC4E-2DA9-4D77-999D-050C98211768}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C8B932C6-3F9A-4AC5-BA8D-B82ADA76A742}"
+	ProjectSection(SolutionItems) = preProject
+		PS5Regrade.txt = PS5Regrade.txt
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +64,10 @@ Global
 		{AEA2D7A3-85E6-4901-B8AB-F3247DCDC460}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AEA2D7A3-85E6-4901-B8AB-F3247DCDC460}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AEA2D7A3-85E6-4901-B8AB-F3247DCDC460}.Release|Any CPU.Build.0 = Release|Any CPU
+		{85DCAC4E-2DA9-4D77-999D-050C98211768}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{85DCAC4E-2DA9-4D77-999D-050C98211768}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{85DCAC4E-2DA9-4D77-999D-050C98211768}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{85DCAC4E-2DA9-4D77-999D-050C98211768}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -238,7 +238,7 @@ namespace SS
             if (!isValidName(name))                                             //valid name check
                 throw new InvalidNameException();
 
-            foreach (var dependent in dg.GetDependents(name))
+            foreach (var dependent in dg.GetDependees(name))
             {
                 yield return dependent;
             }
