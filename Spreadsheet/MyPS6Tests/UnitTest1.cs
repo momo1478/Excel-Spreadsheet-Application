@@ -369,7 +369,7 @@ namespace MyPS6Tests
         [TestMethod]
         public void StressTestConstruct()
         {
-            Spreadsheet sheet = new Spreadsheet(new Regex("[A-Za-z]+[1-9]"));
+            Spreadsheet sheet = new Spreadsheet();
             //TextWriter destination = File.CreateText("../../MySpreadsheet.xml");
 
             //CollectionAssert.AreEqual(sheet.SetContentsOfCell("a12", "I hope this works!").ToList(), new List<string>() { "A12" });
@@ -385,7 +385,8 @@ namespace MyPS6Tests
 
                 sheet = new Spreadsheet(source);
 
-                reader.Dispose();
+                Assert.AreEqual(199, sheet.GetNamesOfAllNonemptyCells().Count());
+                Assert.AreEqual(999.0 , sheet.GetCellValue("A1"));
             }
 
         }
