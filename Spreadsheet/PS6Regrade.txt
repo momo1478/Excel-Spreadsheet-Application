@@ -1,0 +1,4 @@
+-Problem : Strange evaluation error where evaluation would only be successful if the double that cell formulas relied upon was declared before the problem.
+-I didn't find this out until I ran my friend's XML save file which brought up this issue... after the due date. Took a lot of stepping through the code to find a fix.
+-Solution : I copied the last foreach loop from SetCellContents(string, Formula) into it's "same place" in SetCellContents(string, double)
+-This solution fixed all missed tests (17).
