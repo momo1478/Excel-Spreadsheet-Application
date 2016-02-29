@@ -43,7 +43,6 @@ namespace SS
         bool hasChanged;
 
         //Added PS6
-        //TODO: implement hasChanged everywhere.
         /// <summary>
         /// True if this spreadsheet has been modified since it was created or saved
         /// (whichever happened most recently); false otherwise.
@@ -185,8 +184,7 @@ namespace SS
             Cell cell;                                             //will be null if cannot find appropriate cell.
             cells.TryGetValue(name, out cell);
 
-            object obj = (cell?.contents) ?? "";
-            return obj;
+            return (cell?.contents) ?? "";
         }
 
         /// <summary>
@@ -501,7 +499,7 @@ namespace SS
         {
             if (!Changed)
                 return;
-            //"../../MySpreadsheet.xml"
+
             try
             {
                 using (XmlWriter writer = XmlWriter.Create(dest))
@@ -550,10 +548,12 @@ namespace SS
         public override object GetCellValue(string name)
         {
             name = name?.ToUpper();
+
             if (name == null || !isValidName(name))
             {
                 throw new InvalidNameException();
             }
+
             Cell cellWithName;
             cells.TryGetValue(name, out cellWithName);
 
