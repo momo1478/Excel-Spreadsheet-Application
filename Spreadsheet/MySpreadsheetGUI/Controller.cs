@@ -25,6 +25,13 @@ namespace FileAnalyzer
             window.FileChosenEvent += HandleFileChosen;
             window.CloseEvent += HandleClose;
             window.NewEvent += HandleNew;
+            window.SetContentsEvent += Controller_SetContents;
+        }
+
+        private void Controller_SetContents(string cellName, string contents)
+        {
+            model.sheet.SetContentsOfCell(cellName, contents);
+            
         }
 
         /// <summary>

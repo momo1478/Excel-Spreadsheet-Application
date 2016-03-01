@@ -14,7 +14,7 @@ namespace FileAnalyzer
     {
         // The contents of the open file in the AnalysisWindow, or the
         // empty string if no file is open.
-        private Spreadsheet sheet;
+        internal Spreadsheet sheet;
 
         /// <summary>
         /// Constructs a Model with an empty contents

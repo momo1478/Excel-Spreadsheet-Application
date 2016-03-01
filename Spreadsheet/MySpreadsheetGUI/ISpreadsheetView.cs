@@ -9,7 +9,7 @@ namespace FileAnalyzer
     {
         event Action<string> FileChosenEvent;
 
-        event Action<string> CountEvent;
+        event Action<string, string> SetContentsEvent;
 
         event Action CloseEvent;
 

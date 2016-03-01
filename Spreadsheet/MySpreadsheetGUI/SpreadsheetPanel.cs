@@ -103,6 +103,17 @@ namespace SSGui
         }
 
         /// <summary>
+        /// Gets the Cell Name at a particular column and row.
+        /// </summary>
+        /// <param name="col"></param>
+        /// <param name="row"></param>
+        /// <returns></returns>
+        public string GetName(int col , int row)
+        {
+            char[] alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
+            return alphabet[col] + string.Concat(row + 1);
+        }
+        /// <summary>
         /// If the zero-based column and row are in range, uses them to set
         /// the current selection and returns true.  Otherwise, returns false.
         /// </summary>     
