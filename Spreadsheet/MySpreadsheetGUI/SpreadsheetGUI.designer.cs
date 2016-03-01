@@ -1,6 +1,6 @@
 ﻿namespace SSGui
 {
-    partial class SpreadsheetDemo
+    partial class SpreadsheetGUI
     {
         /// <summary>
         /// Required designer variable.
@@ -80,8 +80,8 @@
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.Name = "Form1";
-            this.Text = "SpreadsheetDemo";
+            this.Name = "Sreadsheet";
+            this.Text = "SpreadsheetGUI";
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
@@ -95,6 +95,9 @@
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
+
+
+
     }
 }
 
