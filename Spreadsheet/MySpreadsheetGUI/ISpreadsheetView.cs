@@ -19,5 +19,7 @@ namespace FileAnalyzer
         string Message { get; set; }
         void DoClose();
         void OpenNew();
+        void SetCellValue(int col, int row, string value);
     }
+
 }

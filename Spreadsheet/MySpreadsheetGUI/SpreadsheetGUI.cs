@@ -2,6 +2,7 @@
 using System.Windows.Forms;
 using SSGui;
 using FileAnalyzer;
+using System.Diagnostics;
 
 namespace SSGui
 {
@@ -20,6 +21,11 @@ namespace SSGui
         {
             get;
             set;
+        }
+
+        protected SpreadsheetPanel SPanel
+        {
+            get { return spreadsheetPanel1; }    
         }
 
         /// <summary>
@@ -145,6 +151,11 @@ namespace SSGui
                 NewEvent();
         }
 
+        private void SetCellValue(int col , int row , string value)
+        {
+            spreadsheetPanel1.SetValue(col, row, value);
+        }
+
         private void cellContentsBox_TextChanged(object sender, EventArgs e)
         {
             int rowArg;
@@ -153,12 +164,16 @@ namespace SSGui
             if (SetContentsEvent != null)
             {
                 spreadsheetPanel1.GetSelection(out colArg, out rowArg);
-                SetContentsEvent(spreadsheetPanel1.GetName(colArg, rowArg), this.cellContentsBox.Text);
+                spreadsheetPanel1.SetSelection(colArg, rowArg);
 
-                spreadsheetPanel1.SetSelection(colArg, rowArg); 
-                spreadsheetPanel1.SetValue(colArg, rowArg, this.cellContentsBox.Text);
+                this.SetContentsEvent(spreadsheetPanel1.GetName(colArg, rowArg), this.cellContentsBox.Text);
             }
         
+        }
+
+        void ISpreadsheetView.SetCellValue(int col, int row, string value)
+        {
+            SetCellValue(col, row, value);
         }
     }
 }

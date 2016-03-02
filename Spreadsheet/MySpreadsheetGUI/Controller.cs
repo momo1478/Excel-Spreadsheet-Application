@@ -31,7 +31,27 @@ namespace FileAnalyzer
 
         private void Controller_SetContents(string cellName, string contents)
         {
-            model.sheet.SetContentsOfCell(cellName, contents);
+            try
+            {
+                int row, col;
+                GetRowsAndCols(cellName, out col, out row);
+
+                model.sheet.SetContentsOfCell(cellName, contents);
+                window.SetCellValue(col, row, model.sheet.GetCellValue(cellName).ToString());
+            }
+            catch
+            {
+                int row, col;
+                GetRowsAndCols(cellName ,out col, out row);
+
+                window.SetCellValue(col, row, "Formula Error");
+            } 
+        }
+
+        private static void GetRowsAndCols(string cellName, out int col , out int row)
+        {
+            col = char.ToUpper(cellName[0]) - 65;
+            row = int.Parse(cellName.Substring(1)) - 1;
         }
 
         /// <summary>

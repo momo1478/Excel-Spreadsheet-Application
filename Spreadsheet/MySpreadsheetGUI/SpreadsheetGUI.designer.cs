@@ -49,7 +49,7 @@
             this.fileToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(837, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(884, 24);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -80,7 +80,7 @@
             // 
             this.cellName.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.cellName.AutoSize = true;
-            this.cellName.Location = new System.Drawing.Point(12, 376);
+            this.cellName.Location = new System.Drawing.Point(12, 381);
             this.cellName.Name = "cellName";
             this.cellName.Size = new System.Drawing.Size(55, 13);
             this.cellName.TabIndex = 2;
@@ -90,7 +90,7 @@
             // 
             this.cellContents.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.cellContents.AutoSize = true;
-            this.cellContents.Location = new System.Drawing.Point(12, 413);
+            this.cellContents.Location = new System.Drawing.Point(12, 418);
             this.cellContents.Name = "cellContents";
             this.cellContents.Size = new System.Drawing.Size(69, 13);
             this.cellContents.TabIndex = 3;
@@ -100,7 +100,7 @@
             // 
             this.cellValue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.cellValue.AutoSize = true;
-            this.cellValue.Location = new System.Drawing.Point(141, 376);
+            this.cellValue.Location = new System.Drawing.Point(141, 381);
             this.cellValue.Name = "cellValue";
             this.cellValue.Size = new System.Drawing.Size(54, 13);
             this.cellValue.TabIndex = 4;
@@ -110,7 +110,7 @@
             // 
             this.cellNameBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.cellNameBox.Enabled = false;
-            this.cellNameBox.Location = new System.Drawing.Point(15, 390);
+            this.cellNameBox.Location = new System.Drawing.Point(15, 395);
             this.cellNameBox.Name = "cellNameBox";
             this.cellNameBox.ReadOnly = true;
             this.cellNameBox.Size = new System.Drawing.Size(100, 20);
@@ -120,7 +120,7 @@
             // 
             this.cellValueBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.cellValueBox.Enabled = false;
-            this.cellValueBox.Location = new System.Drawing.Point(144, 390);
+            this.cellValueBox.Location = new System.Drawing.Point(144, 395);
             this.cellValueBox.Name = "cellValueBox";
             this.cellValueBox.ReadOnly = true;
             this.cellValueBox.Size = new System.Drawing.Size(100, 20);
@@ -129,7 +129,7 @@
             // cellContentsBox
             // 
             this.cellContentsBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.cellContentsBox.Location = new System.Drawing.Point(15, 430);
+            this.cellContentsBox.Location = new System.Drawing.Point(15, 435);
             this.cellContentsBox.Name = "cellContentsBox";
             this.cellContentsBox.Size = new System.Drawing.Size(819, 20);
             this.cellContentsBox.TabIndex = 7;
@@ -142,7 +142,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.spreadsheetPanel1.Location = new System.Drawing.Point(0, 27);
             this.spreadsheetPanel1.Name = "spreadsheetPanel1";
-            this.spreadsheetPanel1.Size = new System.Drawing.Size(852, 341);
+            this.spreadsheetPanel1.Size = new System.Drawing.Size(884, 351);
             this.spreadsheetPanel1.TabIndex = 0;
             // 
             // SpreadsheetGUI
@@ -150,7 +150,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
-            this.ClientSize = new System.Drawing.Size(837, 468);
+            this.ClientSize = new System.Drawing.Size(884, 473);
             this.Controls.Add(this.cellContentsBox);
             this.Controls.Add(this.cellValueBox);
             this.Controls.Add(this.cellNameBox);
