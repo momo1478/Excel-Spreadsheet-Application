@@ -27,6 +27,46 @@ namespace FileAnalyzer
             window.CloseEvent += HandleClose;
             window.NewEvent += HandleNew;
             window.SetContentsEvent += Controller_SetContents;
+
+            window.UpdateContentsBoxEvent += Controller_UpdateContentsBox;
+
+            window.UpdateValueBoxEvent += Controller_UpdateValueBox;
+        }
+
+        
+
+        /// <summary>
+        /// Returns the contents of a given cell Name, if an exception occurs, return null.
+        /// </summary>
+        /// <param name="cellName"></param>
+        /// <returns></returns>
+        private object Controller_UpdateContentsBox(string cellName)
+        {
+            try
+            {
+                return model.sheet.GetCellContents(cellName);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Returns the value of a given cell Name, if an exception occurs , return null;
+        /// </summary>
+        /// <param name="arg"></param>
+        /// <returns></returns>
+        private object Controller_UpdateValueBox(string cellName)
+        {
+            try
+            {
+                return model.sheet.GetCellValue(cellName);
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         private void Controller_SetContents(string cellName, string contents)
@@ -47,6 +87,8 @@ namespace FileAnalyzer
                 window.SetCellValue(col, row, "Formula Error");
             } 
         }
+
+        
 
         private static void GetRowsAndCols(string cellName, out int col , out int row)
         {

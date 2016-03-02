@@ -44,16 +44,20 @@ namespace SSGui
             // This could also be done graphically in the designer, as has been
             // demonstrated in class.
             spreadsheetPanel1.SelectionChanged += displaySelection;
-            spreadsheetPanel1.SelectionChanged += updateCellNameBox;
-            spreadsheetPanel1.SelectionChanged += updateCellContentsBox;
+            spreadsheetPanel1.SelectionChanged += updateNameBox;
+            spreadsheetPanel1.SelectionChanged += updateContentsBox;
+            spreadsheetPanel1.SelectionChanged += updateValueBox;
             spreadsheetPanel1.SetSelection(2, 3);
         }
 
         
+
         public event Action<string> FileChosenEvent;
         public event Action CloseEvent;
         public event Action NewEvent;
         public event Action<string, string> SetContentsEvent;
+        public event Func<string, object> UpdateContentsBoxEvent;
+        public event Func<string, object> UpdateValueBoxEvent;
 
         /// <summary>
         /// Every time the selection changes, this method is called with the
@@ -77,7 +81,7 @@ namespace SSGui
         /// Updates the text of cellNameBox
         /// </summary>
         /// <param name="sender"></param>
-        private void updateCellNameBox(SpreadsheetPanel ss)
+        private void updateNameBox(SpreadsheetPanel ss)
         {
             int selectedRow, selectedCol;
             ss.GetSelection(out selectedCol, out selectedRow);
@@ -86,10 +90,25 @@ namespace SSGui
         }
 
         /// <summary>
+        /// Updates the text of cellValueBox
+        /// </summary>
+        /// <param name="sender"></param>
+        private void updateValueBox(SpreadsheetPanel ss)
+        {
+            int selectedRow, selectedCol;
+            ss.GetSelection(out selectedCol, out selectedRow);
+
+            string value;
+            ss.GetValue(selectedCol, selectedRow, out value);
+
+            this.cellValueBox.Text = UpdateValueBoxEvent(ss.GetName(selectedCol, selectedRow))?.ToString() ?? "";
+        }
+
+        /// <summary>
         /// Updates text of CellContentsBox
         /// </summary>
         /// <param name="ss"></param>
-        private void updateCellContentsBox(SpreadsheetPanel ss)
+        private void updateContentsBox(SpreadsheetPanel ss)
         {
             int selectedRow, selectedCol;
             ss.GetSelection(out selectedCol, out selectedRow);
@@ -97,8 +116,10 @@ namespace SSGui
             string value;
             ss.GetValue(selectedCol, selectedRow , out value);
 
-            this.cellContentsBox.Text = value;
+            this.cellContentsBox.Text = UpdateContentsBoxEvent(ss.GetName(selectedCol, selectedRow))?.ToString() ?? "";
+            
         }
+
 
 
         /// <summary>
