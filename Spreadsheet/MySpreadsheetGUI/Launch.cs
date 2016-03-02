@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MySpreadsheetGUI;
+using FileAnalyzer;
 
 namespace MySpreadsheetGUI
 {
@@ -17,7 +19,9 @@ namespace MySpreadsheetGUI
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new SpreadsheetGUI());
+            var context = FileAnalysisApplicationContext.GetContext();
+            FileAnalysisApplicationContext.GetContext().RunNew();
+            Application.Run(context);
         }
     }
 }

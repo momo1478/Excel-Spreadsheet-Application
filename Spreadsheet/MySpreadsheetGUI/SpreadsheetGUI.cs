@@ -39,11 +39,11 @@ namespace SSGui
             // demonstrated in class.
             spreadsheetPanel1.SelectionChanged += displaySelection;
             spreadsheetPanel1.SelectionChanged += updateCellNameBox;
+            spreadsheetPanel1.SelectionChanged += updateCellContentsBox;
             spreadsheetPanel1.SetSelection(2, 3);
         }
 
         
-
         public event Action<string> FileChosenEvent;
         public event Action CloseEvent;
         public event Action NewEvent;
@@ -61,8 +61,8 @@ namespace SSGui
             ss.GetValue(col, row, out value);
             if (value == "") 
             {
-                ss.SetValue(col, row, DateTime.Now.ToLocalTime().ToString("T"));
-                ss.GetValue(col, row, out value);
+                //ss.SetValue(col, row, DateTime.Now.ToLocalTime().ToString("T"));
+                //ss.GetValue(col, row, out value);
                 //MessageBox.Show("Selection: column " + col + " row " + row + " value " + value);
             }
         }
@@ -78,6 +78,22 @@ namespace SSGui
 
             this.cellNameBox.Text = ss.GetName(selectedCol , selectedRow);
         }
+
+        /// <summary>
+        /// Updates text of CellContentsBox
+        /// </summary>
+        /// <param name="ss"></param>
+        private void updateCellContentsBox(SpreadsheetPanel ss)
+        {
+            int selectedRow, selectedCol;
+            ss.GetSelection(out selectedCol, out selectedRow);
+
+            string value;
+            ss.GetValue(selectedCol, selectedRow , out value);
+
+            this.cellContentsBox.Text = value;
+        }
+
 
         /// <summary>
         /// Handles the Click event of the openItem control.
@@ -133,14 +149,16 @@ namespace SSGui
         {
             int rowArg;
             int colArg;
-  
+
             if (SetContentsEvent != null)
             {
                 spreadsheetPanel1.GetSelection(out colArg, out rowArg);
-                SetContentsEvent(spreadsheetPanel1.GetName(colArg , rowArg) , this.cellContentsBox.Text);
-                spreadsheetPanel1.SetSelection(colArg, rowArg);
+                SetContentsEvent(spreadsheetPanel1.GetName(colArg, rowArg), this.cellContentsBox.Text);
+
+                spreadsheetPanel1.SetSelection(colArg, rowArg); 
                 spreadsheetPanel1.SetValue(colArg, rowArg, this.cellContentsBox.Text);
             }
+        
         }
     }
 }

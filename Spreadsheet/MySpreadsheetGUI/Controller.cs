@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text.RegularExpressions;
+using MySpreadsheetGUI;
 
 namespace FileAnalyzer
 {
@@ -31,7 +32,6 @@ namespace FileAnalyzer
         private void Controller_SetContents(string cellName, string contents)
         {
             model.sheet.SetContentsOfCell(cellName, contents);
-            
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace FileAnalyzer
         /// </summary>
         private void HandleNew()
         {
-            window.OpenNew();
+            FileAnalysisApplicationContext.GetContext().RunNew();
         }
     }
 }
