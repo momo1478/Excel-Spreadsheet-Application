@@ -4,6 +4,8 @@ using System.Text.RegularExpressions;
 using MySpreadsheetGUI;
 using System.Diagnostics;
 using Formulas;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace FileAnalyzer
 {
@@ -93,11 +95,21 @@ namespace FileAnalyzer
                 int row, col;
                 GetRowsAndCols(cellName, out col, out row);
 
-                model.sheet.SetContentsOfCell(cellName, contents);
+               List<string> recalculateCells = model.sheet.SetContentsOfCell(cellName, contents).ToList();
+
+                foreach (string name in recalculateCells)
+                {
+                    window.SetCellValue(col, row, model.sheet.GetCellValue(name).ToString());
+                }
             }
             catch(Exception e)
             {
                 Debug.WriteLine(e.ToString() + " From Controller_SetContentsInModel");
+
+                if (e is SS.CircularException)
+                {
+                    window.Message = "Your input created a circular dependency, Stop it... now.";
+                }
             } 
         }
 

@@ -294,12 +294,12 @@ namespace SS
                 HashSet<String> cellWithNameVariables = cellWithName.contents is Formula ? (HashSet<string>)((Formula)cellWithName.contents).GetVariables() : new HashSet<string>();
                 object oldContents = cellWithName.contents;             //save old contents in case of circular exception.
 
-                foreach (string oldCellNames in cellWithNameVariables)  //remove old cell dependencies
+                foreach (string oldCellNames in dg.GetDependents(name))  //remove old cell dependencies
                 {
                     dg.RemoveDependency(name, oldCellNames.ToUpper());
                 }
-                cellWithName.contents = formula;                       //set cell's contents to number.
-                foreach (string newCellNames in formula.GetVariables())//add new cell dependencies
+                cellWithName.contents = formula;                        //set cell's contents to number.
+                foreach (string newCellNames in formula.GetVariables()) //add new cell dependencies
                 {
                     dg.AddDependency(name, newCellNames.ToUpper());
                 }

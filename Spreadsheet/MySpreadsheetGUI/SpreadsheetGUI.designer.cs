@@ -144,6 +144,7 @@
             this.spreadsheetPanel1.Name = "spreadsheetPanel1";
             this.spreadsheetPanel1.Size = new System.Drawing.Size(884, 351);
             this.spreadsheetPanel1.TabIndex = 0;
+            this.spreadsheetPanel1.Load += new System.EventHandler(this.spreadsheetPanel1_Load);
             // 
             // SpreadsheetGUI
             // 

@@ -111,7 +111,7 @@ namespace SSGui
         public string GetName(int col , int row)
         {
             char[] alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
-            return alphabet[col ] + string.Concat(row + 1);
+            return alphabet[col] + string.Concat(row + 1);
         }
 
         /// <summary>

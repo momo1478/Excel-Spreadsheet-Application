@@ -19,8 +19,14 @@ namespace SSGui
 
         public string Message
         {
-            get;
-            set;
+            get
+            {
+                return "";
+            }
+            set
+            {
+                MessageBox.Show(value);
+            } 
         }
 
         protected SpreadsheetPanel SPanel
@@ -195,6 +201,11 @@ namespace SSGui
                 this.SetContentsEvent(spreadsheetPanel1.GetName(colArg, rowArg), this.cellContentsBox.Text);
             }
         
+        }
+
+        private void spreadsheetPanel1_Load(object sender, EventArgs e)
+        {
+            updateNameBox(spreadsheetPanel1);
         }
     }
 }
