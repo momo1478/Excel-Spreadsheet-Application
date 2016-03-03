@@ -172,11 +172,16 @@ namespace SSGui
                 NewEvent();
         }
 
-        private void SetCellValue(int col , int row , string value)
+        public void SetCellValue(int col , int row , string value)
         {
             spreadsheetPanel1.SetValue(col, row, value);
         }
 
+        /// <summary>
+        /// On text change for cellContentsBox
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void cellContentsBox_TextChanged(object sender, EventArgs e)
         {
             int rowArg;
@@ -190,11 +195,6 @@ namespace SSGui
                 this.SetContentsEvent(spreadsheetPanel1.GetName(colArg, rowArg), this.cellContentsBox.Text);
             }
         
-        }
-
-        void ISpreadsheetView.SetCellValue(int col, int row, string value)
-        {
-            SetCellValue(col, row, value);
         }
     }
 }

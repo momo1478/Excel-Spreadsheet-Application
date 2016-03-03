@@ -2,6 +2,8 @@
 using System.IO;
 using System.Text.RegularExpressions;
 using MySpreadsheetGUI;
+using System.Diagnostics;
+using Formulas;
 
 namespace FileAnalyzer
 {
@@ -26,7 +28,9 @@ namespace FileAnalyzer
             window.FileChosenEvent += HandleFileChosen;
             window.CloseEvent += HandleClose;
             window.NewEvent += HandleNew;
-            window.SetContentsEvent += Controller_SetContents;
+
+            window.SetContentsEvent += Controller_SetContentsInModel;
+            window.SetContentsEvent += Controller_SetValueInPanel;
 
             window.UpdateContentsBoxEvent += Controller_UpdateContentsBox;
 
@@ -34,6 +38,8 @@ namespace FileAnalyzer
         }
 
         
+
+
 
         /// <summary>
         /// Returns the contents of a given cell Name, if an exception occurs, return null.
@@ -44,7 +50,14 @@ namespace FileAnalyzer
         {
             try
             {
-                return model.sheet.GetCellContents(cellName);
+                if (model.sheet.GetCellContents(cellName) is Formula)
+                {
+                    return "=" + model.sheet.GetCellContents(cellName);
+                }
+                else
+                {
+                    return model.sheet.GetCellContents(cellName);
+                }
             }
             catch
             {
@@ -68,8 +81,12 @@ namespace FileAnalyzer
                 return null;
             }
         }
-
-        private void Controller_SetContents(string cellName, string contents)
+        /// <summary>
+        /// Attempts to perform SetContentsOfCell
+        /// </summary>
+        /// <param name="cellName"></param>
+        /// <param name="contents"></param>
+        private void Controller_SetContentsInModel(string cellName, string contents)
         {
             try
             {
@@ -77,18 +94,36 @@ namespace FileAnalyzer
                 GetRowsAndCols(cellName, out col, out row);
 
                 model.sheet.SetContentsOfCell(cellName, contents);
-                window.SetCellValue(col, row, model.sheet.GetCellValue(cellName).ToString());
             }
-            catch
+            catch(Exception e)
             {
-                int row, col;
-                GetRowsAndCols(cellName ,out col, out row);
-
-                window.SetCellValue(col, row, "Formula Error");
+                Debug.WriteLine(e.ToString() + " From Controller_SetContentsInModel");
             } 
         }
 
-        
+        /// <summary>
+        /// Sets the value of a cell in the SpreadsheetPanel to it's value according to its model. If any exceptions occur
+        /// sets value of cell in the SpreadsheetPanel to be a "Formula Error"
+        /// </summary>
+        /// <param name="cellName"></param>
+        /// <param name="cellContents"></param>
+        private void Controller_SetValueInPanel(string cellName, string cellContents)
+        {
+            int row, col;
+            GetRowsAndCols(cellName, out col, out row);
+
+            try
+            {
+                window.SetCellValue(col, row, model.sheet.GetCellValue(cellName).ToString());
+            }
+            catch(Exception e)
+            {
+                Debug.WriteLine(e.ToString() + " From Controller_SetValueInPanel");
+            }
+           
+        }
+
+
 
         private static void GetRowsAndCols(string cellName, out int col , out int row)
         {
