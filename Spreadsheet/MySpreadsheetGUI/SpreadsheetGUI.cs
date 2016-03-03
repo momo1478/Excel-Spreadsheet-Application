@@ -190,22 +190,30 @@ namespace SSGui
         /// <param name="e"></param>
         private void cellContentsBox_TextChanged(object sender, EventArgs e)
         {
-            int rowArg;
-            int colArg;
-
-            if (SetContentsEvent != null)
-            {
-                spreadsheetPanel1.GetSelection(out colArg, out rowArg);
-                spreadsheetPanel1.SetSelection(colArg, rowArg);
-
-                this.SetContentsEvent(spreadsheetPanel1.GetName(colArg, rowArg), this.cellContentsBox.Text);
-            }
+            
         
         }
 
         private void spreadsheetPanel1_Load(object sender, EventArgs e)
         {
             updateNameBox(spreadsheetPanel1);
+        }
+
+        private void cellContentsBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            int rowArg;
+            int colArg;
+
+            if (e.KeyData.Equals(Keys.Enter))
+            {
+                if (SetContentsEvent != null)
+                {
+                    spreadsheetPanel1.GetSelection(out colArg, out rowArg);
+                    spreadsheetPanel1.SetSelection(colArg, rowArg);
+
+                    this.SetContentsEvent(spreadsheetPanel1.GetName(colArg, rowArg), this.cellContentsBox.Text);
+                }
+            }
         }
     }
 }

@@ -134,6 +134,7 @@
             this.cellContentsBox.Size = new System.Drawing.Size(819, 20);
             this.cellContentsBox.TabIndex = 7;
             this.cellContentsBox.TextChanged += new System.EventHandler(this.cellContentsBox_TextChanged);
+            this.cellContentsBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.cellContentsBox_KeyDown);
             // 
             // spreadsheetPanel1
             // 
