@@ -21,7 +21,7 @@ namespace FileAnalyzer
 
         event Action<string> SaveEvent;
 
-        string Title { set; }
+        string Title { set; get; }
         string Message { get; set; }
         void DoClose();
         void OpenNew();

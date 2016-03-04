@@ -6,6 +6,7 @@ using System.Diagnostics;
 using Formulas;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Forms;
 
 namespace FileAnalyzer
 {
@@ -26,7 +27,7 @@ namespace FileAnalyzer
         public Controller(ISpreadsheetView window)
         {
             this.window = window;
-            this.model = new Model();
+            this.model = new Model(window);
             window.FileChosenEvent += HandleFileChosen;
             window.CloseEvent += HandleClose;
             window.NewEvent += HandleNew;
@@ -137,7 +138,7 @@ namespace FileAnalyzer
 
 
 
-        private static void GetRowsAndCols(string cellName, out int col , out int row)
+        public static void GetRowsAndCols(string cellName, out int col , out int row)
         {
             col = char.ToUpper(cellName[0]) - 65;
             row = int.Parse(cellName.Substring(1)) - 1;
@@ -185,10 +186,20 @@ namespace FileAnalyzer
             {
                 if (model.sheet.Changed == false)
                 {
-                    window.Message = "No changes to save , bro.";
+                    
                 }
                 else
                 {
+                    if (File.Exists(fileName))
+                    {
+                        DialogResult saveResult = MessageBox.Show("There's a file with this name, would you like to overwrite it?", "Save me!", MessageBoxButtons.YesNo);
+
+                        if (saveResult == DialogResult.No)
+                        {
+                            return;
+                        }
+                    }
+
                     model.WriteFile(fileName);
                     window.Title = fileName;
                 }

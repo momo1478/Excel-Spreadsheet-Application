@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using SS;
 using System.Xml;
+using System.Windows.Forms;
 
 namespace FileAnalyzer
 {
@@ -17,6 +18,11 @@ namespace FileAnalyzer
         internal Spreadsheet sheet;
 
         /// <summary>
+        /// 
+        /// </summary>
+        internal ISpreadsheetView modelWindow;
+
+        /// <summary>
         /// Constructs a Model with an empty contents
         /// </summary>
         public Model()
@@ -25,15 +31,42 @@ namespace FileAnalyzer
         }
 
         /// <summary>
+        /// Constructs a Model with a view reference
+        /// </summary>
+        public Model(ISpreadsheetView iWindow)
+        {
+            sheet = new Spreadsheet();
+            modelWindow = iWindow;
+        }
+
+        /// <summary>
         /// Makes the contents of the named file the new value of contents
         /// </summary>
         public void ReadFile(string filename)
         {
+            if (sheet.Changed == true)
+            {
+                DialogResult saveResult = MessageBox.Show("Opening this file will cause you to lose data, continue?", "Save me!" , MessageBoxButtons.YesNo);
+
+                if (saveResult == DialogResult.No)
+                {
+                    return;
+                }
+            }
             sheet = new Spreadsheet(new StreamReader(filename));
+
+            foreach (var cell in sheet.GetNamesOfAllNonemptyCells())
+            {
+                int col, row;
+                Controller.GetRowsAndCols(cell, out col, out row);
+                modelWindow.SetCellValue(col, row, sheet.GetCellValue(cell).ToString());
+            }
+
         }
 
         public void WriteFile(string foldername)
         {
+            
             sheet.Save(new StreamWriter(foldername));
         }
 
