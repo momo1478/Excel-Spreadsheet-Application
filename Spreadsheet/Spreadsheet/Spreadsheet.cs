@@ -222,11 +222,19 @@ namespace SS
 
             if (cells.TryGetValue(name, out cellWithName))
             {
+                foreach (string oldCellNames in dg.GetDependents(name))  //remove old cell dependencies
+                {
+                    dg.RemoveDependency(name, oldCellNames.ToUpper());
+                }
                 cellWithName.contents = number;                    //set cell's contents to number.
                 cellWithName.value = number;
             }
             else
             {
+                foreach (string oldCellNames in dg.GetDependents(name))  //remove old cell dependencies
+                {
+                    dg.RemoveDependency(name, oldCellNames.ToUpper());
+                }
                 cells.Add(name, new Cell(number, number));                 //or create a cell if it isn't in cells.
             }
 
@@ -417,11 +425,19 @@ namespace SS
 
             if (cells.TryGetValue(name, out cellWithName))
             {
+                foreach (string oldCellNames in dg.GetDependents(name))  //remove old cell dependencies
+                {
+                    dg.RemoveDependency(name, oldCellNames.ToUpper());
+                }
                 cellWithName.contents = text;                     //set cell's contents to number.
                 cellWithName.value = text;
             }
             else
             {
+                foreach (string oldCellNames in dg.GetDependents(name))  //remove old cell dependencies
+                {
+                    dg.RemoveDependency(name, oldCellNames.ToUpper());
+                }
                 cells.Add(name, new Cell(text, text));            //or create a cell if it isn't in cells.
             }
 

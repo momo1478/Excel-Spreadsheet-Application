@@ -19,6 +19,8 @@ namespace FileAnalyzer
 
         event Func<string, object> UpdateValueBoxEvent;
 
+        event Action<string> SaveEvent;
+
         string Title { set; }
         string Message { get; set; }
         void DoClose();

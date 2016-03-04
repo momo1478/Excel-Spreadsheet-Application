@@ -32,6 +32,11 @@ namespace FileAnalyzer
             sheet = new Spreadsheet(new StreamReader(filename));
         }
 
+        public void WriteFile(string foldername)
+        {
+            sheet.Save(new StreamWriter(foldername));
+        }
+
         ///// <summary>
         ///// Returns the number of chars in contents.
         ///// </summary>

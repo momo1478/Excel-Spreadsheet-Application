@@ -30,6 +30,7 @@ namespace FileAnalyzer
             window.FileChosenEvent += HandleFileChosen;
             window.CloseEvent += HandleClose;
             window.NewEvent += HandleNew;
+            window.SaveEvent += HandleSave;
 
             window.SetContentsEvent += Controller_SetContentsInModel;
             window.SetContentsEvent += Controller_SetValueInPanel;
@@ -37,11 +38,9 @@ namespace FileAnalyzer
             window.UpdateContentsBoxEvent += Controller_UpdateContentsBox;
 
             window.UpdateValueBoxEvent += Controller_UpdateValueBox;
+
+            
         }
-
-        
-
-
 
         /// <summary>
         /// Returns the contents of a given cell Name, if an exception occurs, return null.
@@ -174,6 +173,31 @@ namespace FileAnalyzer
         private void HandleNew()
         {
             FileAnalysisApplicationContext.GetContext().RunNew();
+        }
+
+        /// <summary>
+        /// Handles request to Save to a file location
+        /// </summary>
+        /// <param name="obj"></param>
+        private void HandleSave(string fileName)
+        {
+            try
+            {
+                if (model.sheet.Changed == false)
+                {
+                    window.Message = "No changes to save , bro.";
+                }
+                else
+                {
+                    model.WriteFile(fileName);
+                    window.Title = fileName;
+                }
+            }
+            catch (Exception ex)
+            {
+                window.Message = "Unable to open file\n" + ex.Message;
+            }
+            
         }
     }
 }

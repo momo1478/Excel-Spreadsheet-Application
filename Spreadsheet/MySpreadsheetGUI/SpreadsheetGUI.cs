@@ -66,6 +66,7 @@ namespace SSGui
         public event Action<string, string> SetContentsEvent;
         public event Func<string, object> UpdateContentsBoxEvent;
         public event Func<string, object> UpdateValueBoxEvent;
+        public event Action<string> SaveEvent;
 
         /// <summary>
         /// Every time the selection changes, this method is called with the
@@ -127,23 +128,6 @@ namespace SSGui
 
             this.cellContentsBox.Text = UpdateContentsBoxEvent(ss.GetName(selectedCol, selectedRow))?.ToString() ?? "";
             
-        }
-
-
-
-        /// <summary>
-        /// Handles the Click event of the openItem control.
-        /// </summary>
-        private void OpenItem_Click(object sender, EventArgs e)
-        {
-            //DialogResult result = fileDialog.ShowDialog();
-            //if (result == DialogResult.Yes || result == DialogResult.OK)
-            //{
-            //    if (FileChosenEvent != null)
-            //    {
-            //        FileChosenEvent(fileDialog.FileName);
-            //    }
-            //}
         }
 
         /// <summary>
@@ -215,6 +199,30 @@ namespace SSGui
                     spreadsheetPanel1.SetSelection(colArg, rowArg);
 
                     this.SetContentsEvent(spreadsheetPanel1.GetName(colArg, rowArg), this.cellContentsBox.Text);
+                }
+            }
+        }
+
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DialogResult result = openFileDialog1.ShowDialog();
+            if (result == DialogResult.Yes || result == DialogResult.OK)
+            {
+                if (FileChosenEvent != null)
+                {
+                    FileChosenEvent(openFileDialog1.FileName);
+                }
+            }
+        }
+
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DialogResult result = saveFileDialog1.ShowDialog();
+            if (result == DialogResult.Yes || result == DialogResult.OK)
+            {
+                if (SaveEvent != null)
+                {
+                    SaveEvent(saveFileDialog1.FileName);
                 }
             }
         }
