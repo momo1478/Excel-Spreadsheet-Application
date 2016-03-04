@@ -93,12 +93,13 @@ namespace FileAnalyzer
             try
             {
                 int row, col;
-                GetRowsAndCols(cellName, out col, out row);
+                //GetRowsAndCols(cellName, out col, out row);
 
                List<string> recalculateCells = model.sheet.SetContentsOfCell(cellName, contents).ToList();
 
                 foreach (string name in recalculateCells)
                 {
+                    GetRowsAndCols(name, out col, out row);
                     window.SetCellValue(col, row, model.sheet.GetCellValue(name).ToString());
                 }
             }
@@ -126,7 +127,7 @@ namespace FileAnalyzer
 
             try
             {
-                window.SetCellValue(col, row, model.sheet.GetCellValue(cellName).ToString());
+                //window.SetCellValue(col, row, model.sheet.GetCellValue(cellName).ToString());
             }
             catch(Exception e)
             {

@@ -54,6 +54,8 @@ namespace SSGui
             spreadsheetPanel1.SelectionChanged += updateContentsBox;
             spreadsheetPanel1.SelectionChanged += updateValueBox;
             spreadsheetPanel1.SetSelection(2, 3);
+            cellContentsBox.Focus();
+            
         }
 
         
@@ -75,12 +77,13 @@ namespace SSGui
             String value;
             ss.GetSelection(out col, out row);
             ss.GetValue(col, row, out value);
-            if (value == "") 
-            {
-                //ss.SetValue(col, row, DateTime.Now.ToLocalTime().ToString("T"));
-                //ss.GetValue(col, row, out value);
-                //MessageBox.Show("Selection: column " + col + " row " + row + " value " + value);
-            }
+            this.cellContentsBox.Focus();
+            //if (value == "") 
+            //{
+            //    //ss.SetValue(col, row, DateTime.Now.ToLocalTime().ToString("T"));
+            //    //ss.GetValue(col, row, out value);
+            //    //MessageBox.Show("Selection: column " + col + " row " + row + " value " + value);
+            //}
         }
 
         /// <summary>
