@@ -445,6 +445,24 @@ namespace SS
                 cells.Add(name, new Cell(text, text));            //or create a cell if it isn't in cells.
             }
 
+            foreach (string cellName in GetCellsToRecalculate(name))
+            {
+                Cell cellWithNameA;
+                cells.TryGetValue(cellName, out cellWithNameA);
+
+                if (cellWithNameA?.contents != null && cellWithNameA?.contents is Formula)
+                {
+                    try
+                    {
+                        cells[cellName].value = ((Formula)cells[cellName].contents).Evaluate(lookup);
+                    }
+                    catch (Exception)
+                    {
+                        cells[cellName].value = new FormulaError("Variable not defined or is not double.");
+                    }
+                }
+            }
+
             Changed = true;
 
             HashSet<String> result = new HashSet<string>(GetCellsToRecalculate(name));
