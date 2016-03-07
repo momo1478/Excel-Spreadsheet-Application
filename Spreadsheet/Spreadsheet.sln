@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PS6GradingTests", "PS6Gradi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySpreadsheetGUI", "MySpreadsheetGUI\MySpreadsheetGUI.csproj", "{D304F7F1-4AE2-4EF8-98A4-860189976D94}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GUITest", "GUITest\GUITest.csproj", "{97CFFBE2-FBAF-45E2-BDE5-BAF25F9AFECB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -149,6 +151,18 @@ Global
 		{D304F7F1-4AE2-4EF8-98A4-860189976D94}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{D304F7F1-4AE2-4EF8-98A4-860189976D94}.Release|x86.ActiveCfg = Release|Any CPU
 		{D304F7F1-4AE2-4EF8-98A4-860189976D94}.Release|x86.Build.0 = Release|Any CPU
+		{97CFFBE2-FBAF-45E2-BDE5-BAF25F9AFECB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97CFFBE2-FBAF-45E2-BDE5-BAF25F9AFECB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97CFFBE2-FBAF-45E2-BDE5-BAF25F9AFECB}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{97CFFBE2-FBAF-45E2-BDE5-BAF25F9AFECB}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{97CFFBE2-FBAF-45E2-BDE5-BAF25F9AFECB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{97CFFBE2-FBAF-45E2-BDE5-BAF25F9AFECB}.Debug|x86.Build.0 = Debug|Any CPU
+		{97CFFBE2-FBAF-45E2-BDE5-BAF25F9AFECB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97CFFBE2-FBAF-45E2-BDE5-BAF25F9AFECB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97CFFBE2-FBAF-45E2-BDE5-BAF25F9AFECB}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{97CFFBE2-FBAF-45E2-BDE5-BAF25F9AFECB}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{97CFFBE2-FBAF-45E2-BDE5-BAF25F9AFECB}.Release|x86.ActiveCfg = Release|Any CPU
+		{97CFFBE2-FBAF-45E2-BDE5-BAF25F9AFECB}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
