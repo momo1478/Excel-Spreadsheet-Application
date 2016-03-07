@@ -328,6 +328,10 @@ namespace SS
             {
                 cellWithName = new Cell(formula);                        //assign for helper method.
 
+                foreach (string oldCellNames in dg.GetDependents(name))  //remove old cell dependencies
+                {
+                    dg.RemoveDependency(name, oldCellNames.ToUpper());
+                }
                 cells.Add(name, cellWithName);                           //or create a cell if it isn't in cells
                 foreach (string cellName in formula.GetVariables())      //add new cell dependencies
                 {

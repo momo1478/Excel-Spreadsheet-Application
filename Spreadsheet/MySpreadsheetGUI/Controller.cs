@@ -34,13 +34,13 @@ namespace FileAnalyzer
             window.SaveEvent += HandleSave;
 
             window.SetContentsEvent += Controller_SetContentsInModel;
-            window.SetContentsEvent += Controller_SetValueInPanel;
+            //window.SetContentsEvent += Controller_SetValueInPanel;
 
             window.UpdateContentsBoxEvent += Controller_UpdateContentsBox;
 
             window.UpdateValueBoxEvent += Controller_UpdateValueBox;
 
-            
+
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace FileAnalyzer
                 int row, col;
                 //GetRowsAndCols(cellName, out col, out row);
 
-               List<string> recalculateCells = model.sheet.SetContentsOfCell(cellName, contents).ToList();
+                List<string> recalculateCells = model.sheet.SetContentsOfCell(cellName, contents).ToList();
 
                 foreach (string name in recalculateCells)
                 {
@@ -103,7 +103,7 @@ namespace FileAnalyzer
                     window.SetCellValue(col, row, model.sheet.GetCellValue(name).ToString());
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Debug.WriteLine(e.ToString() + " From Controller_SetContentsInModel");
 
@@ -111,7 +111,7 @@ namespace FileAnalyzer
                 {
                     window.Message = "Your input created a circular dependency, Stop it... now.";
                 }
-            } 
+            }
         }
 
         /// <summary>
@@ -129,16 +129,16 @@ namespace FileAnalyzer
             {
                 //window.SetCellValue(col, row, model.sheet.GetCellValue(cellName).ToString());
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Debug.WriteLine(e.ToString() + " From Controller_SetValueInPanel");
             }
-           
+
         }
 
 
 
-        public static void GetRowsAndCols(string cellName, out int col , out int row)
+        public static void GetRowsAndCols(string cellName, out int col, out int row)
         {
             col = char.ToUpper(cellName[0]) - 65;
             row = int.Parse(cellName.Substring(1)) - 1;
@@ -184,31 +184,26 @@ namespace FileAnalyzer
         {
             try
             {
-                if (model.sheet.Changed == false)
+
+                if (File.Exists(fileName))
                 {
-                    
-                }
-                else
-                {
-                    if (File.Exists(fileName))
+                    DialogResult saveResult = MessageBox.Show("There's a file with this name, would you like to overwrite it?", "Save me!", MessageBoxButtons.YesNo);
+
+                    if (saveResult == DialogResult.No)
                     {
-                        DialogResult saveResult = MessageBox.Show("There's a file with this name, would you like to overwrite it?", "Save me!", MessageBoxButtons.YesNo);
-
-                        if (saveResult == DialogResult.No)
-                        {
-                            return;
-                        }
+                        return;
                     }
-
-                    model.WriteFile(fileName);
-                    window.Title = fileName;
                 }
+
+                model.WriteFile(fileName);
+                window.Title = fileName;
+
             }
             catch (Exception ex)
             {
                 window.Message = "Unable to open file\n" + ex.Message;
             }
-            
+
         }
     }
 }
