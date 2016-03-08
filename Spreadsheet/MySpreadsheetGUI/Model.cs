@@ -18,7 +18,7 @@ namespace FileAnalyzer
         internal Spreadsheet sheet;
 
         /// <summary>
-        /// 
+        /// View Access
         /// </summary>
         internal ISpreadsheetView modelWindow;
 
@@ -33,10 +33,24 @@ namespace FileAnalyzer
         /// <summary>
         /// Constructs a Model with a view reference
         /// </summary>
-        public Model(ISpreadsheetView iWindow)
+        public Model(ISpreadsheetView iWindow , Spreadsheet iSheet = null)
         {
-            sheet = new Spreadsheet();
             modelWindow = iWindow;
+            if (iSheet == null)
+            {
+                sheet = new Spreadsheet();
+            }
+            else
+            {
+                sheet = iSheet;
+
+                foreach (var cell in sheet.GetNamesOfAllNonemptyCells())
+                {
+                    int col, row;
+                    Controller.GetRowsAndCols(cell, out col, out row);
+                    modelWindow.SetCellValue(col, row, sheet.GetCellValue(cell).ToString());
+                }
+            }
         }
 
         /// <summary>
@@ -46,28 +60,31 @@ namespace FileAnalyzer
         {
             if (sheet.Changed == true)
             {
-                DialogResult saveResult = MessageBox.Show("Opening this file will cause you to lose data, continue?", "Save me!" , MessageBoxButtons.YesNo);
+                DialogResult saveResult = MessageBox.Show("Opening this file might cause you to lose data, continue?", "Save me!" , MessageBoxButtons.YesNo);
 
                 if (saveResult == DialogResult.No)
                 {
                     return;
                 }
             }
-            sheet = new Spreadsheet(new StreamReader(filename));
+            modelWindow.OpenNew(new Spreadsheet(new StreamReader(filename)));
 
-            foreach (var cell in sheet.GetNamesOfAllNonemptyCells())
-            {
-                int col, row;
-                Controller.GetRowsAndCols(cell, out col, out row);
-                modelWindow.SetCellValue(col, row, sheet.GetCellValue(cell).ToString());
-            }
+            //sheet = new Spreadsheet(new StreamReader(filename));
+
+            //foreach (var cell in sheet.GetNamesOfAllNonemptyCells())
+            //{
+            //    int col, row;
+            //    Controller.GetRowsAndCols(cell, out col, out row);
+            //    modelWindow.SetCellValue(col, row, sheet.GetCellValue(cell).ToString());
+            //}
 
         }
 
         public void WriteFile(string foldername)
         {
-            
-            sheet.Save(new StreamWriter(foldername));
+            StreamWriter saver = new StreamWriter(foldername);
+            sheet.Save(saver);
+            saver.Close();
         }
 
         ///// <summary>

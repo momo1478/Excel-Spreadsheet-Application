@@ -3,13 +3,14 @@ using System.Windows.Forms;
 using SSGui;
 using FileAnalyzer;
 using System.Diagnostics;
+using SS;
 
 namespace SSGui
 {
     /// <summary>
     /// Example of using a SpreadsheetPanel object
     /// </summary>
-    public partial class SpreadsheetGUI : Form , ISpreadsheetView
+    public partial class SpreadsheetGUI : Form, ISpreadsheetView
     {
         public string Title
         {
@@ -26,12 +27,12 @@ namespace SSGui
             set
             {
                 MessageBox.Show(value);
-            } 
+            }
         }
 
         protected SpreadsheetPanel SPanel
         {
-            get { return spreadsheetPanel1; }    
+            get { return spreadsheetPanel1; }
         }
 
         /// <summary>
@@ -55,10 +56,9 @@ namespace SSGui
             spreadsheetPanel1.SelectionChanged += updateValueBox;
             spreadsheetPanel1.SetSelection(2, 3);
             cellContentsBox.Focus();
-            
         }
 
-        
+
 
         public event Action<string> FileChosenEvent;
         public event Action CloseEvent;
@@ -96,7 +96,7 @@ namespace SSGui
             int selectedRow, selectedCol;
             ss.GetSelection(out selectedCol, out selectedRow);
 
-            this.cellNameBox.Text = ss.GetName(selectedCol , selectedRow);
+            this.cellNameBox.Text = ss.GetName(selectedCol, selectedRow);
         }
 
         /// <summary>
@@ -124,10 +124,10 @@ namespace SSGui
             ss.GetSelection(out selectedCol, out selectedRow);
 
             string value;
-            ss.GetValue(selectedCol, selectedRow , out value);
+            ss.GetValue(selectedCol, selectedRow, out value);
 
             this.cellContentsBox.Text = UpdateContentsBoxEvent(ss.GetName(selectedCol, selectedRow))?.ToString() ?? "";
-            
+
         }
 
         /// <summary>
@@ -159,13 +159,19 @@ namespace SSGui
             FileAnalysisApplicationContext.GetContext().RunNew();
         }
 
+        public void OpenNew(Spreadsheet sheet)
+        {
+            FileAnalysisApplicationContext context = FileAnalysisApplicationContext.GetContext();
+            context.RunNew(sheet);
+        }
+
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if(NewEvent != null)
+            if (NewEvent != null)
                 NewEvent();
         }
 
-        public void SetCellValue(int col , int row , string value)
+        public void SetCellValue(int col, int row, string value)
         {
             spreadsheetPanel1.SetValue(col, row, value);
         }
@@ -178,12 +184,12 @@ namespace SSGui
         private void cellContentsBox_TextChanged(object sender, EventArgs e)
         {
             
-        
         }
 
         private void spreadsheetPanel1_Load(object sender, EventArgs e)
         {
             updateNameBox(spreadsheetPanel1);
+            cellContentsBox.Focus();
         }
 
         private void cellContentsBox_KeyDown(object sender, KeyEventArgs e)

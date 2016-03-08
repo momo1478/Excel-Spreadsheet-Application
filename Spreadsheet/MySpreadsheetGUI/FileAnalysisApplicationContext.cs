@@ -1,5 +1,6 @@
 ﻿using SSGui;
 using System.Windows.Forms;
+using SS;
 
 namespace FileAnalyzer
 {
@@ -42,6 +43,25 @@ namespace FileAnalyzer
             // Create the window and the controller
             SpreadsheetGUI window = new SpreadsheetGUI();
             new Controller(window);
+
+            // One more form is running
+            windowCount++;
+
+            // When this form closes, we want to find out
+            window.FormClosed += (o, e) => { if (--windowCount <= 0) ExitThread(); };
+
+            // Run the form
+            window.Show();
+        }
+
+        /// <summary>
+        /// Runs a form in this application context
+        /// </summary>
+        public void RunNew(Spreadsheet sheet)
+        {
+            // Create the window and the controller
+            SpreadsheetGUI window = new SpreadsheetGUI();
+            new Controller(window , sheet);
 
             // One more form is running
             windowCount++;

@@ -1,4 +1,5 @@
 ﻿using System;
+using SS;
 
 namespace FileAnalyzer
 {
@@ -25,6 +26,7 @@ namespace FileAnalyzer
         string Message { get; set; }
         void DoClose();
         void OpenNew();
+        void OpenNew(Spreadsheet sheet);
         void SetCellValue(int col, int row, string value);
     }
 

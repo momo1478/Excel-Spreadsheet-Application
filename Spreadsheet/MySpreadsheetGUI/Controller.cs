@@ -7,6 +7,7 @@ using Formulas;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+using SS;
 
 namespace FileAnalyzer
 {
@@ -24,17 +25,16 @@ namespace FileAnalyzer
         /// <summary>
         /// Begins controlling window.
         /// </summary>
-        public Controller(ISpreadsheetView window)
+        public Controller(ISpreadsheetView window , Spreadsheet sheet = null)
         {
             this.window = window;
-            this.model = new Model(window);
+            this.model = new Model(window , sheet);
             window.FileChosenEvent += HandleFileChosen;
             window.CloseEvent += HandleClose;
             window.NewEvent += HandleNew;
             window.SaveEvent += HandleSave;
 
             window.SetContentsEvent += Controller_SetContentsInModel;
-            //window.SetContentsEvent += Controller_SetValueInPanel;
 
             window.UpdateContentsBoxEvent += Controller_UpdateContentsBox;
 
@@ -113,30 +113,6 @@ namespace FileAnalyzer
                 }
             }
         }
-
-        /// <summary>
-        /// Sets the value of a cell in the SpreadsheetPanel to it's value according to its model. If any exceptions occur
-        /// sets value of cell in the SpreadsheetPanel to be a "Formula Error"
-        /// </summary>
-        /// <param name="cellName"></param>
-        /// <param name="cellContents"></param>
-        private void Controller_SetValueInPanel(string cellName, string cellContents)
-        {
-            int row, col;
-            GetRowsAndCols(cellName, out col, out row);
-
-            try
-            {
-                //window.SetCellValue(col, row, model.sheet.GetCellValue(cellName).ToString());
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e.ToString() + " From Controller_SetValueInPanel");
-            }
-
-        }
-
-
 
         public static void GetRowsAndCols(string cellName, out int col, out int row)
         {
