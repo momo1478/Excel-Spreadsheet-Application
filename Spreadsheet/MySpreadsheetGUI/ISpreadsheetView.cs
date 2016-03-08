@@ -1,5 +1,6 @@
 ﻿using System;
 using SS;
+using SSGui;
 
 namespace FileAnalyzer
 {
@@ -28,6 +29,10 @@ namespace FileAnalyzer
         void OpenNew();
         void OpenNew(Spreadsheet sheet);
         void SetCellValue(int col, int row, string value);
+        //void updateNameBox(SpreadsheetPanel ss);
+        //void updateValueBox(SpreadsheetPanel ss);
+        //void updateContentsBox(SpreadsheetPanel ss);
+
     }
 
 }

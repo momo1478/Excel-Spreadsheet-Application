@@ -68,16 +68,6 @@ namespace FileAnalyzer
                 }
             }
             modelWindow.OpenNew(new Spreadsheet(new StreamReader(filename)));
-
-            //sheet = new Spreadsheet(new StreamReader(filename));
-
-            //foreach (var cell in sheet.GetNamesOfAllNonemptyCells())
-            //{
-            //    int col, row;
-            //    Controller.GetRowsAndCols(cell, out col, out row);
-            //    modelWindow.SetCellValue(col, row, sheet.GetCellValue(cell).ToString());
-            //}
-
         }
 
         public void WriteFile(string foldername)

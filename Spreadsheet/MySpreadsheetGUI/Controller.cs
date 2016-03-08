@@ -83,6 +83,7 @@ namespace FileAnalyzer
                 return null;
             }
         }
+        
         /// <summary>
         /// Attempts to perform SetContentsOfCell
         /// </summary>
@@ -114,6 +115,12 @@ namespace FileAnalyzer
             }
         }
 
+        /// <summary>
+        /// Parses out a cellName into its appropriate row and column to be used in the grid.
+        /// </summary>
+        /// <param name="cellName"></param>
+        /// <param name="col"></param>
+        /// <param name="row"></param>
         public static void GetRowsAndCols(string cellName, out int col, out int row)
         {
             col = char.ToUpper(cellName[0]) - 65;
@@ -149,7 +156,7 @@ namespace FileAnalyzer
         /// </summary>
         private void HandleNew()
         {
-            FileAnalysisApplicationContext.GetContext().RunNew();
+            window.OpenNew();
         }
 
         /// <summary>

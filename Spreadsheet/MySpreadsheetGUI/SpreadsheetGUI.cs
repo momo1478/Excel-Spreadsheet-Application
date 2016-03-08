@@ -91,7 +91,7 @@ namespace SSGui
         /// Updates the text of cellNameBox
         /// </summary>
         /// <param name="sender"></param>
-        private void updateNameBox(SpreadsheetPanel ss)
+        public void updateNameBox(SpreadsheetPanel ss)
         {
             int selectedRow, selectedCol;
             ss.GetSelection(out selectedCol, out selectedRow);
@@ -103,7 +103,7 @@ namespace SSGui
         /// Updates the text of cellValueBox
         /// </summary>
         /// <param name="sender"></param>
-        private void updateValueBox(SpreadsheetPanel ss)
+        public void updateValueBox(SpreadsheetPanel ss)
         {
             int selectedRow, selectedCol;
             ss.GetSelection(out selectedCol, out selectedRow);
@@ -118,7 +118,7 @@ namespace SSGui
         /// Updates text of CellContentsBox
         /// </summary>
         /// <param name="ss"></param>
-        private void updateContentsBox(SpreadsheetPanel ss)
+        public void updateContentsBox(SpreadsheetPanel ss)
         {
             int selectedRow, selectedCol;
             ss.GetSelection(out selectedCol, out selectedRow);
