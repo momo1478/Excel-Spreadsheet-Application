@@ -113,7 +113,7 @@ namespace FileAnalyzer
                 }
                 if (e is FormulaFormatException)
                 {
-                    window.Message = "A Cell you input was off the board! I can't let you do that.";
+                    window.Message = "Your input wasn't a valid formula or referenced a cell that was off the board! I can't let you do that.";
                 } 
 
             }
