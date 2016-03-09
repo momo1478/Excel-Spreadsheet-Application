@@ -66,9 +66,34 @@ namespace GUITest
             CalledOpenNew = true;
         }
 
+        public void FireSetContentsEvent(int col , int row , string value)
+        {
+            if (SetContentsEvent != null)
+            {
+                SetContentsEvent(spreadsheetPanel1.GetName(col, row), value);
+            }
+        }
+
         public void SetCellValue(int col, int row, string value)
         {
             spreadsheetPanel1.SetValue(col, row, value);
+        }
+
+        public string GetCellValue(int col, int row)
+        {
+            string val;
+            spreadsheetPanel1.GetValue(col, row, out val);
+            return val;
+        }
+
+        public void SelectCell(int col , int row)
+        {
+            spreadsheetPanel1.SetSelection(col, row);
+        }
+
+        public void GetSelected(out int col , out int row)
+        {
+            spreadsheetPanel1.GetSelection(out col, out row);
         }
 
         public void FireOpenEvent()
@@ -111,7 +136,7 @@ namespace GUITest
             }
         }
 
-        public void FireUpdateContentsBoEventx(string cellName, SpreadsheetPanel ss = null)
+        public void FireUpdateContentsBoxEvent(string cellName, SpreadsheetPanel ss = null)
         {
             if (UpdateContentsBoxEvent != null)
             {

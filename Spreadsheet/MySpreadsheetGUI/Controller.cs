@@ -95,7 +95,6 @@ namespace FileAnalyzer
             {
                 int row, col;
                 //GetRowsAndCols(cellName, out col, out row);
-
                 List<string> recalculateCells = model.sheet.SetContentsOfCell(cellName, contents).ToList();
 
                 foreach (string name in recalculateCells)
@@ -112,6 +111,11 @@ namespace FileAnalyzer
                 {
                     window.Message = "Your input created a circular dependency, Stop it... now.";
                 }
+                if (e is FormulaFormatException)
+                {
+                    window.Message = "A Cell you input was off the board! I can't let you do that.";
+                } 
+
             }
         }
 
@@ -167,17 +171,6 @@ namespace FileAnalyzer
         {
             try
             {
-
-                if (File.Exists(fileName))
-                {
-                    DialogResult saveResult = MessageBox.Show("There's a file with this name, would you like to overwrite it?", "Save me!", MessageBoxButtons.YesNo);
-
-                    if (saveResult == DialogResult.No)
-                    {
-                        return;
-                    }
-                }
-
                 model.WriteFile(fileName);
                 window.Title = fileName;
 

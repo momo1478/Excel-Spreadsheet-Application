@@ -27,7 +27,7 @@ namespace FileAnalyzer
         /// </summary>
         public Model()
         {
-            sheet = new Spreadsheet();
+            sheet = new Spreadsheet(new Regex("^[A-Za-z][1-9][0-9]?"));
         }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace FileAnalyzer
             modelWindow = iWindow;
             if (iSheet == null)
             {
-                sheet = new Spreadsheet();
+                sheet = new Spreadsheet(new Regex("[A-Za-z][1-9][0-9]?"));
             }
             else
             {
@@ -76,57 +76,5 @@ namespace FileAnalyzer
             sheet.Save(saver);
             saver.Close();
         }
-
-        ///// <summary>
-        ///// Returns the number of chars in contents.
-        ///// </summary>
-        //public int CountChars()
-        //{
-        //    return contents.Length;
-        //}
-
-        ///// <summary>
-        ///// Returns the number of words in contents.
-        ///// </summary>
-        //public int CountWords()
-        //{
-        //    StringReader reader = new StringReader(contents);
-        //    int count = 0;
-        //    string line;
-        //    while ((line = reader.ReadLine()) != null)
-        //    {
-        //        count += Regex.Split(line, @"\s+").Length;
-        //    }
-        //    return count;
-        //}
-
-        ///// <summary>
-        ///// Returns the number of lines in contents.
-        ///// </summary>
-        //public int CountLines()
-        //{
-        //    StringReader reader = new StringReader(contents);
-        //    int count = 0;
-        //    string line;
-        //    while ((line = reader.ReadLine()) != null)
-        //    {
-        //        count++;
-        //    }
-        //    return count;
-        //}
-
-        ///// <summary>
-        ///// Counts the number of times substring occurs in contents.
-        ///// </summary>
-        //public int CountSubstrings(string substring)
-        //{
-        //    int count = 0;
-        //    int index = -1;
-        //    while (((index < contents.Length) && (index = contents.IndexOf(substring, index + 1)) >= 0))
-        //    {
-        //        count++;
-        //    }
-        //    return count;
-        //}
     }
 }

@@ -510,7 +510,7 @@ namespace SS
         {
             return !ReferenceEquals(name, null) && Regex.Matches(name, "([A-Za-z]+[1-9]{1}[0-9]*)$").Count == 1
                    && Regex.Matches(name, "([A-Za-z]+[1-9]{1}[0-9]*)$")[0].Value.Equals(name)
-                   && isValid.IsMatch(name);
+                   && Regex.Matches(name , isValid.ToString()).Count == 1 && Regex.Matches(name, isValid.ToString())[0].Value.Equals(name);
         }
 
         //Added in PS6

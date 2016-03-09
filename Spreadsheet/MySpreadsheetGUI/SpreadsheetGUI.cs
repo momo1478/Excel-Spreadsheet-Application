@@ -50,7 +50,7 @@ namespace SSGui
 
             // This could also be done graphically in the designer, as has been
             // demonstrated in class.
-            spreadsheetPanel1.SelectionChanged += displaySelection;
+            //spreadsheetPanel1.SelectionChanged += displaySelection;
             spreadsheetPanel1.SelectionChanged += updateNameBox;
             spreadsheetPanel1.SelectionChanged += updateContentsBox;
             spreadsheetPanel1.SelectionChanged += updateValueBox;
@@ -204,7 +204,9 @@ namespace SSGui
                     spreadsheetPanel1.GetSelection(out colArg, out rowArg);
                     spreadsheetPanel1.SetSelection(colArg, rowArg);
 
+
                     this.SetContentsEvent(spreadsheetPanel1.GetName(colArg, rowArg), this.cellContentsBox.Text);
+                    updateValueBox(spreadsheetPanel1);
                 }
             }
         }
