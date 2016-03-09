@@ -23,7 +23,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PS6GradingTests", "PS6Gradi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySpreadsheetGUI", "MySpreadsheetGUI\MySpreadsheetGUI.csproj", "{D304F7F1-4AE2-4EF8-98A4-860189976D94}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GUITest", "GUITest\GUITest.csproj", "{97CFFBE2-FBAF-45E2-BDE5-BAF25F9AFECB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControllerTester", "GUITest\ControllerTester.csproj", "{97CFFBE2-FBAF-45E2-BDE5-BAF25F9AFECB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

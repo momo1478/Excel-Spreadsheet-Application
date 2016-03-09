@@ -234,5 +234,13 @@ namespace SSGui
                 }
             }
         }
+
+        private void helpToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Message = "To write to a cell , select the cell by clicking on it and \n"
+                     + "modify the Cell Contents text box.\n "
+                     + "Press enter to commit the changes.\n ";
+
+        }
     }
 }

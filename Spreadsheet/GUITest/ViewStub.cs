@@ -26,15 +26,7 @@ namespace GUITest
 
         public string Message
         {
-            get
-            {
-                return "";
-            }
-
-            set
-            {
-                Message = value;
-            }
+            get;  set;
         }
 
         public string Title
@@ -64,6 +56,8 @@ namespace GUITest
         public void OpenNew(Spreadsheet sheet)
         {
             CalledOpenNew = true;
+
+            Message = "Load success!";
         }
 
         public void FireSetContentsEvent(int col , int row , string value)
@@ -120,7 +114,7 @@ namespace GUITest
             }
         }
 
-        public void FileFileChosenEvent(string filename)
+        public void FireFileChosenEvent(string filename)
         {
             if (FileChosenEvent != null)
             {
@@ -132,7 +126,7 @@ namespace GUITest
         {
             if (UpdateValueBoxEvent != null)
             {
-                ValueBox = UpdateValueBoxEvent(cellName).ToString();
+                ValueBox = UpdateValueBoxEvent(cellName)?.ToString() ?? "";
             }
         }
 
@@ -140,7 +134,7 @@ namespace GUITest
         {
             if (UpdateContentsBoxEvent != null)
             {
-                ContentsBox = UpdateContentsBoxEvent(cellName).ToString();
+                ContentsBox = UpdateContentsBoxEvent(cellName)?.ToString() ?? "";
             }
         }
     }

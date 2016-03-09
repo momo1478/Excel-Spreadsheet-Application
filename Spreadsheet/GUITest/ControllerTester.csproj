@@ -73,6 +73,10 @@
       <Name>Spreadsheet</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="UntitledSpreadsheet.ss" />
+    <None Include="UntitledSpreadsheetLoad.ss" />
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

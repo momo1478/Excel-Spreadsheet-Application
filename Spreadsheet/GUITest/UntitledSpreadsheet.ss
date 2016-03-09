@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="utf-8"?><spreadsheet IsValid="[A-Za-z][1-9][0-9]?"><cell name="A11" contents="=6.5 * 4 / 2" /><cell name="A10" contents="=6.5 * 4 / 2" /><cell name="A9" contents="=6.5 * 4 / 2" /><cell name="A8" contents="=6.5 * 4 / 2" /></spreadsheet>

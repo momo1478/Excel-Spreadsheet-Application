@@ -70,7 +70,7 @@ namespace SS
 
             hasChanged = false;
 
-            this.isValid = new Regex(".*?");
+            this.isValid = new Regex("[A-Za-z0-9]*");
         }
 
         //Added in PS6
