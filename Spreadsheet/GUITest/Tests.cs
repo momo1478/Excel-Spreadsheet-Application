@@ -147,7 +147,7 @@ namespace GUITest
 
             Assert.AreEqual("13", view.ValueBox);
 
-            view.FireSaveEvent("UntitledSpreadsheet.ss");
+            view.FireSaveEvent(@"..\..\UntitledSpreadsheet.ss");
         }
 
         [TestMethod]
@@ -176,7 +176,7 @@ namespace GUITest
             ViewStub view = new ViewStub();
             Controller controller = new Controller(view);
 
-            view.FireFileChosenEvent("UntitledSpreadsheetLoad.ss");
+            view.FireFileChosenEvent(@"..\..\UntitledSpreadsheetLoad.ss");
 
             view.FireUpdateValueBoxEvent("A8");
 
